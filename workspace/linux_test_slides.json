@@ -1,0 +1,10 @@
+[
+  {"slide": 1, "type": "cover", "headline": "Linux Shell\n필수 명령어", "subtext": "개발자를 위한 터미널 기초 가이드"},
+  {"slide": 2, "type": "content-badge", "badge_text": "BASICS", "headline": "Shell이란?", "body": "사용자와 커널 사이의 인터페이스로,\n명령어를 해석하고 실행하는 프로그램", "subtext": "Bash, Zsh, Fish 등 다양한 종류 존재"},
+  {"slide": 3, "type": "content-code", "headline": "파일 탐색 명령어", "code_filename": "terminal", "code_body": "<span class='t-prompt'>$</span> <span class='t-fn'>ls</span> <span class='t-str'>-la</span>        <span class='t-cm'># 상세 목록</span>\n<span class='t-prompt'>$</span> <span class='t-fn'>cd</span> <span class='t-str'>/home/user</span>  <span class='t-cm'># 디렉토리 이동</span>\n<span class='t-prompt'>$</span> <span class='t-fn'>pwd</span>              <span class='t-cm'># 현재 경로</span>\n<span class='t-prompt'>$</span> <span class='t-fn'>find</span> <span class='t-str'>.</span> <span class='t-op'>-name</span> <span class='t-str'>\"*.log\"</span>", "body": "파일 시스템을 자유롭게 탐색하는 기본 명령어"},
+  {"slide": 4, "type": "content-list", "headline": "자주 쓰는 명령어 5선", "item1": "grep — 텍스트 패턴 검색", "item2": "chmod — 파일 권한 변경", "item3": "ps aux — 프로세스 목록 확인", "item4": "tail -f — 실시간 로그 모니터링", "item5": "ssh — 원격 서버 접속"},
+  {"slide": 5, "type": "content-stat", "headline": "전 세계 서버 OS 점유율", "emphasis": "96.3%", "body": "전 세계 상위 100만 서버 중\nLinux가 차지하는 비율 (2024 W3Techs)"},
+  {"slide": 6, "type": "content-grid", "headline": "Linux 4대 핵심 구성요소", "grid1_icon": "Kernel", "grid1_title": "커널", "grid1_desc": "하드웨어와 소프트웨어를 연결하는 핵심", "grid2_icon": "Shell", "grid2_title": "셸", "grid2_desc": "명령어를 해석하고 커널에 전달", "grid3_icon": "FS", "grid3_title": "파일시스템", "grid3_desc": "모든 것을 파일로 관리하는 구조", "grid4_icon": "Utils", "grid4_title": "유틸리티", "grid4_desc": "다양한 시스템 관리 도구 모음"},
+  {"slide": 7, "type": "content-steps", "headline": "파일 권한 변경 절차", "step1": "ls -l 로 현재 권한 확인\n(rwxr-xr-x 형식)", "step2": "chmod 755 file.sh 로\n실행 권한 부여", "step3": "chown user:group file.sh 로\n소유권 변경"},
+  {"slide": 8, "type": "content-highlight", "headline": "핵심 철학", "emphasis": "Everything\nis a File", "body": "Linux에서는 디바이스, 소켓, 파이프까지\n모든 것이 파일로 추상화됩니다", "subtext": "Unix 철학의 핵심 원칙"}
+]

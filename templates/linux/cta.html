@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    width:1080px; height:1080px;
+    font-family:'JetBrains Mono', monospace;
+    background:#1A1A2E; overflow:hidden;
+    display:flex; flex-direction:column;
+    position:relative; color:#FDFDFB;
+  }
+  body::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(245,216,56,0.02) 1px, transparent 1px),linear-gradient(90deg, rgba(245,216,56,0.02) 1px, transparent 1px); background-size:40px 40px; pointer-events:none; z-index:0; }
+  .accent-bar { position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg, {{accent_color}}, #D89C08); z-index:3; }
+  .glow-top { position:absolute; top:-150px; right:-80px; width:500px; height:500px; background:radial-gradient(circle, rgba(245,216,56,0.12) 0%, transparent 70%); pointer-events:none; z-index:0; }
+  .glow-bottom { position:absolute; bottom:-120px; left:-80px; width:400px; height:400px; background:radial-gradient(circle, rgba(0,180,216,0.06) 0%, transparent 70%); pointer-events:none; z-index:0; }
+
+  .content {
+    position:relative; z-index:1;
+    flex:1;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    text-align:center;
+    padding:60px 72px;
+  }
+  .tux-icon { width:120px; height:auto; margin-bottom:40px; filter:drop-shadow(0 4px 24px rgba(245,216,56,0.15)); opacity:0.8; }
+  .headline { font-size:56px; font-weight:800; color:#FDFDFB; line-height:1.2; margin-bottom:40px; word-break:keep-all; }
+  .cta-button {
+    display:inline-flex; align-items:center; gap:12px;
+    padding:20px 56px;
+    background:{{accent_color}};
+    border-radius:12px;
+    font-size:24px; font-weight:700; color:#1A1A2E;
+    letter-spacing:0.02em;
+    box-shadow:0 4px 24px rgba(245,216,56,0.3);
+  }
+  .terminal-prompt {
+    font-size:20px; color:rgba(253,253,251,0.3);
+    margin-top:40px;
+  }
+
+  .footer {
+    position:relative; z-index:1;
+    padding:0 72px 44px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .account { font-size:20px; color:rgba(253,253,251,0.3); }
+  .slide-indicator { font-size:18px; color:rgba(253,253,251,0.2); }
+  .slide-current { color:{{accent_color}}; font-weight:600; }
+</style>
+</head>
+<body>
+  <div class="accent-bar"></div>
+  <div class="glow-top"></div>
+  <div class="glow-bottom"></div>
+
+  <div class="content">
+    <img class="tux-icon" src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Tux" onerror="this.style.display='none'">
+    <h1 class="headline">{{headline}}</h1>
+    <div class="cta-button">{{cta_text}}</div>
+    <div class="terminal-prompt">$ echo "Thank you!" _</div>
+  </div>
+
+  <div class="footer">
+    <span class="account">@{{account_name}}</span>
+    <span class="slide-indicator"><span class="slide-current">{{slide_number}}</span> / {{total_slides}}</span>
+  </div>
+</body>
+</html>

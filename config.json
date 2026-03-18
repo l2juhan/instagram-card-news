@@ -3,7 +3,7 @@
   "defaults": {
     "template": "clean",
     "accent_color": "#3B82F6",
-    "account_name": "my_account",
+    "account_name": "cse_juhan02",
     "slide_count": 7
   },
   "templates": {
@@ -56,6 +56,11 @@
       "description": "CS 교육 콘텐츠 스타일 화이트 배경 + 모노스페이스 + 코딩 감성",
       "accent_color": "#22C55E",
       "background": "white"
+    },
+    "linux": {
+      "description": "Linux 정보 전달 스타일 다크 터미널 배경 + Tux 골든 옐로우 + JetBrains Mono",
+      "accent_color": "#F5D838",
+      "background": "terminal-dark"
     }
   },
   "dimensions": {
@@ -64,7 +69,8 @@
   },
   "style_dimensions": {
     "rn": { "width": 1080, "height": 1080 },
-    "cs": { "width": 1080, "height": 1080 }
+    "cs": { "width": 1080, "height": 1080 },
+    "linux": { "width": 1080, "height": 1080 }
   },
   "output_dir": "output",
   "workspace_dir": "workspace"

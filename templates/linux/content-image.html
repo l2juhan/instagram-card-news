@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    width:1080px; height:1080px;
+    font-family:'JetBrains Mono', monospace;
+    background:#1A1A2E; overflow:hidden;
+    display:flex; flex-direction:column;
+    position:relative; color:#FDFDFB;
+  }
+  body::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(245,216,56,0.02) 1px, transparent 1px),linear-gradient(90deg, rgba(245,216,56,0.02) 1px, transparent 1px); background-size:40px 40px; pointer-events:none; z-index:0; }
+  .accent-bar { position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg, {{accent_color}}, #D89C08); z-index:3; }
+  .glow-top { position:absolute; top:-150px; right:-80px; width:500px; height:500px; background:radial-gradient(circle, rgba(245,216,56,0.1) 0%, transparent 70%); pointer-events:none; z-index:0; }
+  .glow-bottom { position:absolute; bottom:-120px; left:-80px; width:400px; height:400px; background:radial-gradient(circle, rgba(0,180,216,0.05) 0%, transparent 70%); pointer-events:none; z-index:0; }
+
+  .header { position:relative; z-index:1; padding:22px 48px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+  .account { font-size:16px; font-weight:600; color:rgba(253,253,251,0.45); }
+  .tag-right { font-size:16px; font-weight:600; color:{{accent_color}}; }
+  .sep { height:1px; background:rgba(245,216,56,0.12); margin:0 48px; flex-shrink:0; }
+
+  .content { position:relative; z-index:1; flex:1; padding:32px 48px 16px; display:flex; flex-direction:column; }
+  .headline { font-size:44px; font-weight:800; color:#FDFDFB; line-height:1.2; margin-bottom:24px; word-break:keep-all; }
+  .image-wrap {
+    flex:1; min-height:0;
+    border-radius:16px;
+    overflow:hidden;
+    margin-bottom:20px;
+    background:rgba(245,216,56,0.03);
+    border:1px solid rgba(245,216,56,0.08);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .image-wrap img { width:100%; height:100%; object-fit:contain; }
+  .placeholder { font-size:64px; color:rgba(245,216,56,0.2); }
+  .body { font-size:24px; font-weight:400; color:rgba(253,253,251,0.6); line-height:1.6; word-break:keep-all; }
+
+  .footer { position:relative; z-index:1; padding:16px 48px; flex-shrink:0; display:flex; justify-content:flex-end; align-items:center; }
+  .slide-num { font-size:13px; color:rgba(253,253,251,0.25); }
+  .slide-current { color:{{accent_color}}; font-weight:600; }
+</style>
+</head>
+<body>
+  <div class="accent-bar"></div>
+  <div class="glow-top"></div>
+  <div class="glow-bottom"></div>
+
+  <div class="header">
+    <span class="account">@{{account_name}}</span>
+    <span class="tag-right">#Linux</span>
+  </div>
+  <div class="sep"></div>
+
+  <div class="content">
+    <h2 class="headline">{{headline}}</h2>
+    <div class="image-wrap" id="imageWrap">
+      <img src="{{image_url}}" alt="" id="slideImage" onerror="this.style.display='none'; document.getElementById('phText').style.display='block';">
+      <span class="placeholder" id="phText" style="display:none;">&#x1F4F7;</span>
+    </div>
+    <div class="body">{{body}}</div>
+  </div>
+
+  <div class="footer">
+    <span class="slide-num"><span class="slide-current">{{slide_number}}</span> / {{total_slides}}</span>
+  </div>
+<script>
+  var img = document.getElementById('slideImage');
+  if (!img.src || img.src === location.href) {
+    img.style.display = 'none';
+    document.getElementById('phText').style.display = 'block';
+  }
+</script>
+</body>
+</html>
