@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'JetBrains Mono', monospace;
+    background: #FFFFFF; overflow: hidden;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .accent-stripe { position:absolute; left:0; top:0; bottom:0; width:6px; background:{{accent_color}}; }
+  .topbar { padding:28px 72px 22px 80px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+  .account { font-size:17px; font-weight:600; color:#4A5568; }
+  .hashtags-top { font-size:17px; font-weight:600; color:{{accent_color}}; }
+  .sep { height:1.5px; background:#E0F7FA; margin:0 72px 0 80px; flex-shrink:0; }
+
+  .content { flex:1; padding:52px 72px 40px 80px; display:flex; flex-direction:column; justify-content:center; }
+  .slide-label { font-size:20px; color:{{accent_color}}; letter-spacing:0.06em; margin-bottom:18px; }
+  .headline { font-size:44px; font-weight:800; color:#1A202C; line-height:1.2; margin-bottom:48px; white-space:pre-line; }
+
+  .bigdata-block {
+    display: flex;
+    align-items: flex-end;
+    gap: 0px;
+    margin-bottom: 24px;
+    line-height: 1;
+  }
+  .big-number {
+    font-size: 160px;
+    font-weight: 800;
+    color: {{accent_color}};
+    letter-spacing: -6px;
+    line-height: 1;
+  }
+  .big-unit {
+    font-size: 60px;
+    font-weight: 700;
+    color: {{accent_color}};
+    margin-bottom: 16px;
+    margin-left: 8px;
+  }
+
+  .data-divider { width:64px; height:4px; background:{{accent_color}}; border-radius:2px; margin-bottom:28px; }
+  .body-text { font-size:23px; font-weight:400; color:#4A5568; line-height:1.75; white-space:pre-line; }
+  .subtext { font-size:16px; color:#CBD5E0; margin-top:20px; white-space:pre-line; }
+
+  .sep-bottom { height:1.5px; background:#E0F7FA; margin:0 72px 0 80px; flex-shrink:0; }
+  .footer { padding:18px 72px 18px 80px; display:flex; justify-content:flex-end; align-items:center; flex-shrink:0; }
+  .slide-num { font-size:13px; color:#CBD5E0; }
+</style>
+</head>
+<body>
+  <div class="accent-stripe"></div>
+  <div class="topbar">
+    <span class="account">@{{account_name}}</span>
+    <span class="hashtags-top">#ReactNative &nbsp; #TypeScript</span>
+  </div>
+  <div class="sep"></div>
+  <div class="content">
+    <div class="slide-label">// Data</div>
+    <div class="headline">{{headline}}</div>
+    <div class="bigdata-block">
+      <span class="big-number">{{bigdata_number}}</span>
+      <span class="big-unit">{{bigdata_unit}}</span>
+    </div>
+    <div class="data-divider"></div>
+    <div class="body-text">{{body}}</div>
+    <div class="subtext">{{subtext}}</div>
+  </div>
+  <div class="sep-bottom"></div>
+  <div class="footer">
+    <span class="slide-num">{{slide_number}} / {{total_slides}}</span>
+  </div>
+</body>
+</html>

@@ -108,6 +108,16 @@
       word-break: keep-all;
     }
 
+    /* Logo icon */
+    .logo-img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 28px;
+      border-radius: 20px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
     /* Cursor decoration — positioned via JS near the bar-highlight */
     .cursor-icon {
       position: absolute;
@@ -149,8 +159,9 @@
 </head>
 <body>
   <div class="top-line"></div>
-  <div class="dots"><span></span><span></span><span></span></div>
+  
 
+  <img class="logo-img" id="logoImg" src="{{logo_url}}" alt="" onerror="this.style.display='none'" onload="if(!this.src||this.src===window.location.href)this.style.display='none'">
   <p class="label">{{headline_label}}</p>
   <h1 class="headline" id="headline">{{headline}}</h1>
   <p class="subtext">{{subtext}}</p>
@@ -167,6 +178,12 @@
   </div>
 
   <script>
+    // Hide logo if no URL provided
+    const logoImg = document.getElementById('logoImg');
+    if (!logoImg.src || logoImg.src === '' || logoImg.getAttribute('src') === '') {
+      logoImg.style.display = 'none';
+    }
+
     // Split headline by <br> and apply per-line styling
     const el = document.getElementById('headline');
     const raw = el.innerHTML;

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'JetBrains Mono', monospace;
+    background: #FFFFFF; overflow: hidden;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .accent-stripe { position:absolute; left:0; top:0; bottom:0; width:6px; background:{{accent_color}}; }
+  .topbar { padding:28px 72px 22px 80px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+  .account { font-size:17px; font-weight:600; color:#4A5568; }
+  .hashtags-top { font-size:17px; font-weight:600; color:{{accent_color}}; }
+  .sep { height:1.5px; background:#E0F7FA; margin:0 72px 0 80px; flex-shrink:0; }
+
+  .content { flex:1; padding:60px 72px 40px 80px; display:flex; flex-direction:column; justify-content:center; }
+
+  .quote-mark {
+    font-size: 140px;
+    font-weight: 800;
+    color: {{accent_color}};
+    opacity: 0.15;
+    line-height: 1;
+    margin-bottom: -40px;
+    margin-left: -10px;
+  }
+  .quote-inner {
+    border-left: 4px solid {{accent_color}};
+    padding: 28px 32px;
+    background: #F0FDFE;
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 40px;
+  }
+  .body-text {
+    font-size: 28px;
+    font-weight: 500;
+    color: #2D3748;
+    line-height: 1.7;
+    white-space: pre-line;
+  }
+  .attribution {
+    text-align: right;
+    font-size: 20px;
+    color: #718096;
+    margin-bottom: 48px;
+  }
+  .attribution::before { content: '— '; }
+
+  .quote-note {
+    font-size: 20px;
+    color: #A0AEC0;
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+
+  .sep-bottom { height:1.5px; background:#E0F7FA; margin:0 72px 0 80px; flex-shrink:0; }
+  .footer { padding:18px 72px 18px 80px; display:flex; justify-content:flex-end; align-items:center; flex-shrink:0; }
+  .slide-num { font-size:13px; color:#CBD5E0; }
+</style>
+</head>
+<body>
+  <div class="accent-stripe"></div>
+  <div class="topbar">
+    <span class="account">@{{account_name}}</span>
+    <span class="hashtags-top">#ReactNative &nbsp; #TypeScript</span>
+  </div>
+  <div class="sep"></div>
+  <div class="content">
+    <div class="quote-mark">"</div>
+    <div class="quote-inner">
+      <div class="body-text">{{body}}</div>
+    </div>
+    <div class="attribution">{{headline}}</div>
+    <div class="quote-note">{{subtext}}</div>
+  </div>
+  <div class="sep-bottom"></div>
+  <div class="footer">
+    <span class="slide-num">{{slide_number}} / {{total_slides}}</span>
+  </div>
+</body>
+</html>

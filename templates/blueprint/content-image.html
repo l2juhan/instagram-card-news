@@ -95,7 +95,7 @@
     .image-area {
       width: 88%;
       max-width: 840px;
-      height: 420px;
+      height: 460px;
       background: #FFFFFF;
       border-radius: 20px;
       display: flex;
@@ -104,13 +104,14 @@
       overflow: hidden;
       flex-shrink: 0;
       border: 3px solid {{accent_color}};
+      padding: 8px;
     }
 
     .image-area img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      border-radius: 17px;
+      object-fit: contain;
+      border-radius: 14px;
     }
 
     .image-placeholder {
@@ -129,11 +130,33 @@
       line-height: 1.7;
       word-break: keep-all;
     }
+
+    .footer {
+      position: absolute;
+      bottom: 48px;
+      left: 56px;
+      right: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .account {
+      font-size: 28px;
+      font-weight: 600;
+      color: #8B95A5;
+    }
+
+    .page-counter {
+      font-size: 28px;
+      font-weight: 700;
+      color: {{accent_color}};
+    }
   </style>
 </head>
 <body>
   <div class="top-line"></div>
-  <div class="dots"><span></span><span></span><span></span></div>
+  
 
   <div class="content">
     <div class="badge-number">{{badge_number}}</div>
@@ -155,6 +178,11 @@
     </div>
 
     <p class="body-text">{{body}}</p>
+  </div>
+
+  <div class="footer">
+    <span class="account">@{{account_name}}</span>
+    <span class="page-counter">{{slide_number}} / {{total_slides}}</span>
   </div>
 </body>
 </html>

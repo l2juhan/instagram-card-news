@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1350px; overflow: hidden; }
+
+  .card {
+    width: 1080px;
+    height: 1350px;
+    background: #232F3E;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    flex-direction: column;
+    word-break: keep-all;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .accent-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, {{accent_color}}, #ED7100);
+    z-index: 3;
+  }
+
+  .bg-image {
+    position: absolute;
+    inset: 0;
+    background-color: #1a2332;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 0;
+  }
+
+  .dark-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(35,47,62,0.3) 0%, rgba(35,47,62,0.85) 40%, rgba(35,47,62,0.95) 100%);
+    z-index: 1;
+  }
+
+  .glow-top-right {
+    position: absolute;
+    top: -200px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,153,0,0.12) 0%, transparent 70%);
+    z-index: 2;
+  }
+
+  .glow-bottom-left {
+    position: absolute;
+    bottom: -150px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(140,79,255,0.08) 0%, transparent 70%);
+    z-index: 2;
+  }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 72px 40px;
+  }
+
+  .headline {
+    font-size: 56px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.025em;
+    line-height: 1.25;
+    margin-bottom: 48px;
+  }
+
+  .badge-section {
+    margin-bottom: 28px;
+  }
+
+  .badge-pill {
+    display: inline-block;
+    background: {{accent_color}};
+    color: #232F3E;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 6px 18px;
+    border-radius: 100px;
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+
+  .badge-body {
+    font-size: 28px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+
+  .footer {
+    position: relative;
+    z-index: 2;
+    padding: 0 72px 52px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .account-name {
+    font-size: 24px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .slide-indicator {
+    font-size: 22px;
+    color: rgba(255,255,255,0.25);
+  }
+
+  .slide-current {
+    color: {{accent_color}};
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent-bar"></div>
+  <div class="bg-image"></div>
+  <div class="dark-overlay"></div>
+  <div class="glow-top-right"></div>
+  <div class="glow-bottom-left"></div>
+
+  <div class="content">
+    <div class="headline">{{headline}}</div>
+
+    <div class="badge-section">
+      <div class="badge-pill">{{badge_text}}</div>
+      <div class="badge-body">{{body}}</div>
+    </div>
+
+    <div class="badge-section">
+      <div class="badge-pill">{{badge2_text}}</div>
+      <div class="badge-body">{{body2}}</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="account-name">@{{account_name}}</span>
+    <span class="slide-indicator"><span class="slide-current">{{slide_number}}</span> / {{total_slides}}</span>
+  </div>
+</div>
+<script>
+  const url = '{{image_url}}';
+  if (url) document.querySelector('.bg-image').style.backgroundImage = 'url(' + url + ')';
+</script>
+</body>
+</html>

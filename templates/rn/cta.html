@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── Header (split, matching cover) ── */
+  .header {
+    position: relative; flex-shrink: 0;
+    height: 70px; display: flex; align-items: center;
+    padding: 0 52px; justify-content: space-between;
+    background: linear-gradient(to right, {{accent_color}} 50%, #FFFFFF 50%);
+  }
+  .header .h-line {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 1.5px;
+    background: linear-gradient(to right, rgba(255,255,255,0.25) 50%, rgba(0,0,0,0.07) 50%);
+  }
+  .account  { font-size: 17px; font-weight: 600; color: rgba(255,255,255,0.88); }
+  .hashtags-top { font-size: 17px; font-weight: 600; color: {{accent_color}}; }
+
+  /* ── Two-panel row ── */
+  .panels { flex: 1; display: flex; overflow: hidden; }
+
+  /* LEFT: accent brand panel */
+  .left {
+    width: 480px; height: 100%;
+    background: {{accent_color}};
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 28px; position: relative; flex-shrink: 0;
+  }
+  .left-bottom-bar { position:absolute; bottom:0; left:0; right:0; height:6px; background:rgba(255,255,255,0.15); }
+
+  .cta-icon { font-size: 64px; }
+  .cta-msg-left {
+    text-align: center; font-size: 24px; font-weight: 600;
+    color: rgba(255,255,255,0.85); line-height: 1.5; padding: 0 40px;
+  }
+  .social-links {
+    display: flex; flex-direction: column; gap: 12px;
+    align-items: center; margin-top: 8px;
+  }
+  .social-link {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.9);
+    font-size: 15px; padding: 10px 20px;
+    border-radius: 8px; width: 200px; justify-content: center;
+  }
+
+  /* RIGHT: CTA content */
+  .right {
+    flex: 1; height: 100%; background: #FFFFFF;
+    display: flex; flex-direction: column;
+    padding: 52px 52px 28px;
+    position: relative;
+  }
+
+  .done-badge {
+    display: inline-flex; align-items:center; gap:8px;
+    background: #F0FFF4; border: 1.5px solid #68D391;
+    color: #276749; font-size: 14px; font-weight:700;
+    padding: 7px 16px; border-radius:100px;
+    margin-bottom: 28px; width:fit-content;
+  }
+
+  .cta-label { font-size:14px; color:#A0AEC0; margin-bottom:14px; letter-spacing:0.04em; }
+  .headline {
+    font-size: 52px; font-weight:800;
+    color: #1A202C; line-height:1.2;
+    margin-bottom: 24px; white-space:pre-line;
+  }
+  .cta-divider { width:40px; height:3px; background:{{accent_color}}; border-radius:2px; margin-bottom:24px; }
+
+  .cta-btn {
+    display: flex; align-items:center; justify-content:center; gap:10px;
+    background: {{accent_color}}; color: #FFFFFF;
+    font-size: 24px; font-weight:800;
+    padding: 22px 32px; border-radius: 12px;
+    margin-bottom: 20px; letter-spacing: 0.02em;
+  }
+
+  .cta-sub { font-size:17px; color:#A0AEC0; line-height:1.6; margin-bottom:32px; }
+
+  .series-next {
+    margin-top: auto;
+    padding: 20px; background: #F0FDFE;
+    border-radius: 10px; border-left: 4px solid {{accent_color}};
+  }
+  .next-label { font-size:13px; color:#A0AEC0; margin-bottom:6px; }
+  .next-text { font-size:18px; font-weight:600; color:#4A5568; }
+
+  /* slide number bottom-right */
+  .slide-num {
+    position: absolute; bottom: 22px; right: 52px;
+    font-size: 13px; color: #CBD5E0;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Header (split, matching cover style) -->
+  <div class="header">
+    <span class="account">@{{account_name}}</span>
+    <span class="hashtags-top">#ReactNative &nbsp; #TypeScript</span>
+    <div class="h-line"></div>
+  </div>
+
+  <!-- Two panels -->
+  <div class="panels">
+    <div class="left">
+      <div class="cta-icon">⚛️</div>
+      <div class="cta-msg-left">
+        도움이 됐다면<br>팔로우 &amp; 저장해주세요!
+      </div>
+      <div class="social-links">
+        <div class="social-link">📱 Instagram</div>
+        <div class="social-link">🔖 저장하기</div>
+      </div>
+      <div class="left-bottom-bar"></div>
+    </div>
+
+    <div class="right">
+      <div class="done-badge">✓ 완료</div>
+
+      <div class="cta-label">// call to action</div>
+      <div class="headline">{{headline}}</div>
+      <div class="cta-divider"></div>
+
+      <div class="cta-btn">{{cta_text}}</div>
+      <div class="cta-sub">매주 React Native 개발 팁을 공유합니다</div>
+
+      <div class="series-next">
+        <div class="next-label">// 다음 시리즈</div>
+        <div class="next-text">{{subtext}}</div>
+      </div>
+
+      <div class="slide-num">{{slide_number}} / {{total_slides}}</div>
+    </div>
+  </div>
+
+</body>
+</html>

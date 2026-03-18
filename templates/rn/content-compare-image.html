@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'JetBrains Mono', monospace;
+    background: #FFFFFF; overflow: hidden;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .accent-stripe { position:absolute; left:0; top:0; bottom:0; width:6px; background:{{accent_color}}; }
+  .topbar { padding:24px 52px 20px 60px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+  .account { font-size:17px; font-weight:600; color:#4A5568; }
+  .hashtags-top { font-size:17px; font-weight:600; color:{{accent_color}}; }
+  .sep { height:1.5px; background:#E0F7FA; margin:0 52px 0 60px; flex-shrink:0; }
+
+  .content { flex:1; padding:32px 52px 24px 60px; display:flex; flex-direction:column; overflow:hidden; }
+  .slide-label { font-size:20px; color:{{accent_color}}; letter-spacing:0.06em; margin-bottom:12px; flex-shrink:0; }
+  .headline { font-size:46px; font-weight:800; color:#1A202C; line-height:1.2; margin-bottom:28px; flex-shrink:0; }
+
+  /* ── Compare Row ── */
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 48px 1fr;
+    gap: 0;
+    flex: 1;
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  /* ── Each Panel ── */
+  .panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+  }
+  .panel-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    padding: 5px 12px;
+    border-radius: 4px;
+    width: fit-content;
+    flex-shrink: 0;
+  }
+  .panel-left .panel-label { background:#FFF5F5; color:#C53030; border:1px solid #FED7D7; }
+  .panel-right .panel-label { background:#F0FFF4; color:#276749; border:1px solid #C6F6D5; }
+
+  .panel-title {
+    font-size: 24px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .panel-left .panel-title { color:#C53030; }
+  .panel-right .panel-title { color:#276749; }
+
+  .panel-box {
+    flex: 1;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    position: relative;
+  }
+  .panel-left .panel-box { background:#F7FAFC; border:1.5px solid #E2E8F0; }
+  .panel-right .panel-box { background:#F0FDFE; border:1.5px solid #E0F7FA; }
+
+  /* iOS Alert mockup */
+  .ios-screen {
+    width: 280px;
+    height: 480px;
+    background: linear-gradient(145deg, #E8EEF4, #D0DAE6);
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    overflow: hidden;
+  }
+  .ios-screen-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #667eea22, #764ba222);
+  }
+  .ios-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(2px);
+  }
+  .ios-alert-box {
+    position: relative;
+    width: 220px;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(20px);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    z-index: 2;
+  }
+  .ios-alert-body { padding: 18px 16px 0; text-align: center; }
+  .ios-alert-title { font-size: 14px; font-weight: 700; color: #1A1A1A; margin-bottom: 6px; letter-spacing: -0.01em; }
+  .ios-alert-msg { font-size: 11.5px; color: #555; line-height: 1.5; }
+  .ios-alert-divider-h { height: 0.5px; background: #D0D0D0; margin-top: 16px; }
+  .ios-alert-buttons { display: flex; }
+  .ios-btn { flex: 1; padding: 11px 0; font-size: 14px; font-weight: 400; color: #007AFF; text-align: center; cursor: pointer; }
+  .ios-btn.confirm { font-weight: 700; }
+  .ios-btn-divider { width: 0.5px; background: #D0D0D0; }
+
+  /* Toast image */
+  .toast-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  .panel-desc {
+    font-size: 17px;
+    color: #718096;
+    line-height: 1.65;
+    flex-shrink: 0;
+    white-space: pre-line;
+  }
+
+  /* ── VS Divider ── */
+  .vs-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+  }
+  .vs-line { flex: 1; width: 1px; background: #E2E8F0; }
+  .vs-badge {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 2px solid {{accent_color}};
+    color: {{accent_color}};
+    font-size: 13px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .sep-bottom { height:1.5px; background:#E0F7FA; margin:0 52px 0 60px; flex-shrink:0; }
+  .footer { padding:14px 52px 14px 60px; display:flex; justify-content:flex-end; align-items:center; flex-shrink:0; }
+  .slide-num { font-size:13px; color:#CBD5E0; }
+</style>
+</head>
+<body>
+  <div class="accent-stripe"></div>
+  <div class="topbar">
+    <span class="account">@{{account_name}}</span>
+    <span class="hashtags-top">#ReactNative &nbsp; #TypeScript</span>
+  </div>
+  <div class="sep"></div>
+
+  <div class="content">
+    <div class="slide-label">// Compare</div>
+    <div class="headline">{{headline}}</div>
+
+    <div class="compare-row">
+      <!-- LEFT: iOS Alert mockup -->
+      <div class="panel panel-left">
+        <div class="panel-label">BEFORE</div>
+        <div class="panel-title">{{left_title}}</div>
+        <div class="panel-box">
+          <div class="ios-screen">
+            <div class="ios-screen-bg"></div>
+            <div class="ios-overlay"></div>
+            <div class="ios-alert-box">
+              <div class="ios-alert-body">
+                <div class="ios-alert-title">{{left_alert_title}}</div>
+                <div class="ios-alert-msg">{{left_alert_msg}}</div>
+              </div>
+              <div class="ios-alert-divider-h"></div>
+              <div class="ios-alert-buttons">
+                <div class="ios-btn">취소</div>
+                <div class="ios-btn-divider"></div>
+                <div class="ios-btn confirm">확인</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-desc">{{left_body}}</div>
+      </div>
+
+      <!-- VS -->
+      <div class="vs-col">
+        <div class="vs-line"></div>
+        <div class="vs-badge">VS</div>
+        <div class="vs-line"></div>
+      </div>
+
+      <!-- RIGHT: Real Toast image -->
+      <div class="panel panel-right">
+        <div class="panel-label">AFTER</div>
+        <div class="panel-title">{{right_title}}</div>
+        <div class="panel-box">
+          <img class="toast-img" src="{{right_image}}"
+               onerror="this.style.display='none'">
+        </div>
+        <div class="panel-desc">{{right_body}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sep-bottom"></div>
+  <div class="footer">
+    <span class="slide-num">{{slide_number}} / {{total_slides}}</span>
+  </div>
+</body>
+</html>

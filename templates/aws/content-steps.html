@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .card {
+    width: 1080px;
+    height: 1350px;
+    background: #232F3E;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .accent-bar {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, {{accent_color}}, #ED7100);
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .glow-top-right {
+    position: absolute;
+    top: -200px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,153,0,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-bottom-left {
+    position: absolute;
+    bottom: -150px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(140,79,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 72px;
+    padding-bottom: 0;
+  }
+
+  .headline {
+    font-size: 56px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.025em;
+    word-break: keep-all;
+    margin-bottom: 56px;
+  }
+
+  .steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .step-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .step-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 22px 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .step-number {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+    background: {{accent_color}};
+    color: #232F3E;
+    font-size: 20px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .step-text {
+    font-size: 30px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 400;
+    line-height: 1.5;
+    word-break: keep-all;
+  }
+
+  .step-connector {
+    width: 2px;
+    height: 20px;
+    border-left: 2px dashed rgba(255,255,255,0.1);
+    margin-left: 55px;
+  }
+
+  .body {
+    font-size: 28px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 400;
+    line-height: 1.6;
+    margin-top: 48px;
+    word-break: keep-all;
+  }
+
+  .footer {
+    position: relative;
+    z-index: 1;
+    padding: 0 72px 52px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .account-name {
+    font-size: 24px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 400;
+  }
+
+  .slide-indicator {
+    font-size: 24px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 400;
+  }
+
+  .slide-current {
+    color: {{accent_color}};
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent-bar"></div>
+  <div class="glow-top-right"></div>
+  <div class="glow-bottom-left"></div>
+
+  <div class="content">
+    <h1 class="headline">{{headline}}</h1>
+
+    <div class="steps-container">
+      <div class="step-wrapper">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-text">{{step1}}</div>
+        </div>
+      </div>
+
+      <div class="step-connector"></div>
+
+      <div class="step-wrapper">
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-text">{{step2}}</div>
+        </div>
+      </div>
+
+      <div class="step-connector"></div>
+
+      <div class="step-wrapper">
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-text">{{step3}}</div>
+        </div>
+      </div>
+
+      <div class="step-connector"></div>
+
+      <div class="step-wrapper">
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <div class="step-text">{{step4}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="body">{{body}}</div>
+  </div>
+
+  <div class="footer">
+    <span class="account-name">@{{account_name}}</span>
+    <span class="slide-indicator"><span class="slide-current">{{slide_number}}</span> / {{total_slides}}</span>
+  </div>
+</div>
+</body>
+</html>

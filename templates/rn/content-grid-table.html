@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'JetBrains Mono', monospace;
+    background: #FFFFFF; overflow: hidden;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .accent-stripe { position:absolute; left:0; top:0; bottom:0; width:6px; background:{{accent_color}}; }
+  .topbar { padding:22px 52px 18px 60px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+  .account { font-size:17px; font-weight:600; color:#4A5568; }
+  .hashtags-top { font-size:17px; font-weight:600; color:{{accent_color}}; }
+  .sep { height:1.5px; background:#E0F7FA; margin:0 52px 0 60px; flex-shrink:0; }
+
+  .content { flex:1; padding:28px 52px 22px 60px; display:flex; flex-direction:column; }
+  .slide-label { font-size:20px; color:{{accent_color}}; letter-spacing:0.06em; margin-bottom:10px; flex-shrink:0; }
+  .headline { font-size:42px; font-weight:800; color:#1A202C; line-height:1.2; margin-bottom:20px; flex-shrink:0; }
+
+  /* Compact 2x2 Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 18px;
+    height: 460px;
+    flex-shrink: 0;
+    margin-bottom: 24px;
+  }
+  .grid-card {
+    background: #F0FDFE;
+    border-radius: 10px;
+    padding: 24px 20px;
+    border: 1px solid #E0F7FA;
+    border-top: 3px solid {{accent_color}};
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .grid-icon { font-size: 32px; line-height: 1; }
+  .grid-title { font-size: 22px; font-weight: 700; color: #1A202C; }
+  .grid-desc { font-size: 18px; color: #718096; line-height: 1.5; white-space: pre-line; }
+
+  /* Section divider */
+  .section-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: {{accent_color}};
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+  }
+
+  /* Comparison Table */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    flex: 1;
+    font-size: 23px;
+  }
+  .compare-table thead tr { background: #282c34; }
+  .compare-table thead th {
+    padding: 8px 10px;
+    font-weight: 700;
+    font-size: 18px;
+    text-align: left;
+    color: #abb2bf;
+  }
+  .compare-table thead th.th-cat { color: #636d83; width: 22%; }
+  .compare-table thead th.th-before { color: #e06c75; border-left: 1px solid rgba(255,255,255,0.08); }
+  .compare-table thead th.th-after { color: #98c379; border-left: 1px solid rgba(255,255,255,0.08); }
+  .compare-table tbody tr { border-bottom: 1px solid #E0F7FA; }
+  .compare-table tbody tr:last-child { border-bottom: none; }
+  .compare-table tbody tr:nth-child(even) { background: #F8FFFE; }
+  .compare-table tbody td { padding: 6px 10px; color: #4A5568; vertical-align: middle; line-height: 1.5; }
+  .compare-table tbody td.td-cat { font-weight: 700; color: #2D3748; font-size: 21px; white-space: nowrap; }
+  .compare-table tbody td.td-before { border-left: 1px solid #EDF2F7; }
+  .compare-table tbody td.td-after { border-left: 1px solid #EDF2F7; color: #276749; font-weight: 500; }
+
+  .sep-bottom { height:1.5px; background:#E0F7FA; margin:0 52px 0 60px; flex-shrink:0; }
+  .footer { padding:14px 52px 14px 60px; display:flex; justify-content:flex-end; align-items:center; flex-shrink:0; }
+  .slide-num { font-size:13px; color:#CBD5E0; }
+</style>
+</head>
+<body>
+  <div class="accent-stripe"></div>
+  <div class="topbar">
+    <span class="account">@{{account_name}}</span>
+    <span class="hashtags-top">#ReactNative &nbsp; #TypeScript</span>
+  </div>
+  <div class="sep"></div>
+  <div class="content">
+    <div class="slide-label">// Overview</div>
+    <div class="headline">{{headline}}</div>
+
+    <div class="grid">
+      <div class="grid-card">
+        <div class="grid-icon">{{grid1_icon}}</div>
+        <div class="grid-title">{{grid1_title}}</div>
+        <div class="grid-desc">{{grid1_desc}}</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-icon">{{grid2_icon}}</div>
+        <div class="grid-title">{{grid2_title}}</div>
+        <div class="grid-desc">{{grid2_desc}}</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-icon">{{grid3_icon}}</div>
+        <div class="grid-title">{{grid3_title}}</div>
+        <div class="grid-desc">{{grid3_desc}}</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-icon">{{grid4_icon}}</div>
+        <div class="grid-title">{{grid4_title}}</div>
+        <div class="grid-desc">{{grid4_desc}}</div>
+      </div>
+    </div>
+
+    <div class="section-label">// 기존 코드 vs Zustand + persist</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th class="th-cat">항목</th>
+          <th class="th-before">기존 (직접 처리)</th>
+          <th class="th-after">Zustand + persist</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-cat">읽기</td>
+          <td class="td-before">await AsyncStorage.getItem()</td>
+          <td class="td-after">useAuthStore().accessToken</td>
+        </tr>
+        <tr>
+          <td class="td-cat">쓰기</td>
+          <td class="td-before">await AsyncStorage.setItem()</td>
+          <td class="td-after">setAccessToken(token)</td>
+        </tr>
+        <tr>
+          <td class="td-cat">동기/비동기</td>
+          <td class="td-before">비동기</td>
+          <td class="td-after">동기 (persist 백그라운드)</td>
+        </tr>
+        <tr>
+          <td class="td-cat">리렌더링</td>
+          <td class="td-before">수동 처리 필요</td>
+          <td class="td-after">자동</td>
+        </tr>
+        <tr>
+          <td class="td-cat">코드량</td>
+          <td class="td-before">길고 복잡</td>
+          <td class="td-after">간결</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sep-bottom"></div>
+  <div class="footer">
+    <span class="slide-num">{{slide_number}} / {{total_slides}}</span>
+  </div>
+</body>
+</html>

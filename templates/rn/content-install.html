@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'JetBrains Mono', monospace;
+    background: #FFFFFF; overflow: hidden;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .accent-stripe { position:absolute; left:0; top:0; bottom:0; width:6px; background:{{accent_color}}; }
+  .topbar { padding:24px 52px 20px 60px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+  .account { font-size:17px; font-weight:600; color:#4A5568; }
+  .hashtags-top { font-size:17px; font-weight:600; color:{{accent_color}}; }
+  .sep { height:1.5px; background:#E0F7FA; margin:0 52px 0 60px; flex-shrink:0; }
+
+  .content { flex:1; padding:36px 52px 28px 60px; display:flex; flex-direction:column; overflow:hidden; }
+  .slide-label { font-size:20px; color:{{accent_color}}; letter-spacing:0.06em; margin-bottom:14px; flex-shrink:0; }
+
+  .top-section { flex-shrink:0; }
+  .headline { font-size:54px; font-weight:800; color:#1A202C; line-height:1.2; margin-bottom:22px; white-space:pre-line; }
+  .body-text { font-size:30px; font-weight:400; color:#4A5568; line-height:1.9; white-space:pre-line; margin-bottom:24px; }
+
+  .flow-box { background:#F0FDFE; border-radius:12px; padding:20px 24px; display:flex; flex-direction:column; gap:14px; flex-shrink:0; }
+  .flow-row { display:flex; align-items:center; gap:10px; }
+  .flow-item { font-size:21px; font-weight:700; padding:8px 14px; border-radius:8px; }
+  .flow-trigger { background:#E8F4FD; color:#2D3748; }
+  .flow-arrow { font-size:24px; color:#A0AEC0; }
+  .flow-badge { background:#282c34; color:{{accent_color}}; font-size:19px; font-weight:700; padding:6px 14px; border-radius:6px; }
+  .flow-result { background:#F0FFF4; color:#276749; }
+
+  .feature-badges { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; flex-shrink:0; }
+  .feature-badge { background:#E0F7FA; color:#006064; font-size:20px; font-weight:700; padding:10px 20px; border-radius:20px; border:1.5px solid {{accent_color}}; letter-spacing:0.03em; }
+
+  .divider { height:1.5px; background:#E0F7FA; margin:60px 0; flex-shrink:0; }
+
+  .install-section { flex-shrink:0; }
+  .install-title { font-size:54px; font-weight:800; color:#1A202C; line-height:1.2; margin-bottom:22px; }
+
+  .code-block { background:#282c34; border-radius:10px; overflow:hidden; margin-bottom:16px; box-shadow:0 4px 20px rgba(0,0,0,0.14); }
+  .code-titlebar { background:#21252b; padding:9px 16px; display:flex; align-items:center; gap:7px; border-bottom:1px solid rgba(255,255,255,0.06); }
+  .dot { width:11px; height:11px; border-radius:50%; }
+  .dot-red { background:#e06c75; }
+  .dot-yellow { background:#d19a66; }
+  .dot-green { background:#98c379; }
+  .code-filename { font-size:12px; color:#636d83; margin-left:6px; }
+  .code-body { padding:18px 22px; font-size:28px; line-height:1.6; color:#98c379; }
+  .code-body code { display:block; white-space:pre; }
+
+  .note { font-size:21px; color:#4A5568; background:#F0FDFE; border-left:4px solid {{accent_color}}; padding:12px 16px; border-radius:0 8px 8px 0; white-space:pre-line; line-height:1.6; }
+
+  .sep-bottom { height:1.5px; background:#E0F7FA; margin:0 52px 0 60px; flex-shrink:0; }
+  .footer { padding:16px 52px 16px 60px; display:flex; justify-content:flex-end; align-items:center; flex-shrink:0; }
+  .slide-num { font-size:13px; color:#CBD5E0; }
+</style>
+</head>
+<body>
+  <div class="accent-stripe"></div>
+  <div class="topbar">
+    <span class="account">@{{account_name}}</span>
+    <span class="hashtags-top">#ReactNative &nbsp; #TypeScript</span>
+  </div>
+  <div class="sep"></div>
+  <div class="content">
+    <div class="slide-label">// Library</div>
+    <div class="top-section">
+      <div class="headline">{{headline}}</div>
+      <div class="body-text">{{body}}</div>
+      <div class="flow-box">
+        <div class="flow-row">
+          <div class="flow-item flow-trigger">이벤트 발생</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-badge">Toast.show()</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item flow-result">상단 알림 표시</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-item flow-trigger">확인 필요</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-badge">Dialog.show()</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item flow-result">모달 팝업</div>
+        </div>
+      </div>
+      <div class="feature-badges">
+        <div class="feature-badge">자동 닫힘</div>
+        <div class="feature-badge">4가지 타입</div>
+        <div class="feature-badge">커스터마이징</div>
+        <div class="feature-badge">Provider 설정</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="install-section">
+      <div class="install-title">설치법</div>
+      <div class="code-block">
+        <div class="code-titlebar">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+          <span class="code-filename">bash</span>
+        </div>
+        <div class="code-body">
+          <code>{{code_body}}</code>
+        </div>
+      </div>
+      <div class="note">{{badge_text}}</div>
+    </div>
+  </div>
+  <div class="sep-bottom"></div>
+  <div class="footer">
+    <span class="slide-num">{{slide_number}} / {{total_slides}}</span>
+  </div>
+</body>
+</html>

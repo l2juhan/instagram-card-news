@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1350px; overflow: hidden; }
+
+  .card {
+    width: 1080px;
+    height: 1350px;
+    background: #232F3E;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    word-break: keep-all;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .accent-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, {{accent_color}}, #ED7100);
+    z-index: 2;
+  }
+
+  .glow-top-right {
+    position: absolute;
+    top: -200px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,153,0,0.12) 0%, transparent 70%);
+    z-index: 0;
+  }
+
+  .glow-bottom-left {
+    position: absolute;
+    bottom: -150px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(140,79,255,0.08) 0%, transparent 70%);
+    z-index: 0;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    padding: 72px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .quote-card {
+    position: relative;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-left: 4px solid {{accent_color}};
+    border-radius: 12px;
+    padding: 56px;
+  }
+
+  .quote-mark {
+    font-size: 100px;
+    font-weight: 800;
+    color: {{accent_color}};
+    opacity: 0.3;
+    line-height: 1;
+    position: absolute;
+    top: 24px;
+    left: 36px;
+  }
+
+  .quote-body {
+    font-size: 38px;
+    font-weight: 500;
+    color: #FFFFFF;
+    line-height: 1.6;
+    font-style: italic;
+    margin-top: 40px;
+  }
+
+  .attribution {
+    font-size: 28px;
+    font-weight: 600;
+    color: {{accent_color}};
+    margin-top: 48px;
+    padding-left: 56px;
+  }
+
+  .footer {
+    position: relative;
+    z-index: 1;
+    padding: 0 72px 52px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .account-name {
+    font-size: 24px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .slide-indicator {
+    font-size: 22px;
+    color: rgba(255,255,255,0.25);
+  }
+
+  .slide-current {
+    color: {{accent_color}};
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent-bar"></div>
+  <div class="glow-top-right"></div>
+  <div class="glow-bottom-left"></div>
+
+  <div class="content">
+    <div class="quote-card">
+      <div class="quote-mark">"</div>
+      <div class="quote-body">{{body}}</div>
+    </div>
+
+    <div class="attribution">— {{headline}}</div>
+  </div>
+
+  <div class="footer">
+    <span class="account-name">@{{account_name}}</span>
+    <span class="slide-indicator"><span class="slide-current">{{slide_number}}</span> / {{total_slides}}</span>
+  </div>
+</div>
+</body>
+</html>

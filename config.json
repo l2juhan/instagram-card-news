@@ -46,11 +46,25 @@
       "description": "블루프린트 프레젠테이션 스타일 라이트블루그레이 + 소프트블루",
       "accent_color": "#7BA7CC",
       "background": "light-blue-gray"
+    },
+    "aws": {
+      "description": "AWS 클라우드 서비스 전용 스타일 Squid Ink + Amazon Orange",
+      "accent_color": "#FF9900",
+      "background": "squid-ink-dark"
+    },
+    "cs": {
+      "description": "CS 교육 콘텐츠 스타일 화이트 배경 + 모노스페이스 + 코딩 감성",
+      "accent_color": "#22C55E",
+      "background": "white"
     }
   },
   "dimensions": {
     "width": 1080,
     "height": 1350
+  },
+  "style_dimensions": {
+    "rn": { "width": 1080, "height": 1080 },
+    "cs": { "width": 1080, "height": 1080 }
   },
   "output_dir": "output",
   "workspace_dir": "workspace"

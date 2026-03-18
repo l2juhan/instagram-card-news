@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .card {
+    width: 1080px;
+    height: 1350px;
+    background: #232F3E;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .accent-bar {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, {{accent_color}}, #ED7100);
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .glow-top-right {
+    position: absolute;
+    top: -200px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,153,0,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-bottom-left {
+    position: absolute;
+    bottom: -150px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(140,79,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 72px;
+    padding-bottom: 0;
+  }
+
+  .headline {
+    font-size: 44px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: -0.025em;
+    word-break: keep-all;
+    margin-bottom: 48px;
+  }
+
+  .highlight-card {
+    background: rgba(255,153,0,0.06);
+    border-left: 4px solid {{accent_color}};
+    border-radius: 16px;
+    padding: 48px;
+    margin-bottom: 40px;
+  }
+
+  .emphasis {
+    font-size: 52px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.025em;
+    word-break: keep-all;
+    line-height: 1.4;
+  }
+
+  .body {
+    font-size: 30px;
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+    line-height: 1.7;
+    word-break: keep-all;
+    margin-bottom: 20px;
+  }
+
+  .subtext {
+    font-size: 24px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 400;
+    word-break: keep-all;
+  }
+
+  .footer {
+    position: relative;
+    z-index: 1;
+    padding: 0 72px 52px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .account-name {
+    font-size: 24px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 400;
+  }
+
+  .slide-indicator {
+    font-size: 24px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 400;
+  }
+
+  .slide-current {
+    color: {{accent_color}};
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent-bar"></div>
+  <div class="glow-top-right"></div>
+  <div class="glow-bottom-left"></div>
+
+  <div class="content">
+    <h2 class="headline">{{headline}}</h2>
+
+    <div class="highlight-card">
+      <div class="emphasis">{{emphasis}}</div>
+    </div>
+
+    <div class="body">{{body}}</div>
+    <div class="subtext">{{subtext}}</div>
+  </div>
+
+  <div class="footer">
+    <span class="account-name">@{{account_name}}</span>
+    <span class="slide-indicator"><span class="slide-current">{{slide_number}}</span> / {{total_slides}}</span>
+  </div>
+</div>
+</body>
+</html>

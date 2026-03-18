@@ -9,6 +9,24 @@ const configPath = path.join(__dirname, '..', 'config.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
 /**
+ * Convert a local image file path to a base64 data URL.
+ * External URLs are returned as-is. Relative paths are resolved from cwd.
+ */
+function localImageToDataUrl(imagePath) {
+  if (!imagePath) return '';
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://') || imagePath.startsWith('data:')) {
+    return imagePath;
+  }
+  const absPath = path.isAbsolute(imagePath) ? imagePath : path.join(process.cwd(), imagePath);
+  if (!fs.existsSync(absPath)) return '';
+  const ext = path.extname(absPath).slice(1).toLowerCase();
+  const mimeMap = { gif: 'image/gif', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', svg: 'image/svg+xml' };
+  const mime = mimeMap[ext] || 'image/png';
+  const data = fs.readFileSync(absPath).toString('base64');
+  return `data:${mime};base64,${data}`;
+}
+
+/**
  * Replace all template placeholders in HTML content.
  * @param {string} html - Raw HTML template string
  * @param {object} slide - Slide data object
@@ -36,6 +54,7 @@ function applyPlaceholders(html, slide, opts, index, total) {
     '{{step1}}': (slide.step1 || '').replace(/\n/g, '<br>'),
     '{{step2}}': (slide.step2 || '').replace(/\n/g, '<br>'),
     '{{step3}}': (slide.step3 || '').replace(/\n/g, '<br>'),
+    '{{step4}}': (slide.step4 || '').replace(/\n/g, '<br>'),
     '{{item1}}': (slide.item1 || '').replace(/\n/g, '<br>'),
     '{{item2}}': (slide.item2 || '').replace(/\n/g, '<br>'),
     '{{item3}}': (slide.item3 || '').replace(/\n/g, '<br>'),
@@ -70,6 +89,17 @@ function applyPlaceholders(html, slide, opts, index, total) {
     // content-fullimage placeholders
     '{{badge2_text}}': slide.badge2_text || '',
     '{{body2}}': (slide.body2 || '').replace(/\n/g, '<br>'),
+    // cover logo
+    '{{logo_url}}': slide.logo_url || '',
+    // content-code placeholders (code body is NOT converted — preserve raw text)
+    '{{code_filename}}': slide.code_filename || 'App.tsx',
+    '{{code_body}}': slide.code_body || '',
+    // local image placeholders — converted to base64 data URLs
+    '{{left_image}}': localImageToDataUrl(slide.left_image),
+    '{{right_image}}': localImageToDataUrl(slide.right_image),
+    // content-compare-image specific
+    '{{left_alert_title}}': slide.left_alert_title || '알림',
+    '{{left_alert_msg}}': slide.left_alert_msg || '작업이 완료되었습니다.',
   };
 
   let result = html;
@@ -98,6 +128,8 @@ async function render(opts = {}) {
   const outputDir = opts.outputDir || path.join(process.cwd(), config.output_dir);
   const accent = opts.accent || config.defaults.accent_color;
   const account = opts.account || config.defaults.account_name;
+  const styleDim = (config.style_dimensions || {})[style];
+  const dimensions = styleDim || config.dimensions;
 
   // Read slides
   if (!fs.existsSync(slidesPath)) {
@@ -122,8 +154,8 @@ async function render(opts = {}) {
     const page = await browser.newPage();
     page.setDefaultNavigationTimeout(30000);
     await page.setViewport({
-      width: config.dimensions.width,
-      height: config.dimensions.height,
+      width: dimensions.width,
+      height: dimensions.height,
     });
 
     const total = slides.length;
@@ -153,8 +185,8 @@ async function render(opts = {}) {
         clip: {
           x: 0,
           y: 0,
-          width: config.dimensions.width,
-          height: config.dimensions.height,
+          width: dimensions.width,
+          height: dimensions.height,
         },
       });
 

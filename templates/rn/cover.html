@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden; position: relative;
+  }
+
+  /* ── Split backgrounds ── */
+  .bg-left  { position:absolute; left:0;   top:0; width:540px; height:100%; background:{{accent_color}}; }
+  .bg-right { position:absolute; left:540px; top:0; width:540px; height:100%; background:#FFFFFF; }
+  .split-line { position:absolute; left:539px; top:0; width:2px; height:100%; background:rgba(0,0,0,0.06); z-index:2; }
+
+  /* ── Header ── */
+  .header {
+    position:absolute; top:0; left:0; right:0; height:74px; z-index:10;
+    display:flex; align-items:center; padding:0 52px; justify-content:space-between;
+  }
+  .h-line {
+    position:absolute; bottom:0; left:0; right:0; height:1.5px;
+    background:linear-gradient(to right, rgba(255,255,255,0.25) 50%, rgba(0,0,0,0.07) 50%);
+  }
+  .account  { font-size:19px; font-weight:600; color:rgba(255,255,255,0.88); }
+  .hashtags { font-size:19px; font-weight:600; color:{{accent_color}}; }
+
+  /* ── Shared split helper ── */
+  .s-left, .s-right { position:absolute; top:0; left:0; width:100%; height:100%; }
+  .s-left  { clip-path:inset(0 50% 0 0); }
+  .s-right { clip-path:inset(0 0 0 50%); }
+
+  /* ── Brand area ── */
+  .brand-area {
+    position:absolute; top:74px; left:0; right:0; height:810px; z-index:5;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:0;
+  }
+
+  /* 3-column row: Apple | Atom | Android */
+  .icon-atom-row {
+    width:100%; padding:0 80px;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-shrink:0;
+  }
+  .icon-apple  { width:110px; display:flex; align-items:center; justify-content:flex-start; flex-shrink:0; }
+  .icon-android{ width:110px; display:flex; align-items:center; justify-content:flex-end;   flex-shrink:0; }
+
+  /* Topic separator */
+  .brand-sep {
+    position:absolute; bottom:0; left:0; right:0; height:1.5px;
+    background:linear-gradient(to right, rgba(255,255,255,0.2) 50%, rgba(0,0,0,0.06) 50%);
+  }
+
+  /* ── Topic area (transparent, dark text over split bg) ── */
+  .topic-area {
+    position:absolute; top:884px; left:0; right:0; bottom:56px; z-index:6;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:0 60px;
+  }
+  .headline-text {
+    font-size:60px; font-weight:800; color:#0F172A;
+    line-height:1.2; white-space:nowrap; text-align:center;
+  }
+  .subtext-text {
+    font-size:26px; font-weight:400; color:#475569;
+    line-height:1.5; white-space:nowrap; text-align:center;
+    margin-top:14px;
+  }
+  /* <br> tags injected by render.js are replaced with spaces via script below */
+
+  /* Badge */
+  .badge-wrap { position:relative; width:260px; height:44px; margin-top:28px; }
+  .badge-inner {
+    width:260px; height:44px; border-radius:100px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; font-weight:600; letter-spacing:0.04em;
+  }
+
+  /* ── Footer (separator line only) ── */
+  .footer {
+    position:absolute; bottom:0; left:0; right:0; height:56px; z-index:10;
+  }
+  .f-line {
+    position:absolute; top:0; left:0; right:0; height:1.5px;
+    background:rgba(0,0,0,0.06);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Backgrounds -->
+  <div class="bg-left"></div>
+  <div class="bg-right"></div>
+  <div class="split-line"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <span class="account">@{{account_name}}</span>
+    <span class="hashtags">#ReactNative &nbsp; #TypeScript</span>
+    <div class="h-line"></div>
+  </div>
+
+  <!-- Brand area -->
+  <div class="brand-area">
+
+    <!-- Row: Apple | React atom | Android -->
+    <!-- padding:0 80px + icon(110px) × 2 + gaps(80px × 2) → atom = 540px, center at x=540px ✓ -->
+    <div class="icon-atom-row">
+
+      <!-- Apple (white, entirely on cyan left side) -->
+      <div class="icon-apple">
+        <svg width="108" height="108" viewBox="0 0 24 24" fill="rgba(255,255,255,0.88)">
+          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+        </svg>
+      </div>
+
+      <!-- React atom (split: white on left / cyan on right)
+           width=540px → centered at x=540px → clip at 50%=270px from left = page x=540px ✓
+           viewBox "-155 -135 310 270" ensures orbits (max ±128 units) don't get clipped
+           scale = 540/310 = 470/270 = 1.742 px/unit (equal → no distortion) -->
+      <div style="position:relative; width:540px; height:470px; flex-shrink:0;">
+        <!-- Left half → white -->
+        <div class="s-left" style="position:absolute; top:0; left:0; width:540px; height:470px;">
+          <svg width="540" height="470" viewBox="-155 -135 310 270">
+            <circle cx="0" cy="0" r="28" fill="rgba(255,255,255,0.96)"/>
+            <g stroke="rgba(255,255,255,0.92)" stroke-width="10" fill="none">
+              <ellipse rx="145" ry="53"/>
+              <ellipse rx="145" ry="53" transform="rotate(60)"/>
+              <ellipse rx="145" ry="53" transform="rotate(120)"/>
+            </g>
+          </svg>
+        </div>
+        <!-- Right half → cyan -->
+        <div class="s-right" style="position:absolute; top:0; left:0; width:540px; height:470px;">
+          <svg width="540" height="470" viewBox="-155 -135 310 270">
+            <circle cx="0" cy="0" r="28" fill="{{accent_color}}"/>
+            <g stroke="{{accent_color}}" stroke-width="10" fill="none">
+              <ellipse rx="145" ry="53"/>
+              <ellipse rx="145" ry="53" transform="rotate(60)"/>
+              <ellipse rx="145" ry="53" transform="rotate(120)"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Android (cyan, entirely on white right side) -->
+      <div class="icon-android">
+        <svg width="108" height="108" viewBox="0 0 24 24" fill="{{accent_color}}">
+          <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.3C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- "React Native" split text (translateX shifts text right while keeping clip at page center) -->
+    <div style="position:relative; width:820px; height:100px; flex-shrink:0; margin-top:6px;">
+      <div class="s-left" style="position:absolute; top:0; left:0; width:820px; height:100px;">
+        <div style="font-size:88px; font-weight:800; color:#FFFFFF; text-align:center; letter-spacing:-2px; line-height:1; white-space:nowrap; transform:translateX(20px);">React Native</div>
+      </div>
+      <div class="s-right" style="position:absolute; top:0; left:0; width:820px; height:100px;">
+        <div style="font-size:88px; font-weight:800; color:{{accent_color}}; text-align:center; letter-spacing:-2px; line-height:1; white-space:nowrap; transform:translateX(20px);">React Native</div>
+      </div>
+    </div>
+
+    <!-- Subtitle "iOS and Android App Programming" -->
+    <div style="position:relative; width:720px; height:34px; flex-shrink:0; margin-top:12px;">
+      <div class="s-left" style="position:absolute; top:0; left:0; width:720px; height:34px;">
+        <div style="font-size:19px; font-weight:400; color:rgba(255,255,255,0.65); text-align:center; white-space:nowrap;">iOS and Android App Programming</div>
+      </div>
+      <div class="s-right" style="position:absolute; top:0; left:0; width:720px; height:34px;">
+        <div style="font-size:19px; font-weight:400; color:rgba(0,0,0,0.38); text-align:center; white-space:nowrap;">iOS and Android App Programming</div>
+      </div>
+    </div>
+
+    <!-- Series badge -->
+    <div class="badge-wrap" id="badge-wrap">
+      <div class="s-left" style="position:absolute; top:0; left:0; width:260px; height:44px;">
+        <div class="badge-inner" style="border:1.5px solid rgba(255,255,255,0.45); color:rgba(255,255,255,0.88);">{{badge_text}}</div>
+      </div>
+      <div class="s-right" style="position:absolute; top:0; left:0; width:260px; height:44px;">
+        <div class="badge-inner" style="border:1.5px solid {{accent_color}}; color:{{accent_color}};">{{badge_text}}</div>
+      </div>
+    </div>
+    <script>
+      const bw = document.getElementById('badge-wrap');
+      if (!bw.textContent.trim()) bw.style.display = 'none';
+    </script>
+
+    <div class="brand-sep"></div>
+  </div>
+
+  <!-- Topic area (white background, dark text) -->
+  <div class="topic-area">
+    <div class="headline-text">{{headline}}</div>
+    <div class="subtext-text">{{subtext}}</div>
+  </div>
+
+  <!-- Replace <br> with space in single-line topic fields -->
+  <script>
+    document.querySelectorAll('.headline-text br, .subtext-text br').forEach(br => br.replaceWith(' '));
+  </script>
+
+  <!-- Footer (separator line only, no text) -->
+  <div class="footer">
+    <div class="f-line"></div>
+  </div>
+
+</body>
+</html>

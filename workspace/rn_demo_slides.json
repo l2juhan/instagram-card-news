@@ -1,0 +1,99 @@
+[
+  {
+    "slide": 1,
+    "type": "cover",
+    "badge_text": "상태관리 편",
+    "headline": "Zustand\n+ persist",
+    "subtext": "앱을 꺼도\n데이터가 살아있다"
+  },
+  {
+    "slide": 2,
+    "type": "content-badge",
+    "badge_text": "CONCEPT",
+    "headline": "AsyncStorage\n란?",
+    "body": "React Native에서 데이터를\n영구적으로 저장하는 저장소",
+    "subtext": "앱을 종료해도 데이터가 유지됨"
+  },
+  {
+    "slide": 3,
+    "type": "content",
+    "badge_text": "Problem",
+    "headline": "AsyncStorage의\n한계",
+    "body": "문자열만 저장 가능 →\n매번 JSON.stringify() / JSON.parse() 필요\n\n비동기 처리를 직접 관리해야 함 →\n코드가 복잡해지고 실수하기 쉬움\n\n상태 변경 시 저장 로직을 매번 수동으로 호출"
+  },
+  {
+    "slide": 4,
+    "type": "content-split",
+    "headline": "AsyncStorage vs\npersist",
+    "left_title": "AsyncStorage",
+    "left_body": "매번 직접 호출\nJSON 변환 필수\n보일러플레이트 多\n실수하기 쉬움",
+    "right_title": "Zustand persist",
+    "right_body": "자동 저장/복원\n직렬화 자동 처리\n코드 3줄로 완성\n사이드이펙트 없음",
+    "subtext": "같은 기능, 다른 코드량"
+  },
+  {
+    "slide": 5,
+    "type": "content-steps",
+    "headline": "persist 적용\n3단계",
+    "step1": "패키지 설치\nnpm install zustand",
+    "step2": "persist 미들웨어 적용\ncreate(persist(store, config))",
+    "step3": "storage 설정\nAsyncStorage 연결",
+    "body": "실제 코드는 다음 슬라이드에서 →"
+  },
+  {
+    "slide": 6,
+    "type": "content-highlight",
+    "headline": "핵심 포인트",
+    "emphasis": "상태를 변경하면\n자동으로 저장된다",
+    "body": "별도 저장 로직 없이\nZustand 상태만 관리하면 됨",
+    "subtext": "앱 재시작 시 자동으로 복원됨"
+  },
+  {
+    "slide": 7,
+    "type": "content-list",
+    "headline": "persist 사용 시\n장점",
+    "item1": "보일러플레이트 코드 90% 제거",
+    "item2": "직렬화/역직렬화 자동 처리",
+    "item3": "Race Condition 걱정 없음",
+    "item4": "부분 상태만 저장하는 partialize",
+    "item5": "마이그레이션 버전 관리 지원"
+  },
+  {
+    "slide": 8,
+    "type": "content-grid",
+    "headline": "상태관리 4가지\n핵심 개념",
+    "grid1_icon": "🗄️",
+    "grid1_title": "Store",
+    "grid1_desc": "전역 상태를 담는 컨테이너",
+    "grid2_icon": "⚙️",
+    "grid2_title": "Middleware",
+    "grid2_desc": "상태 변경을 가로채는 레이어",
+    "grid3_icon": "💾",
+    "grid3_title": "Persist",
+    "grid3_desc": "저장소에 상태를 자동 동기화",
+    "grid4_icon": "🔄",
+    "grid4_title": "Hydration",
+    "grid4_desc": "앱 시작 시 저장된 상태 복원"
+  },
+  {
+    "slide": 9,
+    "type": "content-stat",
+    "headline": "코드 라인 수 비교",
+    "emphasis": "-87%",
+    "body": "AsyncStorage 직접 사용 대비\npersist 미들웨어 적용 시\n감소하는 보일러플레이트 코드량"
+  },
+  {
+    "slide": 10,
+    "type": "content-quote",
+    "headline": "Daishi Kato (Zustand 개발자)",
+    "body": "Zustand는 최소한의 API로\n최대한의 유연성을 제공한다.\n복잡한 보일러플레이트 없이\n진짜 중요한 로직에 집중하라.",
+    "subtext": "GitHub Stars 40K+ · 주간 다운로드 수 4M+"
+  },
+  {
+    "slide": 11,
+    "type": "cta",
+    "headline": "다음 편도\n기대해주세요",
+    "cta_text": "팔로우하기 →",
+    "subtext": "React Query로 서버 상태 관리하기"
+  }
+]

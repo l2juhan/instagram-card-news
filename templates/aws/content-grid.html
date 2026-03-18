@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1350px; overflow: hidden; }
+
+  .card {
+    width: 1080px;
+    height: 1350px;
+    background: #232F3E;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    flex-direction: column;
+    word-break: keep-all;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .accent-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, {{accent_color}}, #ED7100);
+    z-index: 2;
+  }
+
+  .glow-top-right {
+    position: absolute;
+    top: -200px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,153,0,0.12) 0%, transparent 70%);
+    z-index: 0;
+  }
+
+  .glow-bottom-left {
+    position: absolute;
+    bottom: -150px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(140,79,255,0.08) 0%, transparent 70%);
+    z-index: 0;
+  }
+
+  .top-section {
+    position: relative;
+    z-index: 1;
+    padding: 72px 72px 48px;
+    text-align: center;
+  }
+
+  .headline {
+    font-size: 52px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+
+  .grid-section {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    padding: 0 72px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    align-content: center;
+  }
+
+  .grid-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .grid-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 28px;
+    border-top: 4px solid {{accent_color}};
+    border-left: 4px solid {{accent_color}};
+    border-top-left-radius: 12px;
+  }
+
+  .grid-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+
+  .grid-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .grid-desc {
+    font-size: 22px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.5;
+  }
+
+  .footer {
+    position: relative;
+    z-index: 1;
+    padding: 0 72px 52px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .account-name {
+    font-size: 24px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .slide-indicator {
+    font-size: 22px;
+    color: rgba(255,255,255,0.25);
+  }
+
+  .slide-current {
+    color: {{accent_color}};
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent-bar"></div>
+  <div class="glow-top-right"></div>
+  <div class="glow-bottom-left"></div>
+
+  <div class="top-section">
+    <div class="headline">{{headline}}</div>
+  </div>
+
+  <div class="grid-section">
+    <div class="grid-card">
+      <div class="grid-icon">{{grid1_icon}}</div>
+      <div class="grid-title">{{grid1_title}}</div>
+      <div class="grid-desc">{{grid1_desc}}</div>
+    </div>
+    <div class="grid-card">
+      <div class="grid-icon">{{grid2_icon}}</div>
+      <div class="grid-title">{{grid2_title}}</div>
+      <div class="grid-desc">{{grid2_desc}}</div>
+    </div>
+    <div class="grid-card">
+      <div class="grid-icon">{{grid3_icon}}</div>
+      <div class="grid-title">{{grid3_title}}</div>
+      <div class="grid-desc">{{grid3_desc}}</div>
+    </div>
+    <div class="grid-card">
+      <div class="grid-icon">{{grid4_icon}}</div>
+      <div class="grid-title">{{grid4_title}}</div>
+      <div class="grid-desc">{{grid4_desc}}</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="account-name">@{{account_name}}</span>
+    <span class="slide-indicator"><span class="slide-current">{{slide_number}}</span> / {{total_slides}}</span>
+  </div>
+</div>
+</body>
+</html>

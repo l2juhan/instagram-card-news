@@ -114,11 +114,33 @@
       line-height: 1.4;
       word-break: keep-all;
     }
+
+    .footer {
+      position: absolute;
+      bottom: 48px;
+      left: 56px;
+      right: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .account {
+      font-size: 28px;
+      font-weight: 600;
+      color: #8B95A5;
+    }
+
+    .page-counter {
+      font-size: 28px;
+      font-weight: 700;
+      color: {{accent_color}};
+    }
   </style>
 </head>
 <body>
   <div class="top-line"></div>
-  <div class="dots"><span></span><span></span><span></span></div>
+  
 
   <div class="content">
     <h2 class="headline">{{headline}}</h2>
@@ -150,6 +172,11 @@
         <span class="item-text">{{item5}}</span>
       </div>
     </div>
+  </div>
+
+  <div class="footer">
+    <span class="account">@{{account_name}}</span>
+    <span class="page-counter">{{slide_number}} / {{total_slides}}</span>
   </div>
 </body>
 </html>

@@ -1,6 +1,6 @@
 # Instagram 카드뉴스 생성 프로젝트
 
-> **v5.2** — 14종 슬라이드 타입 + 8종 템플릿 스타일 + 팀 토론 파이프라인
+> **v6.0** — 15종 슬라이드 타입 + 10종 템플릿 스타일 + 팀 토론 파이프라인
 
 ## 프로젝트 개요
 
@@ -19,6 +19,8 @@ Claude Code가 오케스트레이터 역할을 하며, 리서치 → **리서치
 - `magazine` — 매거진 스타일, 포토 오버레이 + 화이트 클린
 - `clean` — 클린 에디토리얼형, 라이트그레이 배경, 그린 하이라이트, 브랜드 마크
 - `blueprint` — 블루프린트 프레젠테이션형, 라이트블루그레이 배경, 소프트블루 악센트, ○○○ 장식
+- `aws` — AWS 서비스 소개형, 다크 네이비 배경, AWS 오렌지 악센트, Pretendard 폰트
+- `rn` — React Native 개발 튜토리얼형, 시안/흰색 스플릿 배경, JetBrains Mono, 코드블럭(One Dark Pro) 지원
 
 ---
 
@@ -109,7 +111,8 @@ Claude Code가 오케스트레이터 역할을 하며, 리서치 → **리서치
   {"slide": 11, "type": "cta", "headline": "...", "cta_text": "팔로우하기"},
   {"slide": 12, "type": "content-grid", "headline": "4대 핵심 전략", "grid1_icon": "🎯", "grid1_title": "타겟팅", "grid1_desc": "설명", "grid2_icon": "📱", "grid2_title": "콘텐츠", "grid2_desc": "설명", "grid3_icon": "🤖", "grid3_title": "자동화", "grid3_desc": "설명", "grid4_icon": "📊", "grid4_title": "분석", "grid4_desc": "설명"},
   {"slide": 13, "type": "content-bigdata", "headline": "시장 규모", "bigdata_number": "48.8", "bigdata_unit": "조원", "body": "설명 텍스트", "subtext": "출처"},
-  {"slide": 14, "type": "content-fullimage", "headline": "풀이미지 타이틀", "badge_text": "핵심 인사이트", "body": "첫 번째 섹션 설명", "badge2_text": "주의할 점", "body2": "두 번째 섹션 설명", "image_url": "https://..."}
+  {"slide": 14, "type": "content-fullimage", "headline": "풀이미지 타이틀", "badge_text": "핵심 인사이트", "body": "첫 번째 섹션 설명", "badge2_text": "주의할 점", "body2": "두 번째 섹션 설명", "image_url": "https://..."},
+  {"slide": 15, "type": "content-code", "headline": "코드 예시", "code_filename": "App.tsx", "code_body": "const [count, setCount] = useState(0);", "body": "설명 텍스트"}
 ]
 ```
 
@@ -128,6 +131,7 @@ Claude Code가 오케스트레이터 역할을 하며, 리서치 → **리서치
 - **2x2 그리드 정보 정리는** `content-grid` 타입 활용 (4개 항목, 이모지 아이콘)
 - **대형 숫자/금액/규모 강조는** `content-bigdata` 타입 활용 (거대 숫자 + 단위)
 - **풀 배경 이미지 + 텍스트 오버레이는** `content-fullimage` 타입 활용 (두 개의 배지 섹션, 다크 오버레이)
+- **코드 예시가 필요하면** `content-code` 타입 활용 (One Dark Pro 테마, `rn`/`aws` 스타일 전용)
 - **마지막 슬라이드 (cta)**: 명확한 행동 유도 (저장, 팔로우, 공유 등)
 - **문장 길이**: 짧고 임팩트 있게, 한 줄 15자 이내 권장
 - **어조**: 요청된 톤(professional / casual / energetic)에 맞게 작성
@@ -225,6 +229,11 @@ node scripts/render.js \
 | `content-grid` | 4가지 항목을 그리드로 정리할 때 | `headline`, `grid1_icon`~`grid4_icon`, `grid1_title`~`grid4_title`, `grid1_desc`~`grid4_desc` |
 | `content-bigdata` | 거대 숫자/금액/규모를 강조할 때 | `headline`, `bigdata_number`, `bigdata_unit`, `body`, `subtext` |
 | `content-fullimage` | 풀 배경 이미지 위에 텍스트 오버레이 | `headline`, `badge_text`, `body`, `badge2_text`, `body2`, `image_url` |
+| `content-code` | 코드 블럭 + 설명 (`rn`/`aws` 전용, One Dark Pro) | `headline`, `code_filename`, `code_body`, `body` |
+| `content-install` | 개념 설명 + 설치법 섹션 (`rn` 전용) | `headline`, `body`, `code_body`, `badge_text` |
+| `content-table` | Before/After 비교 표 (`rn` 전용, 테이블 정적 하드코딩) | `headline`, `subtext` |
+| `content-code-desc` | 설명 박스 + 코드블럭 + 노트 (`rn` 전용) | `headline`, `badge_text` (설명), `code_filename`, `code_body`, `body` |
+| `content-grid-table` | 4-grid 요약 + 비교 표 (`rn` 전용) | `headline`, `grid1~4_icon/title/desc` |
 
 ---
 
@@ -296,6 +305,50 @@ node scripts/render.js \
 - 하이라이트: headline에 `<span class='accent'>텍스트</span>` 사용 시 악센트 블루 컬러, `<span class='bar-highlight'>텍스트</span>` 사용 시 블루 바 배경 효과
 - 추천 주제: 비즈니스, 프레젠테이션, 교육, IT, 데이터, 기획
 
+### aws
+- 스타일: AWS 서비스 소개형
+- 배경: 다크 네이비 (#232F3E) + 격자 패턴 오버레이
+- 느낌: 테크니컬, 신뢰감, 클라우드 브랜드 정체성
+- 기본 악센트: `#FF9900` (AWS 오렌지)
+- 폰트: Pretendard
+- 특징: AWS 오렌지 악센트, 서비스 아이콘 지원, 다크 배경 + 글로우 효과
+- 추천 주제: AWS 서비스 소개, 클라우드 아키텍처, DevOps, 인프라 튜토리얼
+
+### rn
+- 스타일: React Native 개발 튜토리얼형
+- 배경: 시안(#00BCD4) 좌 / 화이트(#FFFFFF) 우 스플릿 레이아웃
+- 느낌: 개발자 감성, 기술적, 모던, 코드 중심
+- 기본 악센트: `#00BCD4` (시안)
+- 폰트: JetBrains Mono (모노스페이스)
+- 특징: CSS clip-path 스플릿 컬러 기법, React 원자 아이콘, One Dark Pro 코드블럭 (`content-code` 타입)
+- 헤더: `@계정명` 좌 + `#ReactNative #TypeScript` 우 (전 슬라이드 통일)
+- 페이지 번호: 우측 하단
+- 추가 필드: `code_filename`, `code_body` (content-code 전용)
+- 추천 주제: React Native 튜토리얼, 모바일 개발, TypeScript, 개발 팁
+- **전용 슬라이드 타입**: `content-install`, `content-table`, `content-code-desc`, `content-grid-table` (templates/rn/ 에만 존재)
+
+#### rn 스타일 렌더링 규칙
+1. **코드블럭 One Dark 테마**: `code_body` 필드에 `<span class='t-kw'>`, `<span class='t-fn'>` 등의 HTML 토큰을 사용하여 구문 강조. 직접 JSON에 HTML 삽입 (render.js는 code_body를 변환하지 않음)
+2. **마지막 팔로우/구독 페이지 생성 금지**: `cta` 타입 (팔로우하기, 저장하기 등) 슬라이드를 생성하지 않음. 마지막 슬라이드는 요약 또는 핵심 내용으로 마무리
+3. **빈 공간 제한**: 한 페이지 내 빈 공간이 페이지 절반(50%) 이상 차지하면 안됨. 내용이 부족할 경우 설명 박스, 주의사항 박스, 비교 표 등을 추가
+4. **slide-label 크기**: 모든 content 템플릿에서 20px (헤드라인과 주석 텍스트의 시각적 구분 강화)
+5. **body 인라인 HTML 텍스트 크기**: 설명 박스 본문 22px, 서브텍스트 20px 권장
+6. **비교표 컬럼 색상 코딩**: 항목 컬럼 `#F0F4F8` + accent_color 텍스트 / before 컬럼 `#FFF5F5` + `#C53030` / after 컬럼 `#F0FFF4` + `#276749`. 행 교차는 각각 약간 더 어두운 버전(`#E4ECF4`, `#FFEDED`, `#E6FFF0`) 적용
+7. **content-install feature-badges**: 플로우 박스 아래 pill 배지 행 추가로 빈 공간 채움. 이모지 없이 텍스트만 사용
+
+#### One Dark Pro 토큰 클래스
+| 클래스 | 색상 | 용도 |
+|---|---|---|
+| `t-kw` | `#c678dd` | 키워드: const, let, import, return, if, null |
+| `t-fn` | `#61afef` | 함수명: create, persist, set, useEffect |
+| `t-str` | `#98c379` | 문자열: `'auth-storage'`, 템플릿 리터럴 |
+| `t-num` | `#d19a66` | 숫자 |
+| `t-cm` | `#5c6370` (italic) | 주석: `// ...` |
+| `t-var` | `#e06c75` | 변수/프로퍼티: accessToken, isHydrated |
+| `t-op` | `#56b6c2` | 연산자: `=>`, `=` |
+| `t-type` | `#e5c07b` | 타입/클래스: AsyncStorage, AuthState |
+| `t-plain` | `#abb2bf` | 일반 텍스트 |
+
 ---
 
 ## 설정 (config.json)
@@ -314,7 +367,7 @@ node scripts/render.js \
 }
 ```
 
-- `template`: 기본 템플릿 스타일 (`minimal` / `bold` / `elegant` / `premium` / `toss` / `magazine` / `clean` / `blueprint`)
+- `template`: 기본 템플릿 스타일 (`minimal` / `bold` / `elegant` / `premium` / `toss` / `magazine` / `clean` / `blueprint` / `aws` / `rn`)
 - `accent_color`: 기본 악센트 색상 (hex 코드)
 - `account_name`: Instagram 계정명 (슬라이드에 표시)
 - `slide_count`: 기본 슬라이드 수
@@ -349,21 +402,41 @@ instagram-card-news/
 │   ├── minimal/         # cover.html, content.html, content-stat.html, content-quote.html, cta.html
 │   │                    # content-image.html, content-steps.html, content-list.html
 │   │                    # content-badge.html, content-split.html, content-highlight.html
-│   │                    # content-grid.html, content-bigdata.html
+│   │                    # content-grid.html, content-bigdata.html, content-fullimage.html (13종)
 │   ├── blueprint/       # 블루프린트 프레젠테이션 스타일 (동일 13종)
 │   ├── bold/
 │   ├── elegant/
 │   ├── premium/
 │   ├── toss/
 │   ├── magazine/
-│   └── clean/
+│   ├── clean/
+│   ├── aws/             # AWS 서비스 소개 스타일 (13종, content-code 미포함)
+│   └── rn/              # React Native 튜토리얼 스타일 (14종, content-code.html 포함)
 ├── scripts/
 │   ├── render.js        # Puppeteer HTML → PNG 렌더러
 │   └── generate-samples.js
-├── workspace/           # 런타임 작업 공간 (research.md, slides.json)
+├── style-example/       # 각 스타일 커버 예시 PNG (aws.png, rn.png 등)
+├── workspace/           # 런타임 작업 공간 (research.md, slides.json, rn_demo_slides.json)
+│   ├── aws_logo.svg     # AWS 스타일용 에셋
+│   ├── ec2-images/      # EC2 서비스 이미지
+│   └── rds-images/      # RDS 서비스 이미지
 ├── output/              # 최종 PNG 출력
 ├── config.json          # 기본 설정
 └── CLAUDE.md            # 이 파일
 ```
 
 `workspace/` 디렉토리는 매 생성 시 덮어쓰기됩니다. 이전 결과물은 `output/`에 보관됩니다.
+
+---
+
+## 노션 레퍼런스 (Notion MCP)
+
+카드뉴스 제작 시 아래 노션 페이지를 MCP로 참고할 수 있습니다.
+
+**접근 방법**: `mcp__notion__API-get-block-children` 으로 블록 내용을, `mcp__notion__API-post-search` 로 페이지를 검색합니다.
+
+| 주제 | 페이지 ID |
+|---|---|
+| Zustand + persist 미들웨어로 상태 관리 | `307b508e-2f68-815d-a336-ee5dbf1f80ff` |
+
+> 테이블 블록은 `has_children: true` 이므로 해당 block_id로 한 번 더 `API-get-block-children` 호출 필요.

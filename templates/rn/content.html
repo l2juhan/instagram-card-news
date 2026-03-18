@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1350px;
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+    background: #FFFFFF;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .accent-stripe {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: {{accent_color}};
+  }
+  .topbar {
+    padding: 28px 72px 22px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .account { font-size: 15px; color: #A0AEC0; }
+  .account span { color: #4A5568; font-weight: 600; }
+  .rn-icon { opacity: 0.25; }
+
+  .sep { height: 1.5px; background: #E0F7FA; margin: 0 72px 0 80px; flex-shrink: 0; }
+
+  .content {
+    flex: 1;
+    padding: 52px 72px 40px 80px;
+    display: flex;
+    flex-direction: column;
+  }
+  .slide-label {
+    font-size: 14px;
+    color: {{accent_color}};
+    letter-spacing: 0.06em;
+    margin-bottom: 18px;
+  }
+  .headline {
+    font-size: 60px;
+    font-weight: 800;
+    color: #1A202C;
+    line-height: 1.2;
+    margin-bottom: 36px;
+    white-space: pre-line;
+  }
+  .body-text {
+    font-size: 24px;
+    font-weight: 400;
+    color: #4A5568;
+    line-height: 1.8;
+    flex: 1;
+    white-space: pre-line;
+  }
+  .body-text strong { color: #1A202C; font-weight: 700; }
+  .body-text code {
+    background: #F0FDFE;
+    border: 1px solid #E2E8F0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 21px;
+    color: {{accent_color}};
+  }
+
+  .sep-bottom { height: 1.5px; background: #E0F7FA; margin: 0 72px 0 80px; flex-shrink: 0; }
+  .footer {
+    padding: 18px 72px 18px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .slide-num { font-size: 13px; color: #CBD5E0; }
+  .progress-track {
+    width: 120px; height: 3px;
+    background: #E0F7FA; border-radius: 2px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 2px;
+    background: {{accent_color}};
+    width: calc({{slide_number}} / {{total_slides}} * 100%);
+  }
+</style>
+</head>
+<body>
+  <div class="accent-stripe"></div>
+  <div class="topbar">
+    <span class="account"><span>@{{account_name}}</span></span>
+    <svg class="rn-icon" width="32" height="32" viewBox="-11.5 -10.23174 23 20.46348" fill="none">
+      <circle cx="0" cy="0" r="2.05" fill="#4A5568"/>
+      <g stroke="#4A5568" stroke-width="1.2" fill="none">
+        <ellipse rx="11" ry="4.2"/>
+        <ellipse rx="11" ry="4.2" transform="rotate(60)"/>
+        <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
+      </g>
+    </svg>
+  </div>
+  <div class="sep"></div>
+
+  <div class="content">
+    <div class="slide-label">// {{badge_text}}</div>
+    <div class="headline">{{headline}}</div>
+    <div class="body-text">{{body}}</div>
+  </div>
+
+  <div class="sep-bottom"></div>
+  <div class="footer">
+    <span class="slide-num">{{slide_number}} / {{total_slides}}</span>
+  </div>
+</body>
+</html>

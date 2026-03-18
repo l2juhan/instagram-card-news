@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .card {
+    width: 1080px;
+    height: 1350px;
+    background: #232F3E;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .accent-bar {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, {{accent_color}}, #ED7100);
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .glow-top-right {
+    position: absolute;
+    top: -200px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,153,0,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-bottom-left {
+    position: absolute;
+    bottom: -150px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(140,79,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 72px;
+    padding-bottom: 0;
+  }
+
+  .headline-area {
+    margin-bottom: 56px;
+  }
+
+  .headline {
+    font-size: 56px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.025em;
+    word-break: keep-all;
+    margin-bottom: 16px;
+  }
+
+  .accent-underline {
+    width: 60px;
+    height: 3px;
+    background: {{accent_color}};
+  }
+
+  .list-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .list-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .list-item:last-child {
+    border-bottom: none;
+  }
+
+  .item-number {
+    font-size: 24px;
+    color: {{accent_color}};
+    font-weight: 700;
+    min-width: 40px;
+  }
+
+  .item-divider {
+    width: 2px;
+    height: 28px;
+    background: {{accent_color}};
+    opacity: 0.3;
+    flex-shrink: 0;
+  }
+
+  .item-text {
+    font-size: 28px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 400;
+    line-height: 1.5;
+    word-break: keep-all;
+  }
+
+  .footer {
+    position: relative;
+    z-index: 1;
+    padding: 0 72px 52px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .account-name {
+    font-size: 24px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 400;
+  }
+
+  .slide-indicator {
+    font-size: 24px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 400;
+  }
+
+  .slide-current {
+    color: {{accent_color}};
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent-bar"></div>
+  <div class="glow-top-right"></div>
+  <div class="glow-bottom-left"></div>
+
+  <div class="content">
+    <div class="headline-area">
+      <h1 class="headline">{{headline}}</h1>
+    </div>
+
+    <div class="list-container">
+      <div class="list-item">
+        <span class="item-number">01</span>
+        <div class="item-divider"></div>
+        <span class="item-text">{{item1}}</span>
+      </div>
+      <div class="list-item">
+        <span class="item-number">02</span>
+        <div class="item-divider"></div>
+        <span class="item-text">{{item2}}</span>
+      </div>
+      <div class="list-item">
+        <span class="item-number">03</span>
+        <div class="item-divider"></div>
+        <span class="item-text">{{item3}}</span>
+      </div>
+      <div class="list-item">
+        <span class="item-number">04</span>
+        <div class="item-divider"></div>
+        <span class="item-text">{{item4}}</span>
+      </div>
+      <div class="list-item">
+        <span class="item-number">05</span>
+        <div class="item-divider"></div>
+        <span class="item-text">{{item5}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="account-name">@{{account_name}}</span>
+    <span class="slide-indicator"><span class="slide-current">{{slide_number}}</span> / {{total_slides}}</span>
+  </div>
+</div>
+</body>
+</html>
