@@ -47,10 +47,10 @@
     /* Content */
     .content-wrapper {
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      align-items: center; justify-content: flex-start;
       flex: 1; width: 100%;
       text-align: center;
-      padding: 0 80px;
+      padding: 100px 80px 0 80px;
       z-index: 1;
     }
     .brace-left, .brace-right {
@@ -89,6 +89,53 @@
       max-width: 800px;
       word-break: keep-all;
     }
+    .character-area {
+      display: flex; flex-direction: column;
+      align-items: center;
+      margin-top: auto;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .speech-bubble {
+      position: relative;
+      background: #F3F4F6;
+      border: 2px solid #E5E7EB;
+      border-radius: 60px;
+      padding: 24px 40px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-4px);
+      width: 18px; height: 18px;
+      background: #F3F4F6;
+      border-radius: 50%;
+      border: 2px solid #E5E7EB;
+    }
+    .speech-bubble .dot-tail-1 {
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(6px);
+      width: 11px; height: 11px;
+      background: #F3F4F6;
+      border-radius: 50%;
+      border: 2px solid #E5E7EB;
+    }
+    .speech-bubble img {
+      display: block;
+      height: 56px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    .character-img {
+      height: 300px;
+      object-fit: contain;
+    }
     .footer {
       padding: 0 80px 44px 80px;
       display: flex; align-items: center;
@@ -116,7 +163,7 @@
         </div>
         <div class="tab">
           
-          <span class="tab-title">@cse_juhan02</span>
+          <span class="tab-title">@{{account_name}}</span>
           <span class="tab-close">&times;</span>
         </div>
         <span class="new-tab-btn">+</span>
@@ -152,12 +199,32 @@
       <span class="tag">// Computer Science</span>
       <h1 class="headline">{{headline}}</h1>
       <div class="divider"></div>
-      <p class="subtext">{{subtext}}</p>
+      <p class="subtext" id="subtextEl">{{subtext}}</p>
+      <div class="character-area" id="characterArea" style="display:none;">
+        <div class="speech-bubble">
+          <img src="{{right_image}}">
+          <span class="dot-tail-1"></span>
+        </div>
+        <img class="character-img" src="{{left_image}}">
+      </div>
     </div>
     <div class="footer">
       <span class="account-name">@{{account_name}}</span>
     </div>
   </div>
-<script>var a=document.getElementById('addressText');if(a)a.innerHTML=a.innerHTML.replace(/<br\s*\/?>/gi,' ');</script>
+<script>
+var a=document.getElementById('addressText');if(a)a.innerHTML=a.innerHTML.replace(/<br\s*\/?>/gi,' ');
+var charArea=document.getElementById('characterArea');
+var sub=document.getElementById('subtextEl');
+if(charArea) {
+  var imgs=charArea.querySelectorAll('img');
+  var hasImg=false;
+  imgs.forEach(function(i){if(i.src && !i.src.endsWith('/') && i.src!=='') hasImg=true;});
+  if(hasImg) {
+    charArea.style.display='flex';
+    if(sub && (!sub.textContent || sub.textContent.trim()==='')) sub.style.display='none';
+  }
+}
+</script>
 </body>
 </html>
