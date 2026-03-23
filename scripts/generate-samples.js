@@ -143,16 +143,11 @@ const sampleSlides = [
   },
 ];
 
-const templateStyles = [
-  { name: 'minimal', accent: '#2D63E2' },
-  { name: 'bold', accent: '#6C5CE7' },
-  { name: 'elegant', accent: '#D4AF37' },
-  { name: 'premium', accent: '#A855F7' },
-  { name: 'toss', accent: '#3182F6' },
-  { name: 'magazine', accent: '#3B82F6' },
-  { name: 'clean', accent: '#8BC34A' },
-  { name: 'blueprint', accent: '#7BA7CC' },
-];
+// Build template list dynamically from config.json
+const templateStyles = Object.entries(config.templates).map(([name, meta]) => ({
+  name,
+  accent: meta.accent_color,
+}));
 
 async function generateSamples() {
   const workspaceDir = path.join(process.cwd(), config.workspace_dir);
@@ -185,9 +180,9 @@ async function generateSamples() {
   }
 
   console.log('Sample images generated at sample-output/');
-  console.log('  sample-output/minimal/');
-  console.log('  sample-output/bold/');
-  console.log('  sample-output/elegant/');
+  for (const t of templateStyles) {
+    console.log(`  sample-output/${t.name}/`);
+  }
 }
 
 generateSamples().catch((err) => {

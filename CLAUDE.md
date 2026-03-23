@@ -1,6 +1,6 @@
 # Instagram 카드뉴스 생성 프로젝트
 
-> **v6.0** — 15종 슬라이드 타입 + 10종 템플릿 스타일 + 팀 토론 파이프라인
+> **v7.0** — 15종 슬라이드 타입 + 12종 템플릿 스타일 + 팀 토론 파이프라인 + 동적 placeholder + 병렬 렌더링
 
 ## 프로젝트 개요
 
@@ -21,6 +21,8 @@ Claude Code가 오케스트레이터 역할을 하며, 리서치 → **리서치
 - `blueprint` — 블루프린트 프레젠테이션형, 라이트블루그레이 배경, 소프트블루 악센트, ○○○ 장식
 - `aws` — AWS 서비스 소개형, 다크 네이비 배경, AWS 오렌지 악센트, Pretendard 폰트
 - `rn` — React Native 개발 튜토리얼형, 시안/흰색 스플릿 배경, JetBrains Mono, 코드블럭(One Dark Pro) 지원
+- `cs` — CS 교육 콘텐츠형, 화이트 배경, 모노스페이스, 브라우저 프레임 UI
+- `linux` — Linux 정보 전달형, 다크 터미널 배경, Tux 골든 옐로우, JetBrains Mono
 
 ---
 
@@ -189,7 +191,7 @@ node scripts/render.js \
   --account "{account_name}"
 ```
 
-렌더링 완료 후 `output/` 디렉토리에 `slide-01.png` ~ `slide-0N.png` 파일이 생성됩니다.
+렌더링은 4개 워커가 병렬로 실행되며, 완료 후 `output/` 디렉토리에 `slide_01.png` ~ `slide_0N.png` 파일이 생성됩니다.
 
 ---
 
@@ -314,6 +316,24 @@ node scripts/render.js \
 - 특징: AWS 오렌지 악센트, 서비스 아이콘 지원, 다크 배경 + 글로우 효과
 - 추천 주제: AWS 서비스 소개, 클라우드 아키텍처, DevOps, 인프라 튜토리얼
 
+### cs
+- 스타일: CS 교육 콘텐츠형
+- 배경: 화이트 (#FFFFFF) + 브라우저 프레임 UI
+- 느낌: 교육적, 코딩 감성, 깔끔
+- 기본 악센트: `#22C55E` (그린)
+- 폰트: Noto Sans KR + JetBrains Mono
+- 특징: 브라우저 크롬 헤더 (traffic lights), 캐릭터 이미지+말풍선 지원, 이미지 갤러리
+- 추천 주제: CS 교육, 자료구조, 알고리즘, 프로그래밍 기초
+
+### linux
+- 스타일: Linux 정보 전달형
+- 배경: 다크 터미널 (#1A1A2E) + 격자 패턴 오버레이
+- 느낌: 터미널 감성, 테크니컬, 해커 무드
+- 기본 악센트: `#F5D838` (Tux 골든 옐로우)
+- 폰트: JetBrains Mono
+- 특징: 골든 그라디언트 악센트 바, 글로우 효과, 코드블럭 지원 (`content-code` 타입)
+- 추천 주제: Linux 명령어, 서버 관리, DevOps, 시스템 관리
+
 ### rn
 - 스타일: React Native 개발 튜토리얼형
 - 배경: 시안(#00BCD4) 좌 / 화이트(#FFFFFF) 우 스플릿 레이아웃
@@ -367,7 +387,7 @@ node scripts/render.js \
 }
 ```
 
-- `template`: 기본 템플릿 스타일 (`minimal` / `bold` / `elegant` / `premium` / `toss` / `magazine` / `clean` / `blueprint` / `aws` / `rn`)
+- `template`: 기본 템플릿 스타일 (`minimal` / `bold` / `elegant` / `premium` / `toss` / `magazine` / `clean` / `blueprint` / `aws` / `rn` / `cs` / `linux`)
 - `accent_color`: 기본 악센트 색상 (hex 코드)
 - `account_name`: Instagram 계정명 (슬라이드에 표시)
 - `slide_count`: 기본 슬라이드 수
@@ -398,26 +418,24 @@ node scripts/render.js \
 
 ```
 instagram-card-news/
-├── templates/           # HTML 템플릿
-│   ├── minimal/         # cover.html, content.html, content-stat.html, content-quote.html, cta.html
-│   │                    # content-image.html, content-steps.html, content-list.html
-│   │                    # content-badge.html, content-split.html, content-highlight.html
-│   │                    # content-grid.html, content-bigdata.html, content-fullimage.html (13종)
-│   ├── blueprint/       # 블루프린트 프레젠테이션 스타일 (동일 13종)
-│   ├── bold/
-│   ├── elegant/
-│   ├── premium/
-│   ├── toss/
-│   ├── magazine/
-│   ├── clean/
-│   ├── aws/             # AWS 서비스 소개 스타일 (13종, content-code 미포함)
-│   └── rn/              # React Native 튜토리얼 스타일 (14종, content-code.html 포함)
+├── templates/           # HTML 템플릿 (12 스타일)
+│   ├── minimal/         # 14종 (공통 슬라이드 타입)
+│   ├── bold/            # 14종
+│   ├── elegant/         # 14종
+│   ├── premium/         # 14종
+│   ├── toss/            # 14종
+│   ├── magazine/        # 14종
+│   ├── clean/           # 14종
+│   ├── blueprint/       # 14종
+│   ├── aws/             # 14종
+│   ├── rn/              # 20종 (공통 14 + rn 전용 6)
+│   ├── cs/              # 14종 (1080×1080)
+│   └── linux/           # 15종 (1080×1080, content-code 포함)
 ├── scripts/
-│   ├── render.js        # Puppeteer HTML → PNG 렌더러
-│   └── generate-samples.js
-├── style-example/       # 각 스타일 커버 예시 PNG (aws.png, rn.png 등)
-├── workspace/           # 런타임 작업 공간 (research.md, slides.json, rn_demo_slides.json)
-│   ├── aws_logo.svg     # AWS 스타일용 에셋
+│   ├── render.js        # Puppeteer HTML → PNG 렌더러 (동적 placeholder, 병렬 렌더링)
+│   └── generate-samples.js  # config.json 기반 자동 샘플 생성
+├── style-example/       # 각 스타일 커버 예시 PNG
+├── workspace/           # 런타임 작업 공간 (research.md, slides.json)
 │   ├── ec2-images/      # EC2 서비스 이미지
 │   └── rds-images/      # RDS 서비스 이미지
 ├── output/              # 최종 PNG 출력

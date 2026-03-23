@@ -57,6 +57,11 @@
       "accent_color": "#22C55E",
       "background": "white"
     },
+    "rn": {
+      "description": "React Native 개발 튜토리얼 스타일 시안/화이트 스플릿 + JetBrains Mono + One Dark Pro 코드블럭",
+      "accent_color": "#00BCD4",
+      "background": "cyan-white-split"
+    },
     "linux": {
       "description": "Linux 정보 전달 스타일 다크 터미널 배경 + Tux 골든 옐로우 + JetBrains Mono",
       "accent_color": "#F5D838",

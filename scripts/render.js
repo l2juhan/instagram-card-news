@@ -26,8 +26,22 @@ function localImageToDataUrl(imagePath) {
   return `data:${mime};base64,${data}`;
 }
 
+// Fields where \n should NOT be converted to <br> (raw HTML insertion)
+const RAW_FIELDS = new Set(['code_body']);
+
+// Fields that contain local image paths and need base64 conversion
+const IMAGE_FIELDS = new Set(['left_image', 'right_image']);
+
+// Fields that contain URLs (no conversion, pass through as-is)
+const URL_FIELDS = new Set(['image_url', 'logo_url']);
+
+// Metadata fields that are not template placeholders
+const SKIP_FIELDS = new Set(['slide', 'type']);
+
 /**
  * Replace all template placeholders in HTML content.
+ * Dynamically processes all fields from the slide object — no need to
+ * register new fields here when adding new slide types.
  * @param {string} html - Raw HTML template string
  * @param {object} slide - Slide data object
  * @param {object} opts - Rendering options
@@ -36,80 +50,42 @@ function localImageToDataUrl(imagePath) {
  * @returns {string} Processed HTML
  */
 function applyPlaceholders(html, slide, opts, index, total) {
-  const body = (slide.body || '').replace(/\n/g, '<br>');
+  let result = html;
 
-  const replacements = {
-    '{{headline}}': (slide.headline || '').replace(/\n/g, '<br>'),
-    '{{subtext}}': (slide.subtext || '').replace(/\n/g, '<br>'),
-    '{{body}}': body,
-    '{{emphasis}}': (slide.emphasis || '').replace(/\n/g, '<br>'),
-    '{{cta_text}}': slide.cta_text || '',
+  // 1. System placeholders (not from slide data)
+  const accentColor = opts.accent || config.defaults.accent_color;
+  const systemReplacements = {
     '{{slide_number}}': String(index + 1).padStart(2, '0'),
     '{{total_slides}}': String(total).padStart(2, '0'),
-    '{{accent_color}}': opts.accent || config.defaults.accent_color,
+    '{{accent_color}}': accentColor,
     '{{account_name}}': opts.account || config.defaults.account_name,
-    // v2 placeholders
-    '{{image_url}}': slide.image_url || '',
-    '{{badge_text}}': slide.badge_text || '',
-    '{{step1}}': (slide.step1 || '').replace(/\n/g, '<br>'),
-    '{{step2}}': (slide.step2 || '').replace(/\n/g, '<br>'),
-    '{{step3}}': (slide.step3 || '').replace(/\n/g, '<br>'),
-    '{{step4}}': (slide.step4 || '').replace(/\n/g, '<br>'),
-    '{{item1}}': (slide.item1 || '').replace(/\n/g, '<br>'),
-    '{{item2}}': (slide.item2 || '').replace(/\n/g, '<br>'),
-    '{{item3}}': (slide.item3 || '').replace(/\n/g, '<br>'),
-    '{{item4}}': (slide.item4 || '').replace(/\n/g, '<br>'),
-    '{{item5}}': (slide.item5 || '').replace(/\n/g, '<br>'),
-    '{{left_title}}': slide.left_title || '',
-    '{{left_body}}': (slide.left_body || '').replace(/\n/g, '<br>'),
-    '{{right_title}}': slide.right_title || '',
-    '{{right_body}}': (slide.right_body || '').replace(/\n/g, '<br>'),
-    // content-grid placeholders
-    '{{grid1_icon}}': (slide.grid1_icon || '').replace(/\n/g, '<br>'),
-    '{{grid1_title}}': (slide.grid1_title || '').replace(/\n/g, '<br>'),
-    '{{grid1_desc}}': (slide.grid1_desc || '').replace(/\n/g, '<br>'),
-    '{{grid2_icon}}': (slide.grid2_icon || '').replace(/\n/g, '<br>'),
-    '{{grid2_title}}': (slide.grid2_title || '').replace(/\n/g, '<br>'),
-    '{{grid2_desc}}': (slide.grid2_desc || '').replace(/\n/g, '<br>'),
-    '{{grid3_icon}}': (slide.grid3_icon || '').replace(/\n/g, '<br>'),
-    '{{grid3_title}}': (slide.grid3_title || '').replace(/\n/g, '<br>'),
-    '{{grid3_desc}}': (slide.grid3_desc || '').replace(/\n/g, '<br>'),
-    '{{grid4_icon}}': (slide.grid4_icon || '').replace(/\n/g, '<br>'),
-    '{{grid4_title}}': (slide.grid4_title || '').replace(/\n/g, '<br>'),
-    '{{grid4_desc}}': (slide.grid4_desc || '').replace(/\n/g, '<br>'),
-    // content-bigdata placeholders
-    '{{bigdata_number}}': slide.bigdata_number || '',
-    '{{bigdata_unit}}': slide.bigdata_unit || '',
-    // magazine style placeholders
-    '{{headline_label}}': slide.headline_label || '',
-    '{{tag1}}': slide.tag1 || '',
-    '{{tag2}}': slide.tag2 || '',
-    '{{tag3}}': slide.tag3 || '',
-    '{{badge_number}}': slide.badge_number || '',
-    // content-fullimage placeholders
-    '{{badge2_text}}': slide.badge2_text || '',
-    '{{body2}}': (slide.body2 || '').replace(/\n/g, '<br>'),
-    // cover logo
-    '{{logo_url}}': slide.logo_url || '',
-    // content-code placeholders (code body is NOT converted — preserve raw text)
-    '{{code_filename}}': slide.code_filename || 'App.tsx',
-    '{{code_body}}': slide.code_body || '',
-    // local image placeholders — converted to base64 data URLs
-    '{{left_image}}': localImageToDataUrl(slide.left_image),
-    '{{right_image}}': localImageToDataUrl(slide.right_image),
-    // content-compare-image specific
-    '{{left_alert_title}}': slide.left_alert_title || '알림',
-    '{{left_alert_msg}}': slide.left_alert_msg || '작업이 완료되었습니다.',
   };
 
-  let result = html;
-  for (const [placeholder, value] of Object.entries(replacements)) {
-    // Replace all occurrences
+  for (const [placeholder, value] of Object.entries(systemReplacements)) {
     result = result.split(placeholder).join(value);
   }
-  // Second pass: replace {{accent_color}} that may exist inside injected data (e.g. SVG icons)
-  const accentColor = opts.accent || config.defaults.accent_color;
+
+  // 2. Dynamic slide field placeholders
+  for (const [key, value] of Object.entries(slide)) {
+    if (SKIP_FIELDS.has(key)) continue;
+
+    const placeholder = `{{${key}}}`;
+    let processed;
+
+    if (IMAGE_FIELDS.has(key)) {
+      processed = localImageToDataUrl(value);
+    } else if (URL_FIELDS.has(key) || RAW_FIELDS.has(key)) {
+      processed = value || '';
+    } else {
+      processed = (value || '').toString().replace(/\n/g, '<br>');
+    }
+
+    result = result.split(placeholder).join(processed);
+  }
+
+  // 3. Second pass: replace {{accent_color}} that may exist inside injected data (e.g. SVG icons)
   result = result.split('{{accent_color}}').join(accentColor);
+
   return result;
 }
 
@@ -151,15 +127,10 @@ async function render(opts = {}) {
   });
 
   try {
-    const page = await browser.newPage();
-    page.setDefaultNavigationTimeout(30000);
-    await page.setViewport({
-      width: dimensions.width,
-      height: dimensions.height,
-    });
-
     const total = slides.length;
 
+    // Pre-validate templates and prepare HTML for all slides
+    const tasks = [];
     for (let i = 0; i < slides.length; i++) {
       const slide = slides[i];
       const slideType = slide.type || 'content';
@@ -170,28 +141,51 @@ async function render(opts = {}) {
         continue;
       }
 
-      console.log(`Rendering slide ${i + 1}/${total}...`);
-
       const rawHtml = fs.readFileSync(templateFile, 'utf8');
       const processedHtml = applyPlaceholders(rawHtml, slide, { accent, account }, i, total);
-
-      await page.setContent(processedHtml, { waitUntil: 'networkidle0' });
-
       const slideNum = String(i + 1).padStart(2, '0');
       const outputFile = path.join(outputDir, `slide_${slideNum}.png`);
 
-      await page.screenshot({
-        path: outputFile,
-        clip: {
-          x: 0,
-          y: 0,
-          width: dimensions.width,
-          height: dimensions.height,
-        },
+      tasks.push({ index: i, processedHtml, outputFile, slideNum });
+    }
+
+    // Render slides in parallel using separate pages
+    const CONCURRENCY = Math.min(tasks.length, 4);
+    let nextTask = 0;
+
+    async function worker() {
+      const page = await browser.newPage();
+      page.setDefaultNavigationTimeout(30000);
+      await page.setViewport({
+        width: dimensions.width,
+        height: dimensions.height,
       });
 
-      console.log(`  Saved: ${outputFile}`);
+      while (nextTask < tasks.length) {
+        const taskIndex = nextTask++;
+        const task = tasks[taskIndex];
+
+        console.log(`Rendering slide ${task.index + 1}/${total}...`);
+
+        await page.setContent(task.processedHtml, { waitUntil: 'networkidle0' });
+
+        await page.screenshot({
+          path: task.outputFile,
+          clip: {
+            x: 0,
+            y: 0,
+            width: dimensions.width,
+            height: dimensions.height,
+          },
+        });
+
+        console.log(`  Saved: ${task.outputFile}`);
+      }
+
+      await page.close();
     }
+
+    await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
   } finally {
     await browser.close();
   }
