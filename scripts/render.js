@@ -86,6 +86,9 @@ function applyPlaceholders(html, slide, opts, index, total) {
   // 3. Second pass: replace {{accent_color}} that may exist inside injected data (e.g. SVG icons)
   result = result.split('{{accent_color}}').join(accentColor);
 
+  // 4. Clean up any remaining unreplaced placeholders
+  result = result.replace(/\{\{[^}]+\}\}/g, '');
+
   return result;
 }
 
