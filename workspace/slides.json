@@ -2,71 +2,66 @@
   {
     "slide": 1,
     "type": "cover",
-    "headline": "LAN 서버가 뭔데요?",
-    "subtext": "",
-    "left_image": "workspace/character.png",
-    "right_image": "workspace/lan_button.png"
+    "headline": "AI가 뭐든\n연결할 수 있다면?",
+    "subtext": "MCP가 바꾸는 AI 연결의 패러다임"
   },
   {
     "slide": 2,
-    "type": "content-highlight",
-    "headline": "LAN이 뭐예요?",
-    "emphasis": "동네 네트워크",
-    "body": "같은 공간 안에서만\n연결되는 작은 네트워크예요\n\n집, 학교, 카페에서\n공유기 하나로 묶인\n기기들의 통신 구역이죠",
-    "subtext": "Local Area Network"
+    "type": "content-badge",
+    "badge_text": "CONCEPT",
+    "headline": "MCP란 무엇인가",
+    "body": "AI를 위한 USB-C 포트\n\n어떤 AI 모델이든, 어떤 외부 도구든\n표준 방식 하나로 연결하는 오픈 프로토콜\n\n2024년 11월 Anthropic이 공개\n현재는 Linux Foundation에 기증",
+    "subtext": "MCP = Model Context Protocol"
   },
   {
     "slide": 3,
-    "type": "content-badge",
-    "badge_text": "사용 경험",
-    "headline": "LAN 서버, 사실 써봤다?",
-    "left_image": "workspace/minecraft_lan.jpg",
-    "right_image": "workspace/starcraft_lan.jpeg",
-    "body": "같은 Wi-Fi에 있는 친구한테만\n자동으로 서버가 뜨는 그게\n바로 LAN 서버예요",
-    "subtext": "LAN 서버의 핵심은 '같은 공간'"
+    "type": "content-split",
+    "headline": "MCP 이전 vs 이후",
+    "left_title": "Before MCP",
+    "left_body": "모델마다 연결 방식이 달라\n맞춤 코드를 매번 작성\n\n새 데이터 소스 추가 시\nN×M 문제 발생\n\n벤더 종속, 재사용 불가",
+    "right_title": "After MCP",
+    "right_body": "MCP 서버 한 번 구축으로\n모든 AI 클라이언트에서 재사용\n\nAI 모델 교체해도\n기존 연동 코드 유지\n\n보안 권한까지 표준화",
+    "subtext": "하나의 표준, 무한한 연결"
   },
   {
     "slide": 4,
-    "type": "content-stat",
-    "headline": "유선 LAN은 이렇게 빠릅니다",
-    "emphasis": "1ms",
-    "body": "Wi-Fi는 10~30ms, 인터넷은 20~100ms\n그래서 e스포츠 대회는 무조건 LAN이에요"
+    "type": "content-steps",
+    "headline": "MCP 작동 원리 3단계",
+    "step1": "MCP 클라이언트 → 서버 연결",
+    "step2": "기능 목록 조회\n(Tools · Resources · Prompts)",
+    "step3": "LLM이 필요 시 서버 기능 자율 호출",
+    "body": "Host(AI 앱) → Client → Server → 외부 도구/데이터"
   },
   {
     "slide": 5,
-    "type": "content-grid",
-    "headline": "알고 보면 다 LAN이네?",
-    "grid1_icon": "🖨️",
-    "grid1_title": "프린터 공유",
-    "grid1_desc": "와이파이로 출력",
-    "grid2_icon": "📺",
-    "grid2_title": "스마트TV 스트리밍",
-    "grid2_desc": "폰 → TV 미러링",
-    "grid3_icon": "📁",
-    "grid3_title": "파일 공유",
-    "grid3_desc": "USB 없이 전송",
-    "grid4_icon": "💾",
-    "grid4_title": "NAS 저장소",
-    "grid4_desc": "집 안의 클라우드"
+    "type": "content-stat",
+    "headline": "MCP 출시 1년, 숫자로 보다",
+    "emphasis": "9,700만",
+    "body": "월간 SDK 다운로드 횟수 (Python + TypeScript 합산)\n커뮤니티 등록 MCP 서버 10,000개 이상\nClaude · ChatGPT · Gemini · Copilot · VS Code 공식 채택"
   },
   {
     "slide": 6,
-    "type": "content-split",
-    "headline": "LAN 서버 vs 온라인 서버",
-    "left_title": "LAN 서버",
-    "left_body": "같은 공유기 필수\n속도 빠름 (1ms)\n보안 굿\n인터넷 없어도 OK\n원거리 접속 불가",
-    "right_title": "온라인 서버",
-    "right_body": "전 세계 접속 가능\n속도 느릴 수 있음\n보안 신경 써야 함\n인터넷 필수\n어디서든 연결",
-    "subtext": "원거리 LAN이 필요하면? → 하마치(VPN)로 우회 가능"
+    "type": "content-grid",
+    "headline": "MCP 핵심 기능 4가지",
+    "grid1_icon": "🔧",
+    "grid1_title": "Tools",
+    "grid1_desc": "LLM이 실행하는 액션\nAPI 호출·파일 조작·코드 실행",
+    "grid2_icon": "📂",
+    "grid2_title": "Resources",
+    "grid2_desc": "읽기 전용 데이터 제공\n파일·DB·API 응답",
+    "grid3_icon": "💬",
+    "grid3_title": "Prompts",
+    "grid3_desc": "재사용 가능한\n프롬프트 워크플로우",
+    "grid4_icon": "🤖",
+    "grid4_title": "Sampling",
+    "grid4_desc": "서버가 클라이언트 LLM에\n역으로 추론 요청 가능"
   },
   {
     "slide": 7,
-    "type": "content-list",
-    "headline": "오늘의 핵심 정리",
-    "item1": "LAN = 같은 공간의 작은 네트워크",
-    "item2": "LAN 서버 = 같은 공유기 기기만 접속",
-    "item3": "유선 LAN 핑 1ms → 게임에서 유리",
-    "item4": "프린터·TV·NAS가 다 LAN 활용",
-    "item5": "Wi-Fi는 연결 방식, LAN은 범위 개념"
+    "type": "content-highlight",
+    "headline": "MCP의 본질",
+    "emphasis": "AI 생태계의\n공통 언어",
+    "body": "Anthropic · OpenAI · Google · Microsoft\n4대 빅테크가 모두 채택한 표준\n\n2026년, 실험에서 전사 도입으로\nGartner: API 게이트웨이의 75%가\nMCP 기능 탑재 전망",
+    "subtext": "모든 AI가 하나로 연결되는 시대"
   }
 ]
