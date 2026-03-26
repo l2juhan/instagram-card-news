@@ -36,7 +36,7 @@ const IMAGE_FIELDS = new Set(['left_image', 'right_image']);
 const URL_FIELDS = new Set(['image_url', 'logo_url']);
 
 // Metadata fields that are not template placeholders
-const SKIP_FIELDS = new Set(['slide', 'type']);
+const SKIP_FIELDS = new Set(['slide', 'type', 'style_override']);
 
 /**
  * Replace all template placeholders in HTML content.
@@ -85,6 +85,17 @@ function applyPlaceholders(html, slide, opts, index, total) {
 
   // 3. Second pass: replace {{accent_color}} that may exist inside injected data (e.g. SVG icons)
   result = result.split('{{accent_color}}').join(accentColor);
+
+  // 3.5. Inject per-slide style_override CSS
+  if (slide.style_override) {
+    const processedOverride = slide.style_override.split('{{accent_color}}').join(accentColor);
+    const overrideStyle = `<style>/* slide override */\n${processedOverride}\n</style>`;
+    if (result.includes('</head>')) {
+      result = result.replace('</head>', `${overrideStyle}\n</head>`);
+    } else {
+      result = result.replace('</html>', `${overrideStyle}\n</html>`);
+    }
+  }
 
   // 4. Clean up any remaining unreplaced placeholders
   result = result.replace(/\{\{[^}]+\}\}/g, '');
