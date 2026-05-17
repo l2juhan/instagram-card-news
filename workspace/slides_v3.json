@@ -1,0 +1,71 @@
+[
+  {
+    "slide": 1,
+    "type": "cover",
+    "headline": "스마트폰은\n가짜 주소로\n접속한다",
+    "subtext": "Private MAC Address — 프라이버시를 지키는 네트워크 레이어의 비밀",
+    "style_override": ".content-wrapper { justify-content: center; padding-top: 40px; }"
+  },
+  {
+    "slide": 2,
+    "type": "content",
+    "headline": "MAC 주소 구조",
+    "body": "MAC 주소는 48비트(6바이트)로 구성됩니다.\n\n앞 3바이트는 IEEE가 제조사에 발급하는 OUI(Organizationally Unique Identifier), 뒤 3바이트는 제조사가 부여하는 기기 고유 번호입니다.\n\n첫 번째 바이트의 b0 비트는 Unicast/Multicast 구분, b1 비트는 공식 제조사 MAC(0)인지 소프트웨어 생성 MAC(1)인지를 나타냅니다.",
+    "subtext": "// b1=0 → Globally Unique  |  b1=1 → Locally Administered",
+    "style_override": ".header { padding-top: 28px; } .body-section { justify-content: flex-start; padding-top: 16px; }"
+  },
+  {
+    "slide": 3,
+    "type": "content-highlight",
+    "headline": "Private MAC이란?",
+    "emphasis": "b1 = 1",
+    "body": "소프트웨어가 생성하는 가짜 MAC 주소입니다. 첫 번째 바이트의 b1 비트를 1로 설정하면 실제 제조사 MAC(b1=0)과 구조적으로 절대 겹치지 않는 주소 공간이 만들어집니다. OUI와 기기 번호 모두 랜덤으로 생성되어 제조사 식별과 기기 추적이 원천 차단됩니다.",
+    "subtext": "// IEEE 802 표준 — Locally Administered Address"
+  },
+  {
+    "slide": 4,
+    "type": "content-grid",
+    "headline": "iPhone Wi-Fi 프라이버시 설정 3가지",
+    "grid1_icon": "🔴",
+    "grid1_title": "끔",
+    "grid1_desc": "실제 MAC 그대로 사용. 제조사·기기 추적 가능",
+    "grid2_icon": "🟡",
+    "grid2_title": "고정식",
+    "grid2_desc": "네트워크마다 고정된 가짜 MAC. 프라이버시·안정성 균형. iOS 기본값",
+    "grid3_icon": "🟢",
+    "grid3_title": "순환식",
+    "grid3_desc": "주기적으로 바뀌는 가짜 MAC. DHCP 충돌 가능",
+    "grid4_icon": "📡",
+    "grid4_title": "Apple / Android 공통",
+    "grid4_desc": "두 플랫폼 모두 네트워크별 고정 랜덤 MAC 기본 채택"
+  },
+  {
+    "slide": 5,
+    "type": "content-split",
+    "headline": "고정식이 의미있는 이유",
+    "left_title": "같은 네트워크 → 안정",
+    "left_body": "재접속 시 동일 가짜 MAC → DHCP 동일 IP 재발급 → 연결 안정. 기업·캠퍼스 MAC 필터링 호환",
+    "right_title": "다른 네트워크 → 익명",
+    "right_body": "네트워크마다 다른 MAC → 카페·공항·회사 간 동선 추적 불가. 위치·행동 패턴 분석 원천 차단",
+    "subtext": "// 한 번만 가는 네트워크(카페 등)에서는 순환식과 사실상 동일한 효과",
+    "style_override": ".content-header { padding-top: 36px; } .columns-section { justify-content: flex-start; padding-top: 16px; }"
+  },
+  {
+    "slide": 6,
+    "type": "content-list",
+    "headline": "순환식의 DHCP 문제",
+    "item1": "MAC_A로 IP_1 임대 — DHCP lease 기간 24시간 시작",
+    "item2": "순환식 정책으로 MAC이 MAC_B로 변경",
+    "item3": "DHCP 서버: MAC_B를 새 기기로 인식 → IP_2 신규 발급",
+    "item4": "IP_1은 lease 만료까지 24시간 동안 반환 불가 상태 유지",
+    "item5": "공항·대학 등 대규모 환경에서 IP 풀 고갈 가능성 발생"
+  },
+  {
+    "slide": 7,
+    "type": "content",
+    "headline": "핵심 정리",
+    "body": "Private MAC — b1=1 비트 하나로 실제 MAC과 절대 겹치지 않는 주소 공간을 만든다.\n\n고정식 — 네트워크마다 다른 MAC, 같은 네트워크에서는 같은 MAC. 프라이버시와 안정성의 최적 균형.\n\n순환식 — 프라이버시는 최고지만 MAC 변경 시 DHCP가 새 기기로 인식, 대규모 환경에서 IP 낭비 유발.",
+    "subtext": "// Apple·Android 모두 '네트워크별 고정 랜덤 MAC'을 기본 정책으로 채택 중",
+    "style_override": ".header { padding-top: 28px; } .body-section { justify-content: flex-start; padding-top: 16px; }"
+  }
+]

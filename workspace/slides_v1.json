@@ -1,0 +1,61 @@
+[
+  {
+    "slide": 1,
+    "type": "cover",
+    "headline": "구현 상세\n추상화하기",
+    "subtext": "",
+    "style_override": ".label{font-size:0}.label::after{content:'가독성';font-size:26px;font-weight:600;color:#8B95A1;letter-spacing:0.02em}.subtext{display:none}.footer span:last-child{font-size:0}.footer span:last-child::after{content:'출처 · Toss Frontend Fundamentals';font-size:18px;font-weight:500;color:#6B7684}"
+  },
+  {
+    "slide": 2,
+    "type": "content-highlight",
+    "headline": "읽는 사람의 맥락은 한정돼 있다",
+    "emphasis": "추상화",
+    "body": "한 사람이 코드를 읽을 때 동시에 고려할 수 있는 맥락의 수는 제한돼 있습니다. 구현 상세가 그대로 드러나면 그 한도를 넘어, 이 코드가 무슨 역할을 하는지 알기 어려워집니다. 더 작은 단위로 추상화하면 한 번에 볼 맥락이 줄어듭니다.",
+    "subtext": "Frontend Fundamentals · 코드 품질",
+    "style_override": ".headline{font-size:38px}.highlight-card{justify-content:center}.emphasis{font-size:80px}.divider{margin:44px 0}.body-text{font-size:40px;line-height:1.7;flex:none}"
+  },
+  {
+    "slide": 3,
+    "type": "content",
+    "headline": "Before — 드러난 상세",
+    "body": "<span class='k'>function</span> <span class='fn'>LoginStartPage</span>() {<br>&nbsp;&nbsp;<span class='fn'>useCheckLogin</span>({<br>&nbsp;&nbsp;&nbsp;&nbsp;onChecked: (status) =&gt; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='k'>if</span> (status === <span class='s'>\"LOGGED_IN\"</span>) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;location.href = <span class='s'>\"/home\"</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;});<br><br>&nbsp;&nbsp;<span class='c'>/* ... 로그인 관련 로직 ... */</span><br><br>&nbsp;&nbsp;<span class='k'>return</span> &lt;&gt;{<span class='c'>/* 로그인 컴포넌트 */</span>}&lt;/&gt;;<br>}<br><br><span class='c'>// 로그인 체크 상세가 화면 컴포넌트에 그대로 노출</span>",
+    "style_override": "@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');.container{padding:60px 60px 90px;justify-content:center}.headline{font-size:50px;margin-bottom:6px}.accent-line{display:none}.body{margin-top:36px;background:#21252B;border:1px solid #2C313A;border-left:7px solid #FF5C5C;border-radius:16px;padding:42px 44px;font-family:'JetBrains Mono','Menlo',monospace;font-size:30px;line-height:1.62;color:#ABB2BF;white-space:normal}.body .k{color:#C678DD;font-weight:600}.body .s{color:#98C379}.body .fn{color:#61AFEF}.body .t{color:#E5C07B}.body .c{color:#5C6370;font-style:italic}"
+  },
+  {
+    "slide": 4,
+    "type": "content",
+    "headline": "무엇이 문제일까",
+    "body": "useCheckLogin, onChecked, status, 로그인 상태 문자열까지 — 여러 세부사항을 한꺼번에 이해해야 합니다.\n\n로그인 여부를 확인하는 로직과 실제 로그인 화면 로직이 한 컴포넌트에 뒤섞여, 이 컴포넌트가 무슨 역할인지 한눈에 들어오지 않습니다.\n\n맥락이 많을수록, 코드는 흐릿해집니다.",
+    "style_override": ".container{justify-content:center}.headline{font-size:76px}.body{font-size:44px;line-height:1.6;margin-top:44px}"
+  },
+  {
+    "slide": 5,
+    "type": "content",
+    "headline": "After — 감춘 상세",
+    "body": "<span class='k'>function</span> <span class='fn'>App</span>() {<br>&nbsp;&nbsp;<span class='k'>return</span> (<br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class='t'>AuthGuard</span>&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class='t'>LoginStartPage</span> /&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class='t'>AuthGuard</span>&gt;<br>&nbsp;&nbsp;);<br>}<br><br><span class='k'>function</span> <span class='fn'>AuthGuard</span>({ children }) {<br>&nbsp;&nbsp;<span class='k'>const</span> status = <span class='fn'>useCheckLoginStatus</span>();<br><br>&nbsp;&nbsp;<span class='fn'>useEffect</span>(() =&gt; {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='k'>if</span> (status === <span class='s'>\"LOGGED_IN\"</span>) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;location.href = <span class='s'>\"/home\"</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;}, [status]);<br><br>&nbsp;&nbsp;<span class='k'>return</span> status !== <span class='s'>\"LOGGED_IN\"</span> ? children : <span class='k'>null</span>;<br>}<br><br><span class='c'>// 로그인 분기는 AuthGuard가 도맡는다</span>",
+    "style_override": "@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');.container{padding:54px 60px 80px;justify-content:center}.headline{font-size:50px;margin-bottom:6px}.accent-line{display:none}.body{margin-top:30px;background:#21252B;border:1px solid #2C313A;border-left:7px solid #3DDC97;border-radius:16px;padding:38px 42px;font-family:'JetBrains Mono','Menlo',monospace;font-size:26px;line-height:1.55;color:#ABB2BF;white-space:normal}.body .k{color:#C678DD;font-weight:600}.body .s{color:#98C379}.body .fn{color:#61AFEF}.body .t{color:#E5C07B}.body .c{color:#5C6370;font-style:italic}"
+  },
+  {
+    "slide": 6,
+    "type": "content-split",
+    "headline": "무엇이 달라졌나",
+    "left_title": "Before",
+    "left_body": "로그인 체크 상세가 화면 컴포넌트에 그대로 노출된다.\n\n인증 흐름과 화면 로직을 동시에 따라가야 한다.\n\n컴포넌트의 역할이 한눈에 안 보인다.",
+    "right_title": "After",
+    "right_body": "인증 분기는 AuthGuard가 도맡는다.\n\n화면 컴포넌트는 화면에만 집중한다.\n\n한 번에 볼 맥락이 줄어든다.",
+    "subtext": "동작은 그대로, 역할은 또렷하게",
+    "style_override": ".headline{margin-bottom:44px}.split-card{justify-content:center;padding:44px 34px;gap:12px}.card-title{font-size:38px;margin-bottom:6px}.card-body{font-size:31px;line-height:1.65;color:#A8B0BB;word-break:keep-all}.vs-text{color:#6B7684}.split-row>div:first-of-type{background:#2A2024;border:1px solid #5A2E2E;border-left:7px solid #FF5C5C}.split-row>div:last-of-type{background:#1C2A24;border:1px solid #2C5A41;border-left:7px solid #3DDC97}.split-row>div:first-of-type .card-title{color:#FF8585}.split-row>div:last-of-type .card-title{color:#3DDC97}"
+  },
+  {
+    "slide": 7,
+    "type": "content-list",
+    "headline": "이럴 때 추상화하세요",
+    "item1": "구현 상세가 화면 로직과 섞일 때",
+    "item2": "한 함수가 여러 관심사를 동시에 다룰 때",
+    "item3": "이름만으로 역할이 드러나지 않을 때",
+    "item4": "한 번에 추적할 맥락이 너무 많을 때",
+    "item5": "함께 바뀔 코드가 멀리 떨어져 있을 때",
+    "style_override": ".list-card{justify-content:space-evenly}.list-item{padding:34px 46px}.item-number{font-size:40px;min-width:44px}.item-text{font-size:40px;line-height:1.45}"
+  }
+]

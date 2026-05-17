@@ -1,0 +1,60 @@
+[
+  {
+    "slide": 1,
+    "type": "cover",
+    "headline": "같이 안 도는 코드는\n한곳에 두지 마세요",
+    "subtext": "동시에 실행되지 않는 코드가 한 컴포넌트에 뒤섞이면, 정작 읽는 사람만 힘들어집니다."
+  },
+  {
+    "slide": 2,
+    "type": "content-highlight",
+    "headline": "가독성은 곧 맥락 줄이기",
+    "emphasis": "맥락 줄이기",
+    "body": "동시에 실행되지 않는 코드가 한 함수·컴포넌트에 있으면, 동작을 한눈에 파악하기 어렵습니다. 읽을 때 따라가야 할 분기가 그만큼 늘어나기 때문입니다.",
+    "subtext": "Frontend Fundamentals · 코드 품질"
+  },
+  {
+    "slide": 3,
+    "type": "content",
+    "headline": "Before — 섞인 코드",
+    "body": "<span class='k'>function</span> <span class='fn'>SubmitButton</span>() {<br>&nbsp;&nbsp;<span class='k'>const</span> isViewer = <span class='fn'>useRole</span>() === <span class='s'>\"viewer\"</span>;<br>&nbsp;&nbsp;<span class='fn'>useEffect</span>(() =&gt; {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='k'>if</span> (isViewer) <span class='k'>return</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='fn'>showButtonAnimation</span>();<br>&nbsp;&nbsp;}, [isViewer]);<br>&nbsp;&nbsp;<span class='k'>return</span> isViewer ? (<br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class='t'>TextButton</span> disabled&gt;Submit&lt;/<span class='t'>TextButton</span>&gt;<br>&nbsp;&nbsp;) : (<br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class='t'>Button</span> type=<span class='s'>\"submit\"</span>&gt;Submit&lt;/<span class='t'>Button</span>&gt;<br>&nbsp;&nbsp;);<br>}",
+    "subtext": "viewer·일반 로직이 한 컴포넌트에 교차",
+    "style_override": ".header{padding:32px 80px 0 80px}.headline{font-size:46px}.body-section{padding:22px 60px 20px 60px;justify-content:flex-start}.accent-bar{display:none}.accent-block{display:block;background:#F6F8FA;border:1px solid #E1E4E8;border-left:6px solid #FF5F57;border-radius:14px;padding:30px 34px}.body-text{font-family:'JetBrains Mono',monospace;font-size:22px;line-height:1.62;color:#24292E;white-space:normal;word-break:normal}.body-text .k{color:#D73A49;font-weight:700}.body-text .s{color:#032F62}.body-text .fn{color:#6F42C1}.body-text .t{color:#22863A}.subtext{margin-top:20px;font-size:19px;color:#6A737D}"
+  },
+  {
+    "slide": 4,
+    "type": "content",
+    "headline": "무엇이 문제일까",
+    "body": "viewer일 때와 아닐 때의 로직이 useEffect와 삼항 연산자에 함께 엉켜 있습니다. 읽는 사람은 두 갈래의 흐름을 동시에 머릿속에 들고 따라가야 하죠. 한쪽을 고치려면 다른 쪽이 깨지지 않는지도 같이 살펴야 합니다.",
+    "subtext": "맥락이 많다 = 한눈에 안 들어온다"
+  },
+  {
+    "slide": 5,
+    "type": "content",
+    "headline": "After — 분리한 코드",
+    "body": "<span class='k'>function</span> <span class='fn'>SubmitButton</span>() {<br>&nbsp;&nbsp;<span class='k'>const</span> isViewer = <span class='fn'>useRole</span>() === <span class='s'>\"viewer\"</span>;<br>&nbsp;&nbsp;<span class='k'>return</span> isViewer<br>&nbsp;&nbsp;&nbsp;&nbsp;? &lt;<span class='t'>ViewerSubmitButton</span> /&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;: &lt;<span class='t'>AdminSubmitButton</span> /&gt;;<br>}<br><br><span class='k'>function</span> <span class='fn'>ViewerSubmitButton</span>() {<br>&nbsp;&nbsp;<span class='k'>return</span> &lt;<span class='t'>TextButton</span> disabled&gt;Submit&lt;/<span class='t'>TextButton</span>&gt;;<br>}<br><br><span class='k'>function</span> <span class='fn'>AdminSubmitButton</span>() {<br>&nbsp;&nbsp;<span class='fn'>useEffect</span>(() =&gt; {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='fn'>showButtonAnimation</span>();<br>&nbsp;&nbsp;}, []);<br>&nbsp;&nbsp;<span class='k'>return</span> &lt;<span class='t'>Button</span> type=<span class='s'>\"submit\"</span>&gt;Submit&lt;/<span class='t'>Button</span>&gt;;<br>}",
+    "subtext": "부모는 선택만 · 각 컴포넌트는 한 상태만 책임",
+    "style_override": ".header{padding:30px 80px 0 80px}.headline{font-size:46px}.body-section{padding:20px 60px 18px 60px;justify-content:flex-start}.accent-bar{display:none}.accent-block{display:block;background:#F6F8FA;border:1px solid #E1E4E8;border-left:6px solid {{accent_color}};border-radius:14px;padding:28px 34px}.body-text{font-family:'JetBrains Mono',monospace;font-size:21px;line-height:1.55;color:#24292E;white-space:normal;word-break:normal}.body-text .k{color:#D73A49;font-weight:700}.body-text .s{color:#032F62}.body-text .fn{color:#6F42C1}.body-text .t{color:#22863A}.subtext{margin-top:18px;font-size:19px;color:#6A737D}"
+  },
+  {
+    "slide": 6,
+    "type": "content-split",
+    "headline": "무엇이 달라졌나",
+    "left_title": "Before",
+    "left_body": "분기·애니메이션·뷰어 처리가 한 컴포넌트에 뒤섞여, 두 흐름을 동시에 추적해야 읽힌다",
+    "right_title": "After",
+    "right_body": "각 컴포넌트가 하나의 상태만 책임지고, 부모는 무엇을 보여줄지 고르기만 한다",
+    "subtext": "동작은 그대로, 읽기는 훨씬 쉽게",
+    "style_override": ".content-header{padding:46px 80px 0 80px}.columns-section{padding:34px 70px 24px 70px;justify-content:center}.column-card{padding:46px 38px;min-height:540px;justify-content:center;gap:22px}.columns-row>div:first-of-type{background:#FFF5F5;border:1px solid #FAD4D4;border-left:6px solid #FF5F57}.columns-row>div:last-of-type{background:#F0FBF4;border:1px solid #C7ECD3;border-left:6px solid {{accent_color}}}.column-title{font-size:32px}.columns-row>div:first-of-type .column-title{color:#C53030}.columns-row>div:last-of-type .column-title{color:#1F9D57}.column-body{font-size:25px;color:#5B6166;flex:none}.subtext{font-size:24px}"
+  },
+  {
+    "slide": 7,
+    "type": "content-list",
+    "headline": "이럴 때 분리하세요",
+    "item1": "if·삼항으로 갈리는 상호배타 로직",
+    "item2": "분기마다 딸린 부수효과(useEffect 등)",
+    "item3": "한 분기의 JSX 덩어리가 커질 때",
+    "item4": "두 흐름을 동시에 추적해야 읽힐 때",
+    "item5": "이름이 'A이면서 B'처럼 모호할 때"
+  }
+]

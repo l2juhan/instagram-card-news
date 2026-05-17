@@ -1,0 +1,61 @@
+[
+  {
+    "slide": 1,
+    "type": "cover",
+    "headline": "같이 실행되지 않는\n코드 분리하기",
+    "subtext": "동시에 실행되지 않는 코드가 한 컴포넌트에 뒤섞이면, 정작 읽는 사람만 힘들어집니다.",
+    "style_override": ".footer span:last-child{font-size:0}.footer span:last-child::after{content:'출처 · Toss Frontend Fundamentals';font-size:18px;font-weight:500;color:#6B7684}"
+  },
+  {
+    "slide": 2,
+    "type": "content-highlight",
+    "headline": "가독성은 곧 맥락 줄이기",
+    "emphasis": "맥락 줄이기",
+    "body": "동시에 실행되지 않는 코드가 한 함수·컴포넌트에 있으면, 동작을 한눈에 파악하기 어렵습니다. 읽을 때 따라가야 할 분기가 그만큼 늘어나기 때문입니다. 한 번에 한쪽만 보면 되도록 나누면, 읽는 사람이 신경 쓸 맥락이 줄어듭니다.",
+    "subtext": "Frontend Fundamentals · 코드 품질",
+    "style_override": ".headline{font-size:38px}.highlight-card{justify-content:center}.emphasis{font-size:78px}.divider{margin:44px 0}.body-text{font-size:40px;line-height:1.7;flex:none}"
+  },
+  {
+    "slide": 3,
+    "type": "content",
+    "headline": "Before — 섞인 코드",
+    "body": "<span class='k'>function</span> <span class='fn'>SubmitButton</span>() {<br>&nbsp;&nbsp;<span class='k'>const</span> isViewer = <span class='fn'>useRole</span>() === <span class='s'>\"viewer\"</span>;<br>&nbsp;&nbsp;<span class='fn'>useEffect</span>(() =&gt; {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='k'>if</span> (isViewer) <span class='k'>return</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='fn'>showButtonAnimation</span>();<br>&nbsp;&nbsp;}, [isViewer]);<br>&nbsp;&nbsp;<span class='k'>return</span> isViewer ? (<br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class='t'>TextButton</span> disabled&gt;Submit&lt;/<span class='t'>TextButton</span>&gt;<br>&nbsp;&nbsp;) : (<br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class='t'>Button</span> type=<span class='s'>\"submit\"</span>&gt;Submit&lt;/<span class='t'>Button</span>&gt;<br>&nbsp;&nbsp;);<br>}<br><br><span class='c'>// viewer·일반 로직이 한 컴포넌트에 교차</span>",
+    "style_override": "@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');.container{padding:60px 60px 90px;justify-content:center}.headline{font-size:50px;margin-bottom:6px}.accent-line{display:none}.body{margin-top:36px;background:#21252B;border:1px solid #2C313A;border-left:7px solid #FF5C5C;border-radius:16px;padding:42px 44px;font-family:'JetBrains Mono','Menlo',monospace;font-size:31px;line-height:1.62;color:#ABB2BF;white-space:normal}.body .k{color:#C678DD;font-weight:600}.body .s{color:#98C379}.body .fn{color:#61AFEF}.body .t{color:#E5C07B}.body .c{color:#5C6370;font-style:italic}"
+  },
+  {
+    "slide": 4,
+    "type": "content",
+    "headline": "무엇이 문제일까",
+    "body": "viewer일 때와 아닐 때의 로직이 useEffect와 삼항 연산자에 함께 엉켜 있습니다.\n\n읽는 사람은 두 갈래의 흐름을 동시에 머릿속에 들고 따라가야 하죠. 한쪽을 고치려면 다른 쪽이 깨지지 않는지도 같이 살펴야 합니다.\n\n맥락이 많을수록, 코드는 한눈에 들어오지 않습니다.",
+    "style_override": ".container{justify-content:center}.headline{font-size:76px}.body{font-size:46px;line-height:1.6;margin-top:44px}"
+  },
+  {
+    "slide": 5,
+    "type": "content",
+    "headline": "After — 분리한 코드",
+    "body": "<span class='k'>function</span> <span class='fn'>SubmitButton</span>() {<br>&nbsp;&nbsp;<span class='k'>const</span> isViewer = <span class='fn'>useRole</span>() === <span class='s'>\"viewer\"</span>;<br>&nbsp;&nbsp;<span class='k'>return</span> isViewer<br>&nbsp;&nbsp;&nbsp;&nbsp;? &lt;<span class='t'>ViewerSubmitButton</span> /&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;: &lt;<span class='t'>AdminSubmitButton</span> /&gt;;<br>}<br><br><span class='k'>function</span> <span class='fn'>ViewerSubmitButton</span>() {<br>&nbsp;&nbsp;<span class='k'>return</span> &lt;<span class='t'>TextButton</span> disabled&gt;Submit&lt;/<span class='t'>TextButton</span>&gt;;<br>}<br><br><span class='k'>function</span> <span class='fn'>AdminSubmitButton</span>() {<br>&nbsp;&nbsp;<span class='fn'>useEffect</span>(() =&gt; {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='fn'>showButtonAnimation</span>();<br>&nbsp;&nbsp;}, []);<br>&nbsp;&nbsp;<span class='k'>return</span> &lt;<span class='t'>Button</span> type=<span class='s'>\"submit\"</span>&gt;Submit&lt;/<span class='t'>Button</span>&gt;;<br>}<br><br><span class='c'>// 부모는 선택만 · 각 컴포넌트는 한 상태만 책임</span>",
+    "style_override": "@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');.container{padding:54px 60px 80px;justify-content:center}.headline{font-size:50px;margin-bottom:6px}.accent-line{display:none}.body{margin-top:32px;background:#21252B;border:1px solid #2C313A;border-left:7px solid #3DDC97;border-radius:16px;padding:40px 42px;font-family:'JetBrains Mono','Menlo',monospace;font-size:27px;line-height:1.55;color:#ABB2BF;white-space:normal}.body .k{color:#C678DD;font-weight:600}.body .s{color:#98C379}.body .fn{color:#61AFEF}.body .t{color:#E5C07B}.body .c{color:#5C6370;font-style:italic}"
+  },
+  {
+    "slide": 6,
+    "type": "content-split",
+    "headline": "무엇이 달라졌나",
+    "left_title": "Before",
+    "left_body": "권한 분기·애니메이션·뷰어 처리가 한 컴포넌트에 뒤섞여 있다.\n\n두 흐름을 동시에 추적해야 비로소 읽힌다.\n\n한쪽을 고치면 다른 쪽이 깨질까 걱정된다.",
+    "right_title": "After",
+    "right_body": "각 컴포넌트가 하나의 상태만 책임진다.\n\n부모는 무엇을 보여줄지 고르기만 하면 된다.\n\n읽을 맥락이 절반으로 줄어든다.",
+    "subtext": "동작은 그대로, 읽기는 훨씬 쉽게",
+    "style_override": ".headline{margin-bottom:44px}.split-card{justify-content:center;padding:44px 34px;gap:12px}.card-title{font-size:38px;margin-bottom:6px}.card-body{font-size:31px;line-height:1.65;color:#A8B0BB;word-break:keep-all}.vs-text{color:#6B7684}.split-row>div:first-of-type{background:#2A2024;border:1px solid #5A2E2E;border-left:7px solid #FF5C5C}.split-row>div:last-of-type{background:#1C2A24;border:1px solid #2C5A41;border-left:7px solid #3DDC97}.split-row>div:first-of-type .card-title{color:#FF8585}.split-row>div:last-of-type .card-title{color:#3DDC97}"
+  },
+  {
+    "slide": 7,
+    "type": "content-list",
+    "headline": "이럴 때 분리하세요",
+    "item1": "if·삼항으로 갈리는 상호배타 로직",
+    "item2": "분기마다 딸린 부수효과(useEffect 등)",
+    "item3": "한 분기의 JSX 덩어리가 커질 때",
+    "item4": "두 흐름을 동시에 추적해야 읽힐 때",
+    "item5": "이름이 'A이면서 B'처럼 모호할 때",
+    "style_override": ".list-card{justify-content:space-evenly}.list-item{padding:34px 46px}.item-number{font-size:40px;min-width:44px}.item-text{font-size:40px;line-height:1.45}"
+  }
+]
