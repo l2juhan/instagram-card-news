@@ -6,11 +6,29 @@
 <title>Content Image</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <style>
+  /* === Toss Design System (TDS) 토큰 — 실제 토스 디자인 시스템 컬러 ===
+     출처: TDS Foundation Colors. 다크 테마 카드뉴스용 시맨틱 매핑. */
+  :root {
+    --tds-grey-50:#F9FAFB; --tds-grey-400:#B0B8C1; --tds-grey-500:#8B95A1;
+    --tds-grey-600:#6B7684; --tds-grey-700:#4E5968; --tds-grey-800:#333D4B;
+    --tds-grey-900:#191F28;
+    --tds-blue-400:#4593FC; --tds-blue-500:#3182F6; --tds-blue-600:#2272EB;
+    --tds-red-300:#FB8890; --tds-red-400:#F66570; --tds-red-500:#F04452;
+    --tds-green-300:#3FD599; --tds-green-400:#15C47E; --tds-green-500:#03B26C;
+    /* 다크 테마 시맨틱 (grey900 base + greyOpacity 레이어링) */
+    --tds-bg:var(--tds-grey-900);
+    --tds-surface:#232A35;            /* TDS 다크 레이어드 표면 (grey900 + greyOpacityWhite) */
+    --tds-text-strong:#FFFFFF;        /* 다크 테마 1차 텍스트 */
+    --tds-text-weak:var(--tds-grey-500);
+    --tds-text-subtle:var(--tds-grey-700);
+    --tds-primary:var(--tds-blue-500);  /* Toss Blue */
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     width: 1080px;
     height: 1350px;
-    background: #191F28;
+    background: var(--tds-bg);
     font-family: 'Pretendard', -apple-system, sans-serif;
     overflow: hidden;
     position: relative;
@@ -18,7 +36,7 @@
   .image-area {
     width: 100%;
     height: 675px;
-    background-color: #252B36;
+    background-color: var(--tds-surface);
     background-image: url('{{image_url}}');
     background-size: cover;
     background-position: center;
@@ -42,7 +60,7 @@
   .headline {
     font-size: 56px;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--tds-text-strong);
     line-height: 1.2;
     white-space: pre-line;
     margin-bottom: 32px;
@@ -50,7 +68,7 @@
   .body {
     font-size: 32px;
     font-weight: 400;
-    color: #8B95A1;
+    color: var(--tds-text-weak);
     line-height: 1.7;
     white-space: pre-line;
   }
@@ -63,7 +81,7 @@
     justify-content: space-between;
     align-items: center;
     font-size: 18px;
-    color: #4E5968;
+    color: var(--tds-text-subtle);
   }
 </style>
 </head>
@@ -71,11 +89,11 @@
   <div class="image-area">
     <div class="image-placeholder">
       <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="4" y="12" width="56" height="44" rx="6" stroke="#4E5968" stroke-width="3" fill="none"/>
-        <circle cx="32" cy="34" r="10" stroke="#4E5968" stroke-width="3" fill="none"/>
-        <circle cx="32" cy="34" r="4" fill="#4E5968"/>
-        <path d="M22 12 L26 4 H38 L42 12" stroke="#4E5968" stroke-width="3" stroke-linejoin="round" fill="none"/>
-        <circle cx="52" cy="22" r="3" fill="#4E5968"/>
+        <rect x="4" y="12" width="56" height="44" rx="6" stroke="var(--tds-text-subtle)" stroke-width="3" fill="none"/>
+        <circle cx="32" cy="34" r="10" stroke="var(--tds-text-subtle)" stroke-width="3" fill="none"/>
+        <circle cx="32" cy="34" r="4" fill="var(--tds-text-subtle)"/>
+        <path d="M22 12 L26 4 H38 L42 12" stroke="var(--tds-text-subtle)" stroke-width="3" stroke-linejoin="round" fill="none"/>
+        <circle cx="52" cy="22" r="3" fill="var(--tds-text-subtle)"/>
       </svg>
     </div>
   </div>
