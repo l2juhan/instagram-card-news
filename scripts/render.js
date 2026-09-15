@@ -27,7 +27,7 @@ function localImageToDataUrl(imagePath) {
 }
 
 // Fields where \n should NOT be converted to <br> (raw HTML insertion)
-const RAW_FIELDS = new Set(['code_body']);
+const RAW_FIELDS = new Set(['code_body', 'visual']);
 
 // Fields that contain local image paths and need base64 conversion
 const IMAGE_FIELDS = new Set(['left_image', 'right_image']);
@@ -36,7 +36,23 @@ const IMAGE_FIELDS = new Set(['left_image', 'right_image']);
 const URL_FIELDS = new Set(['image_url', 'logo_url']);
 
 // Metadata fields that are not template placeholders
-const SKIP_FIELDS = new Set(['slide', 'type', 'style_override']);
+const SKIP_FIELDS = new Set(['slide', 'type', 'style_override', 'bleed_right', 'bleed_y', 'bleed_color', 'bleed_from', 'bleed_to', 'alt']);
+
+/**
+ * Normalize a slide's bleed_right spec into [{ y, color, from }].
+ * bleed_right: true uses bleed_y / bleed_color / bleed_from; an array lists several lines.
+ */
+function normalizeBleed(slide) {
+  if (!slide || !slide.bleed_right) return [];
+  const list = Array.isArray(slide.bleed_right)
+    ? slide.bleed_right
+    : [{ y: slide.bleed_y, color: slide.bleed_color, from: slide.bleed_from }];
+  return list.map((b) => ({ y: Number(b.y) || 760, color: b.color || 'ink', from: b.from || '' }));
+}
+
+function toScriptJson(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
+}
 
 /**
  * Replace all template placeholders in HTML content.
@@ -54,11 +70,16 @@ function applyPlaceholders(html, slide, opts, index, total) {
 
   // 1. System placeholders (not from slide data)
   const accentColor = opts.accent || config.defaults.accent_color;
+  const bleedTo = [].concat(slide.bleed_to || []);
   const systemReplacements = {
     '{{slide_number}}': String(index + 1).padStart(2, '0'),
     '{{total_slides}}': String(total).padStart(2, '0'),
     '{{accent_color}}': accentColor,
     '{{account_name}}': opts.account || config.defaults.account_name,
+    '{{progress_pct}}': (((index + 1) / total) * 100).toFixed(2),
+    '{{series}}': opts.series || '',
+    '{{bleed_out}}': toScriptJson(normalizeBleed(slide)),
+    '{{bleed_in}}': toScriptJson(normalizeBleed(opts.prevSlide).map((b, k) => ({ y: b.y, color: b.color, to: bleedTo[k] || '' }))),
   };
 
   for (const [placeholder, value] of Object.entries(systemReplacements)) {
@@ -142,6 +163,8 @@ async function render(opts = {}) {
 
   try {
     const total = slides.length;
+    const seriesSource = slides.find((s) => s.series);
+    const series = opts.series || (seriesSource ? seriesSource.series : '');
 
     // Pre-validate templates and prepare HTML for all slides
     const tasks = [];
@@ -156,7 +179,9 @@ async function render(opts = {}) {
       }
 
       const rawHtml = fs.readFileSync(templateFile, 'utf8');
-      const processedHtml = applyPlaceholders(rawHtml, slide, { accent, account }, i, total);
+      const processedHtml = applyPlaceholders(
+        rawHtml, slide, { accent, account, series, prevSlide: slides[i - 1] }, i, total
+      );
       const slideNum = String(i + 1).padStart(2, '0');
       const outputFile = path.join(outputDir, `slide_${slideNum}.png`);
 
@@ -227,6 +252,9 @@ function parseArgs(argv) {
         break;
       case '--account':
         opts.account = args[++i];
+        break;
+      case '--series':
+        opts.series = args[++i];
         break;
       default:
         console.warn(`Unknown argument: ${args[i]}`);

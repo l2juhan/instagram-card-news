@@ -62,6 +62,11 @@
       "accent_color": "#00BCD4",
       "background": "cyan-white-split"
     },
+    "cs-v2": {
+      "description": "CS 교육 콘텐츠 v2 웜 페이퍼 + 잉크 + 개념 색 토큰 + Pretendard, 4:5 세로형",
+      "accent_color": "#16171B",
+      "background": "warm-paper"
+    },
     "linux": {
       "description": "Linux 정보 전달 스타일 다크 터미널 배경 + Tux 골든 옐로우 + JetBrains Mono",
       "accent_color": "#F5D838",
@@ -75,6 +80,7 @@
   "style_dimensions": {
     "rn": { "width": 1080, "height": 1080 },
     "cs": { "width": 1080, "height": 1080 },
+    "cs-v2": { "width": 1080, "height": 1350 },
     "linux": { "width": 1080, "height": 1080 }
   },
   "output_dir": "output",
