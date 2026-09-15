@@ -125,6 +125,78 @@ function applyPlaceholders(html, slide, opts, index, total) {
 }
 
 /**
+ * Wait for web fonts before taking a screenshot.
+ * networkidle0 alone does not guarantee that font files have been applied.
+ * Templates may list required families in <body data-fonts="Family A|Family B">;
+ * if none of a family's faces finished loading, the render fails instead of
+ * silently producing a fallback-font PNG.
+ */
+async function waitForFonts(page, slideNo) {
+  const missing = await page.evaluate(async () => {
+    await document.fonts.ready;
+    // Let callbacks registered by the template (e.g. layout fitting after fonts.ready) run and paint
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const required = ((document.body && document.body.getAttribute('data-fonts')) || '').split('|').filter(Boolean);
+    const faces = Array.from(document.fonts);
+    return required.filter((family) => !faces.some(
+      (face) => face.family.replace(/["']/g, '') === family && face.status === 'loaded'
+    ));
+  });
+  if (missing.length > 0) {
+    throw new Error(`slide ${slideNo}: required font not applied: ${missing.join(', ')}`);
+  }
+}
+
+const PREVIEW_WIDTH = 360;
+
+/**
+ * Write phone-size previews to <outputDir>/preview/:
+ * - slide_XX.png: each slide scaled to 360px wide
+ * - grid_cover.png: the cover center-cropped to 3:4 as shown in the profile grid
+ */
+async function writePreviews(browser, files, dimensions, outputDir) {
+  const previewDir = path.join(outputDir, 'preview');
+  fs.mkdirSync(previewDir, { recursive: true });
+  const toDataUrl = (file) => `data:image/png;base64,${fs.readFileSync(file).toString('base64')}`;
+  const page = await browser.newPage();
+
+  const scale = PREVIEW_WIDTH / dimensions.width;
+  const previewHeight = Math.round(dimensions.height * scale);
+  await page.setViewport({ width: PREVIEW_WIDTH, height: previewHeight });
+  for (const file of files) {
+    await page.setContent(
+      `<body style="margin:0"><img src="${toDataUrl(file)}" style="display:block;width:${PREVIEW_WIDTH}px;height:${previewHeight}px"></body>`
+    );
+    await page.screenshot({
+      path: path.join(previewDir, path.basename(file)),
+      clip: { x: 0, y: 0, width: PREVIEW_WIDTH, height: previewHeight },
+    });
+  }
+
+  if (files.length > 0) {
+    let cropWidth = dimensions.width;
+    let cropHeight = dimensions.height;
+    if (cropWidth / cropHeight > 3 / 4) cropWidth = cropHeight * 3 / 4;
+    else cropHeight = cropWidth * 4 / 3;
+    const gridScale = PREVIEW_WIDTH / cropWidth;
+    const gridHeight = Math.round(cropHeight * gridScale);
+    const offsetX = ((dimensions.width - cropWidth) / 2) * gridScale;
+    const offsetY = ((dimensions.height - cropHeight) / 2) * gridScale;
+    await page.setViewport({ width: PREVIEW_WIDTH, height: gridHeight });
+    await page.setContent(
+      `<body style="margin:0;overflow:hidden"><img src="${toDataUrl(files[0])}" style="display:block;width:${dimensions.width * gridScale}px;margin:${-offsetY}px 0 0 ${-offsetX}px"></body>`
+    );
+    await page.screenshot({
+      path: path.join(previewDir, 'grid_cover.png'),
+      clip: { x: 0, y: 0, width: PREVIEW_WIDTH, height: gridHeight },
+    });
+  }
+
+  await page.close();
+  console.log(`  Previews: ${previewDir}`);
+}
+
+/**
  * Main render function.
  * @param {object} opts - Options
  * @param {string} opts.slidesPath - Path to slides.json
@@ -207,6 +279,7 @@ async function render(opts = {}) {
         console.log(`Rendering slide ${task.index + 1}/${total}...`);
 
         await page.setContent(task.processedHtml, { waitUntil: 'networkidle0' });
+        await waitForFonts(page, task.index + 1);
 
         await page.screenshot({
           path: task.outputFile,
@@ -225,6 +298,10 @@ async function render(opts = {}) {
     }
 
     await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
+
+    if (opts.preview) {
+      await writePreviews(browser, tasks.map((t) => t.outputFile), dimensions, outputDir);
+    }
   } finally {
     await browser.close();
   }
@@ -255,6 +332,9 @@ function parseArgs(argv) {
         break;
       case '--series':
         opts.series = args[++i];
+        break;
+      case '--preview':
+        opts.preview = true;
         break;
       default:
         console.warn(`Unknown argument: ${args[i]}`);

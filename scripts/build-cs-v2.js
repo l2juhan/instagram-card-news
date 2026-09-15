@@ -583,7 +583,7 @@ function buildHtml(type, def) {
   <link rel="stylesheet" href="${MONO_CSS}">
   <style>${BASE_CSS}${def.css}</style>
 </head>
-<body class="${def.bodyClass || ''}" data-type="${type}" data-slide="{{slide_number}}" data-total="{{total_slides}}">
+<body class="${def.bodyClass || ''}" data-type="${type}" data-fonts="Pretendard Variable" data-slide="{{slide_number}}" data-total="{{total_slides}}">
 <div class="card">
   ${HEADER}
   ${def.main}
