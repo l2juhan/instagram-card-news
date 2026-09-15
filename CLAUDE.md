@@ -1,6 +1,6 @@
 # Instagram 카드뉴스 생성 프로젝트
 
-> **v9.0** — 15종 슬라이드 타입 + 12종 템플릿 스타일 + GAN 영감 하네스 아키텍처 + Skills 기반
+> **v9.1** — 15종 슬라이드 타입 + 13종 템플릿 스타일(cs-v2 추가) + GAN 영감 하네스 아키텍처 + Skills 기반 + 가독성 lint
 
 ## 프로젝트 개요
 
@@ -35,8 +35,21 @@
 | `blueprint` | 블루프린트 프레젠테이션형 | `/style-blueprint` |
 | `aws` | AWS 서비스 소개형, 다크 네이비 | `/style-aws` |
 | `rn` | React Native 튜토리얼형, 스플릿 | `/style-rn` |
-| `cs` | CS 교육 콘텐츠형, 브라우저 프레임 | `/style-cs` |
+| `cs` | CS 교육 콘텐츠형, 브라우저 프레임 (이전 게시물 재렌더링용) | `/style-cs` |
+| `cs-v2` | CS 교육 콘텐츠 v2, 웜 페이퍼 + 개념 색 토큰, 4:5 (1080×1350) | `/style-cs-v2` |
 | `linux` | Linux 정보 전달형, 다크 터미널 | `/style-linux` |
+
+### cs-v2 카피 규칙 (요약)
+
+cs-v2로 만들 때는 `/card-news` 스킬의 "cs-v2 카피 규칙"을 따른다. 핵심:
+
+- 장당 핵심 문장 1개 + 보조 1줄. 넘치면 장을 나눈다.
+- 표지 헤드라인은 결과나 긴장을 담은 훅으로 쓰고, 주제명만 적은 제목은 금지한다.
+- 설명형 불릿 나열 대신 다이어그램, 비교, 단계로 보여준다.
+- 끝에서 두 번째 장은 `content-cheatsheet`, 마지막 장은 `cta`로 고정한다 (cta 금지 규칙의 cs-v2 예외).
+- CTA는 구체적 행동 하나("시험 전에 같이 공부하는 친구한테 보내기")와 다음 주제 예고 한 줄로 쓴다.
+- 결과물과 함께 `output/caption.md`를 만든다: 첫 줄 검색 키워드, 해시태그 5개 이하, 슬라이드별 alt text, 음악 추가 리마인더.
+- 렌더링은 `--accent "#16171B" --series "{카테고리}" --preview`로 하고, `node scripts/lint-slides.js` error 0이어야 평가 단계로 넘어간다.
 
 ### 빠른 명령어 예시
 
@@ -72,8 +85,10 @@
 ```
 instagram-card-news/
 ├── .claude/
-│   └── skills/          # Claude Skills (13개)
+│   └── skills/          # Claude Skills (16개)
 │       ├── card-news.md         # 하네스 파이프라인 (기획자-생성자-평가자)
+│       ├── create-template.md   # 새 템플릿 스타일 생성 절차
+│       ├── edit-card-news.md    # 기존 카드뉴스 수동 수정
 │       ├── style-minimal.md     # 템플릿별 스타일 가이드
 │       ├── style-bold.md
 │       ├── style-elegant.md
@@ -85,8 +100,9 @@ instagram-card-news/
 │       ├── style-aws.md
 │       ├── style-rn.md
 │       ├── style-cs.md
+│       ├── style-cs-v2.md
 │       └── style-linux.md
-├── templates/           # HTML 템플릿 (12 스타일)
+├── templates/           # HTML 템플릿 (13 스타일)
 │   ├── minimal/         # 14종 (공통 슬라이드 타입)
 │   ├── bold/            # 14종
 │   ├── elegant/         # 14종
@@ -98,9 +114,12 @@ instagram-card-news/
 │   ├── aws/             # 14종
 │   ├── rn/              # 20종 (공통 14 + rn 전용 6)
 │   ├── cs/              # 14종 (1080×1080)
+│   ├── cs-v2/           # 16종 (1080×1350, 공통 14 + content-diagram, content-cheatsheet) ※ build-cs-v2.js가 생성
 │   └── linux/           # 15종 (1080×1080, content-code 포함)
 ├── scripts/
-│   ├── render.js        # Puppeteer HTML → PNG 렌더러
+│   ├── render.js        # Puppeteer HTML → PNG 렌더러 (--series, --preview)
+│   ├── lint-slides.js   # 가독성 검사 (글자 크기, 대비, 안전 영역, 오버플로)
+│   ├── build-cs-v2.js   # cs-v2 템플릿 생성기
 │   └── generate-samples.js
 ├── style-example/       # 각 스타일 커버 예시 PNG
 ├── workspace/           # 런타임 작업 공간

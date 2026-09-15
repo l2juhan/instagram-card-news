@@ -136,7 +136,7 @@ Step 5    시각 검토 — 가독성, 텍스트 잘림, 흐름, CTA 명확성 �
 
 ---
 
-## 템플릿 스타일 (12종)
+## 템플릿 스타일 (13종)
 
 | 스타일 | 설명 | 기본 악센트 | 배경 | 사이즈 |
 |---|---|---|---|---|
@@ -151,6 +151,7 @@ Step 5    시각 검토 — 가독성, 텍스트 잘림, 흐름, CTA 명확성 �
 | **aws** | AWS 서비스 소개형 | `#FF9900` 오렌지 | 다크 네이비 | 1080x1350 |
 | **rn** | React Native 튜토리얼형 | `#00BCD4` 시안 | 시안/화이트 스플릿 | 1080x1080 |
 | **cs** | CS 교육 콘텐츠형 | `#22C55E` 그린 | 화이트 | 1080x1080 |
+| **cs-v2** | CS 교육 콘텐츠 v2 (다이어그램, 개념 색 토큰) | `#16171B` 잉크 | 웜 페이퍼 | 1080x1350 |
 | **linux** | Linux 정보 전달형 | `#F5D838` 골든옐로우 | 다크 터미널 | 1080x1080 |
 
 ---
@@ -202,6 +203,20 @@ node scripts/render.js \
   --account "my_account"
 ```
 
+### cs-v2: 미리보기와 가독성 검사
+
+```bash
+node scripts/render.js --slides workspace/slides.json --style cs-v2 --output output/ \
+  --accent "#16171B" --account "my_account" --series "Security" --preview
+node scripts/lint-slides.js --slides workspace/slides.json --style cs-v2 --accent "#16171B"
+```
+
+- `--series`: 헤더에 표시할 시리즈명 (생략하면 slides.json의 첫 `series` 필드)
+- `--preview`: `output/preview/`에 360px 축소본(폰 체감 크기)과 표지 3:4 그리드 크롭(`grid_cover.png`) 저장
+- `lint-slides.js`: 28px 미만 글자, 4.5:1 미만 대비, 34px 그리드 크롭 영역 침범, 오버플로를 error로 보고 (error 있으면 exit 1). 모든 스타일에 실행할 수 있다.
+- cs-v2 전용 타입: `content-diagram`(SVG 다이어그램), `content-cheatsheet`(한 장 요약). 모든 content 타입에서 `my_note`(작성자 한 줄) 사용 가능
+- cs-v2 템플릿은 `scripts/build-cs-v2.js`가 생성한다. 수정은 빌더에서 하고 `node scripts/build-cs-v2.js`로 재생성한다.
+
 ### 샘플 생성
 
 슬라이드 타입을 모두 포함하는 샘플을 렌더링합니다:
@@ -249,7 +264,7 @@ headline이나 body에 HTML span을 사용하면 스타일별 강조 효과가 �
 
 ```
 instagram-card-news/
-├── templates/           # HTML 템플릿 (12 스타일)
+├── templates/           # HTML 템플릿 (13 스타일)
 │   ├── minimal/         # 14종 (공통 타입)
 │   ├── bold/
 │   ├── elegant/
@@ -261,9 +276,12 @@ instagram-card-news/
 │   ├── aws/
 │   ├── rn/              # 20종 (공통 14 + rn 전용 6)
 │   ├── cs/              # 14종 (1080×1080)
+│   ├── cs-v2/           # 16종 (1080×1350, build-cs-v2.js가 생성)
 │   └── linux/           # 15종 (1080×1080, content-code 포함)
 ├── scripts/
-│   ├── render.js        # Puppeteer HTML → PNG 렌더러 (동적 placeholder, 병렬 렌더링)
+│   ├── render.js        # Puppeteer HTML → PNG 렌더러 (동적 placeholder, 병렬 렌더링, --preview)
+│   ├── lint-slides.js   # 가독성 자동 검사
+│   ├── build-cs-v2.js   # cs-v2 템플릿 생성기
 │   └── generate-samples.js  # config.json 기반 자동 샘플 생성
 ├── style-example/       # 각 스타일 커버 예시 PNG
 ├── skill-package/       # Claude Code 스킬 배포 패키지
