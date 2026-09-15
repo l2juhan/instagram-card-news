@@ -116,7 +116,7 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
 .on-dark .card { background: #16171B; }
 .on-dark .note-mark { background: #F6F2EA; color: #16171B; }
 
-.big { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; overflow: hidden; }
+.big { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
 .big-num { font-size: 240px; font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 .big-unit { font-size: 72px; font-weight: 700; }
 .big-body { margin-top: 40px; }
@@ -128,7 +128,7 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
     <span class="series" data-opt="series"><i class="series-mark"></i><span data-slot="series">{{series}}</span></span>
     <span class="page"><b>{{slide_number}}</b> / {{total_slides}}</span>
   </header>
-  <main class="main">
+  <main data-lint-region class="main">
     <h2 class="title">{{headline}}</h2>
     <div class="stage stage-center">
       <div class="big" data-fit data-fit-min="120"><span class="big-num">{{bigdata_number}}</span><span class="big-unit">{{bigdata_unit}}</span></div>

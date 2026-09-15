@@ -382,7 +382,7 @@ TYPES['content-highlight'] = {
 TYPES['content-stat'] = {
   css: `
 .stat { margin-top: 0; }
-.stat-num { font-size: 220px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
+.stat-num { font-size: 220px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .stat-title { margin-top: 44px; font-size: 60px; }
 .stat-body { margin-top: 28px; }
 `,
@@ -398,7 +398,7 @@ TYPES['content-stat'] = {
 
 TYPES['content-bigdata'] = {
   css: `
-.big { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; overflow: hidden; }
+.big { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
 .big-num { font-size: 240px; font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 .big-unit { font-size: 72px; font-weight: 700; }
 .big-body { margin-top: 40px; }
@@ -586,7 +586,7 @@ function buildHtml(type, def) {
 <body class="${def.bodyClass || ''}" data-type="${type}" data-fonts="Pretendard Variable" data-slide="{{slide_number}}" data-total="{{total_slides}}">
 <div class="card">
   ${HEADER}
-  ${def.main}
+  ${def.main.replace('<main class="main', '<main data-lint-region class="main')}
   ${FOOTER}
   <svg class="bleed-layer" width="1080" height="1350" viewBox="0 0 1080 1350"></svg>
 </div>

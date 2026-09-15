@@ -117,7 +117,7 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
 .on-dark .note-mark { background: #F6F2EA; color: #16171B; }
 
 .stat { margin-top: 0; }
-.stat-num { font-size: 220px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
+.stat-num { font-size: 220px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .stat-title { margin-top: 44px; font-size: 60px; }
 .stat-body { margin-top: 28px; }
 </style>
@@ -128,7 +128,7 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
     <span class="series" data-opt="series"><i class="series-mark"></i><span data-slot="series">{{series}}</span></span>
     <span class="page"><b>{{slide_number}}</b> / {{total_slides}}</span>
   </header>
-  <main class="main">
+  <main data-lint-region class="main">
     <div class="stage stage-center stat">
       <p class="stat-num" data-fit data-fit-min="120">{{emphasis}}</p>
       <h2 class="title stat-title">{{headline}}</h2>

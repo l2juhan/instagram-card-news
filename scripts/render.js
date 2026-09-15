@@ -134,8 +134,9 @@ function applyPlaceholders(html, slide, opts, index, total) {
 async function waitForFonts(page, slideNo) {
   const missing = await page.evaluate(async () => {
     await document.fonts.ready;
-    // Let callbacks registered by the template (e.g. layout fitting after fonts.ready) run and paint
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    // Let callbacks registered by the template (e.g. layout fitting after fonts.ready) run.
+    // setTimeout rather than requestAnimationFrame: rAF never fires in a background tab.
+    await new Promise((resolve) => setTimeout(resolve, 50));
     const required = ((document.body && document.body.getAttribute('data-fonts')) || '').split('|').filter(Boolean);
     const faces = Array.from(document.fonts);
     return required.filter((family) => !faces.some(
@@ -205,10 +206,15 @@ async function writePreviews(browser, files, dimensions, outputDir) {
  * @param {string} opts.accent - Accent color hex
  * @param {string} opts.account - Account name string
  */
-async function render(opts = {}) {
+/**
+ * Build processed HTML for every slide. Shared by render() and scripts/lint-slides.js.
+ * @param {object} opts - Same options as render() (slidesPath, style, accent, account, series)
+ * @returns {{ slides: object[], style: string, dimensions: {width: number, height: number},
+ *             pages: Array<{ index: number, type: string, html: string }> }}
+ */
+function buildSlidePages(opts = {}) {
   const slidesPath = opts.slidesPath || path.join(process.cwd(), config.workspace_dir, 'slides.json');
   const style = opts.style || config.defaults.template;
-  const outputDir = opts.outputDir || path.join(process.cwd(), config.output_dir);
   const accent = opts.accent || config.defaults.accent_color;
   const account = opts.account || config.defaults.account_name;
   const styleDim = (config.style_dimensions || {})[style];
@@ -220,13 +226,43 @@ async function render(opts = {}) {
   }
   const slides = JSON.parse(fs.readFileSync(slidesPath, 'utf8'));
 
-  // Ensure output directory exists
-  fs.mkdirSync(outputDir, { recursive: true });
-
   const templateDir = path.join(__dirname, '..', 'templates', style);
   if (!fs.existsSync(templateDir)) {
     throw new Error(`Template directory not found: ${templateDir}`);
   }
+
+  const total = slides.length;
+  const seriesSource = slides.find((s) => s.series);
+  const series = opts.series || (seriesSource ? seriesSource.series : '');
+
+  // Pre-validate templates and prepare HTML for all slides
+  const pages = [];
+  for (let i = 0; i < slides.length; i++) {
+    const slide = slides[i];
+    const slideType = slide.type || 'content';
+    const templateFile = path.join(templateDir, `${slideType}.html`);
+
+    if (!fs.existsSync(templateFile)) {
+      console.warn(`  Warning: template not found for type "${slideType}", skipping slide ${i + 1}`);
+      continue;
+    }
+
+    const rawHtml = fs.readFileSync(templateFile, 'utf8');
+    const html = applyPlaceholders(
+      rawHtml, slide, { accent, account, series, prevSlide: slides[i - 1] }, i, total
+    );
+    pages.push({ index: i, type: slideType, html });
+  }
+
+  return { slides, style, dimensions, pages };
+}
+
+async function render(opts = {}) {
+  const outputDir = opts.outputDir || path.join(process.cwd(), config.output_dir);
+  const { slides, dimensions, pages } = buildSlidePages(opts);
+
+  // Ensure output directory exists
+  fs.mkdirSync(outputDir, { recursive: true });
 
   const browser = await puppeteer.launch({
     headless: 'new',
@@ -235,30 +271,10 @@ async function render(opts = {}) {
 
   try {
     const total = slides.length;
-    const seriesSource = slides.find((s) => s.series);
-    const series = opts.series || (seriesSource ? seriesSource.series : '');
-
-    // Pre-validate templates and prepare HTML for all slides
-    const tasks = [];
-    for (let i = 0; i < slides.length; i++) {
-      const slide = slides[i];
-      const slideType = slide.type || 'content';
-      const templateFile = path.join(templateDir, `${slideType}.html`);
-
-      if (!fs.existsSync(templateFile)) {
-        console.warn(`  Warning: template not found for type "${slideType}", skipping slide ${i + 1}`);
-        continue;
-      }
-
-      const rawHtml = fs.readFileSync(templateFile, 'utf8');
-      const processedHtml = applyPlaceholders(
-        rawHtml, slide, { accent, account, series, prevSlide: slides[i - 1] }, i, total
-      );
-      const slideNum = String(i + 1).padStart(2, '0');
-      const outputFile = path.join(outputDir, `slide_${slideNum}.png`);
-
-      tasks.push({ index: i, processedHtml, outputFile, slideNum });
-    }
+    const tasks = pages.map((p) => {
+      const slideNum = String(p.index + 1).padStart(2, '0');
+      return { index: p.index, processedHtml: p.html, outputFile: path.join(outputDir, `slide_${slideNum}.png`), slideNum };
+    });
 
     // Render slides in parallel using separate pages
     const CONCURRENCY = Math.min(tasks.length, 4);
@@ -352,4 +368,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { render };
+module.exports = { render, buildSlidePages, applyPlaceholders, waitForFonts };

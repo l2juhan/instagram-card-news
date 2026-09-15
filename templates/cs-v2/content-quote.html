@@ -128,7 +128,7 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
     <span class="series" data-opt="series"><i class="series-mark"></i><span data-slot="series">{{series}}</span></span>
     <span class="page"><b>{{slide_number}}</b> / {{total_slides}}</span>
   </header>
-  <main class="main">
+  <main data-lint-region class="main">
     <div class="stage stage-center" style="margin-top: 0">
       <svg class="quote-mark" width="120" height="96" viewBox="0 0 120 96" fill="currentColor"><path d="M0 96V58C0 26 16 5 48 0v20C32 25 26 37 26 52h22v44H0zM68 96V58c0-32 16-53 48-58v20c-16 5-22 17-22 32h22v44H68z"/></svg>
       <blockquote class="quote-text">{{body}}</blockquote>

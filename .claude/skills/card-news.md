@@ -270,6 +270,20 @@ node scripts/render.js \
 
 렌더링은 4개 워커가 병렬로 실행되며, 완료 후 `output/` 디렉토리에 `slide_01.png` ~ `slide_0N.png` 파일이 생성됩니다.
 
+**cs-v2 스타일은 추가로** `--series "{카테고리}" --preview` 를 붙이고, 렌더링 직후 가독성 lint를 실행합니다:
+
+```bash
+node scripts/render.js --slides workspace/slides.json --style cs-v2 --output output/ \
+  --accent "#16171B" --account "{account_name}" --series "{카테고리}" --preview
+node scripts/lint-slides.js --slides workspace/slides.json --style cs-v2 \
+  --accent "#16171B" --account "{account_name}" --series "{카테고리}"
+```
+
+- `output/preview/slide_XX.png`: 폰 체감 크기(360px 폭) 축소본
+- `output/preview/grid_cover.png`: 프로필 그리드(3:4)에서 보이는 표지
+- lint 검사 항목: 글자 28px 미만, 대비 4.5:1 미만, 34px 크롭 영역 침범, 캔버스·레이아웃 영역 밖 요소, 잘린 텍스트 → error / 72px 여백 침범 → warning
+- **lint가 exit 1(error 존재)이면 평가자에게 넘기기 전에 생성자 단계로 되돌립니다.** error 목록을 `evaluation.md`의 `[CRITICAL]` 항목으로 그대로 전달합니다.
+
 ---
 
 ### Step 3c: 평가자 (Evaluator) — 서브 에이전트
@@ -278,6 +292,7 @@ node scripts/render.js \
 **모델**: sonnet
 **입력**:
 - `output/` 디렉토리의 PNG 파일 전체 (시각 검사)
+- cs-v2: `output/preview/` 360px 축소본 전체 + `grid_cover.png`, `lint-slides.js` 출력 결과
 - `workspace/slides.json` (데이터 검사)
 - `workspace/contract.md` (수락 기준)
 - `workspace/spec.md` (기획 의도)
@@ -290,6 +305,9 @@ node scripts/render.js \
 ### 평가 수행 항목
 
 1. **시각 검사** (PNG): 텍스트 오버플로, 빈 공간 비율, 정렬, 색상 일관성, 가독성, style_override 적용 결과
+   - **cs-v2**: 가독성은 원본 PNG가 아니라 `output/preview/` **360px 축소본으로 판단**한다. 기준은 "폰으로 봤을 때 한 장당 2~3초 안에 핵심이 읽히는가"이다. `grid_cover.png`에서 헤드라인과 비주얼이 온전한지도 확인한다.
+   - **cs-v2**: lint error가 1개라도 남아 있으면 기술적 완성도 축은 5점 이하(자동 불통과)로 채점한다. warning은 슬라이드별 피드백에 적는다.
+   - **cs-v2**: 물감(도형) 색과 수식 변수 색이 같은 개념 토큰인지 확인한다.
 2. **데이터 검사** (slides.json): 서사 흐름, 카피 품질, 후킹력, 글자 수, 슬라이드 타입 다양성
 3. **4축 채점**: 각 축 1~10점
 4. **슬라이드별 피드백**: OK 또는 구체적 수정 제안
