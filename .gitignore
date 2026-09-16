@@ -1,5 +1,6 @@
 node_modules/
 output/
+workspace/
 sample-output/
 .DS_Store
 .playwright-mcp/
