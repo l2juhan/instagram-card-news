@@ -230,7 +230,8 @@ description: "카드뉴스 생성 파이프라인 (Harness v1.0). 사용자가 '
 | `content-grid` | 4가지 항목을 그리드로 정리할 때 | `headline`, `grid1_icon`~`grid4_icon`, `grid1_title`~`grid4_title`, `grid1_desc`~`grid4_desc` |
 | `content-bigdata` | 거대 숫자/금액/규모를 강조할 때 | `headline`, `bigdata_number`, `bigdata_unit`, `body`, `subtext` |
 | `content-fullimage` | 풀 배경 이미지 위에 텍스트 오버레이 | `headline`, `badge_text`, `body`, `badge2_text`, `body2`, `image_url` |
-| `content-code` | 코드 블럭 + 설명 (`rn`/`aws`/`linux` 전용) | `headline`, `code_filename`, `code_body`, `body` |
+| `content-code` | 코드 블럭 + 설명 (`rn`/`aws`/`linux` 전용) | `headline`, `code_filename`, `code_body`, `body` (aws는 `highlight_lines`, `annotations` 추가 지원 — `style-aws.md` 참고) |
+| `content-console` | 콘솔 스크린샷 + 주석 (`aws` 전용) | `headline`, `screenshot`, `crop`, `callouts`, `redact` — 좌표계·필드 상세는 `style-aws.md` |
 
 > 템플릿별 전용 슬라이드 타입은 해당 `/style-{name}` 스킬에서 확인하세요.
 
@@ -268,6 +269,23 @@ description: "카드뉴스 생성 파이프라인 (Harness v1.0). 사용자가 '
 9. **`my_note`는 초안 생성 시 만들지 않는다.** 작성자 한 줄 코멘트는 파이프라인이 대신 지어내지 않는다 — 사용자가 "N번 장에 이 코멘트 넣어줘"라고 직접 요청할 때만 `/edit-card-news`로 추가한다.
 10. **헤드라인 금지 패턴**: `—` 구분자, `A · B · C` 가운뎃점 나열, 제목 속 단어 하나 색칠
 11. **대체 텍스트**: slides.json 각 장에 `alt` 필드(1~2문장, 이미지에 보이는 내용 묘사)를 쓴다. 렌더링에는 쓰이지 않고 `caption.md`에 들어간다.
+
+### aws 카피 규칙 (aws 스타일에서는 위 cs-v2 카피 규칙에 아래를 더한다)
+
+aws는 cs-v2 카피 규칙(장당 핵심 1 + 보조 1, 훅 헤드라인, `content-cheatsheet` 고정, `cta` 미사용,
+`my_note` 기본 미생성, `alt` 필드 등)을 그대로 따르되 다음을 더한다.
+
+1. **바뀌는 정보는 작성 시점에 공식 문서로 확인한다.** 요금, 프리 티어, 서비스 한도, 콘솔 UI 문구는
+   AWS 공식 문서 기준으로 검증하고, `caption.md`에 확인 기준일을 적는다(예: "2026-09 기준").
+2. **콘솔 스크린샷 장은 캡처 시점을 캡션에 적는다.** 콘솔 UI는 자주 바뀐다.
+3. **서비스명 첫 등장은 공식 전체 명칭**(예: "Amazon EC2", "AWS Lambda", "Amazon VPC")으로 쓰고,
+   이후 슬라이드부터는 약칭(EC2, Lambda, VPC)을 써도 된다.
+4. **마지막 장 `content-cheatsheet`는 주제에 맞춰** "설정 체크리스트" / "CLI 한 장 요약" / "서비스
+   비교표" 중 하나로 쓴다.
+5. **스크린샷을 쓸 땐 `content-console`의 `crop`을 기본으로 쓴다.** 원본 그대로 축소하면 콘솔 글씨가
+   안 읽힌다. 계정 ID·액세스 키·IP·이메일이 보이면 `redact`로 반드시 가린다.
+6. **코드(`content-code`)는 `highlight_lines`로 핵심 줄만 짚는다.** 스니펫 전체를 설명하려 하지 말고,
+   그 장의 요점과 직결된 1~2줄만 강조하고 `annotations`로 이유를 짧게 단다.
 
 ---
 
@@ -311,7 +329,7 @@ node scripts/lint-slides.js --slides workspace/slides.json --style cs-v2 \
 **모델**: sonnet
 **입력**:
 - `output/` 디렉토리의 PNG 파일 전체 (시각 검사)
-- cs-v2, cs-doodle: `output/preview/` 360px 축소본 전체 + `grid_cover.png`, `lint-slides.js` 출력 결과
+- cs-v2, cs-doodle, aws: `output/preview/` 360px 축소본 전체 + `grid_cover.png`, `lint-slides.js` 출력 결과
 - `workspace/slides.json` (데이터 검사)
 - `workspace/contract.md` (수락 기준)
 - `workspace/spec.md` (기획 의도)
@@ -324,14 +342,20 @@ node scripts/lint-slides.js --slides workspace/slides.json --style cs-v2 \
 ### 평가 수행 항목
 
 1. **시각 검사** (PNG): 텍스트 오버플로, 빈 공간 비율, 정렬, 색상 일관성, 가독성, style_override 적용 결과
-   - **cs-v2, cs-doodle**: 가독성은 원본 PNG가 아니라 `output/preview/` **360px 축소본으로 판단**한다. 기준은 "폰으로 봤을 때 한 장당 2~3초 안에 핵심이 읽히는가"이다. `grid_cover.png`에서 헤드라인과 비주얼이 온전한지도 확인한다.
-   - **cs-v2, cs-doodle**: lint error가 1개라도 남아 있으면 기술적 완성도 축은 5점 이하(자동 불통과)로 채점한다. warning은 슬라이드별 피드백에 적는다.
-   - **cs-v2, cs-doodle**: 물감(도형) 색과 수식 변수 색이 같은 개념 토큰인지 확인한다.
+   - **cs-v2, cs-doodle, aws**: 가독성은 원본 PNG가 아니라 `output/preview/` **360px 축소본으로 판단**한다. 기준은 "폰으로 봤을 때 한 장당 2~3초 안에 핵심이 읽히는가"이다. `grid_cover.png`에서 헤드라인과 비주얼이 온전한지도 확인한다.
+   - **cs-v2, cs-doodle, aws**: lint error가 1개라도 남아 있으면 기술적 완성도 축은 5점 이하(자동 불통과)로 채점한다. warning은 슬라이드별 피드백에 적는다.
+   - **cs-v2, cs-doodle, aws**: 물감(도형) 색과 수식/역할 변수 색이 같은 개념 토큰인지 확인한다.
    - **cs-doodle 전용**:
      - 360px 미리보기에서 핵심이 2~3초 안에 읽히는가 (그림체가 부드러워졌다고 가독성이 희생되지 않았는지)
      - 그림이 설명을 돕는가, 장식에 그치는가 — 손그림이라는 이유로 정보 없는 낙서를 늘리지 않았는지
      - 낙서 질감(흔들리는 선, 해쳐 채움)이 라벨·수식·화살표 방향 같은 정보를 흐리지 않는가
      - 한 덱 안에서 그림체(선 굵기, 거칠기, 채색 방식)가 일관적인가 — 슬라이드마다 손맛의 정도가 달라 보이지 않는지
+   - **aws 전용**:
+     - 스크린샷에 계정 ID, 액세스 키, IP, 이메일 등 민감정보가 보이지 않는가 (lint의 `sensitive-*` warning과 별개로 이미지 픽셀 자체를 육안 확인 — lint는 텍스트 필드만 훑는다)
+     - 스크린샷 주석(callouts)이 가리키는 UI가 360px 미리보기에서도 식별되는가
+     - 서비스명이 공식 표기이고, 사실관계(요금, 한도, 기본값)가 공식 문서와 맞는가
+     - 공식 아이콘을 쓴 경우(기본은 미사용) 변형이 없는가
+     - 코드 장의 하이라이트·주석이 실제 핵심 줄을 가리키는가, 카드 하단을 침범하지 않는가
 2. **데이터 검사** (slides.json): 서사 흐름, 카피 품질, 후킹력, 글자 수, 슬라이드 타입 다양성
 3. **4축 채점**: 각 축 1~10점
 4. **슬라이드별 피드백**: OK 또는 구체적 수정 제안
@@ -429,9 +453,9 @@ node scripts/lint-slides.js --slides workspace/slides.json --style cs-v2 \
 output/slide_01.png ~ output/slide_{count}.png
 ```
 
-### cs-v2, cs-doodle: `output/caption.md` 생성
+### cs-v2, cs-doodle, aws: `output/caption.md` 생성
 
-cs-v2, cs-doodle 결과물은 PNG와 함께 오케스트레이터가 `output/caption.md`를 작성합니다. 캡션, 대체 텍스트, 해시태그는 콘텐츠 분류와 검색 노출(공개 게시물은 구글 검색 포함)에 쓰입니다.
+cs-v2, cs-doodle, aws 결과물은 PNG와 함께 오케스트레이터가 `output/caption.md`를 작성합니다. 캡션, 대체 텍스트, 해시태그는 콘텐츠 분류와 검색 노출(공개 게시물은 구글 검색 포함)에 쓰입니다.
 
 ```markdown
 # 캡션
@@ -454,6 +478,8 @@ cs-v2, cs-doodle 결과물은 PNG와 함께 오케스트레이터가 `output/cap
 - **캡션 본문은 한 줄로만 쓴다.** 여러 줄로 나눠 쓰지 않는다 — 검색 키워드와 핵심을 한 문장에 담는다. 예: "EC2 Status Check와 자동 복구: 호스트·인스턴스·EBS 중 어디서 장애가 나든 감지해서 살려내는 법"
 - **해시태그는 5개 이하**로 쓴다. 게시물당 5개로 제한됐고 도달을 올려 주지 않으므로 분류용으로만 고른다.
 - 대체 텍스트는 slides.json의 `alt` 필드를 그대로 쓰고, 슬라이드 수와 개수가 같아야 한다.
+- **aws**: 요금·한도처럼 바뀌는 정보나 콘솔 스크린샷을 썼다면 캡션 본문 또는 대체 텍스트 뒤에 확인
+  기준일을 짧게 덧붙인다(예: "2026-09 기준").
 
 ---
 

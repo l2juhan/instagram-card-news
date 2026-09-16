@@ -148,7 +148,7 @@ Step 5    시각 검토 — 가독성, 텍스트 잘림, 흐름, CTA 명확성 �
 | **toss** | 토스 스타일 미니멀 | `#3182F6` 블루 | 다크 플랫 | 1080x1350 |
 | **magazine** | 매거진/SNS형 | `#3B82F6` 블루 | 포토+화이트 | 1080x1350 |
 | **blueprint** | 블루프린트 프레젠테이션형 | `#7BA7CC` 소프트블루 | 라이트블루그레이 | 1080x1350 |
-| **aws** | AWS 서비스 소개형 | `#FF9900` 오렌지 | 다크 네이비 | 1080x1350 |
+| **aws** | AWS 서비스/아키텍처/콘솔 튜토리얼형 (손그림 낙서풍) | `#FF9900` 오렌지 | Squid Ink 다크 | 1080x1350 |
 | **rn** | React Native 튜토리얼형 | `#00BCD4` 시안 | 시안/화이트 스플릿 | 1080x1080 |
 | **cs** | CS 교육 콘텐츠형 | `#22C55E` 그린 | 화이트 | 1080x1080 |
 | **cs-v2** | CS 교육 콘텐츠 v2 (다이어그램, 개념 색 토큰) | `#16171B` 잉크 | 웜 페이퍼 | 1080x1350 |
@@ -273,10 +273,10 @@ instagram-card-news/
 │   ├── magazine/
 │   ├── clean/
 │   ├── blueprint/
-│   ├── aws/
 │   ├── rn/              # 20종 (공통 14 + rn 전용 6)
 │   ├── cs/              # 14종 (1080×1080)
 │   ├── cs-v2/           # 16종 (1080×1350, build-cs-v2.js가 생성)
+│   ├── aws/             # 18종 (1080×1350, cs-doodle 손그림 엔진 공유 + content-code/content-console, build-aws.js가 생성)
 │   └── linux/           # 15종 (1080×1080, content-code 포함)
 ├── scripts/
 │   ├── render.js        # Puppeteer HTML → PNG 렌더러 (동적 placeholder, 병렬 렌더링, --preview)

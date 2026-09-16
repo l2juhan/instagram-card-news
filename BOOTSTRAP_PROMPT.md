@@ -333,12 +333,14 @@ node scripts/render.js \
 - 하이라이트: `<span class='accent'>텍스트</span>` → 악센트 블루, `<span class='bar-highlight'>텍스트</span>` → 블루 바 배경
 - 추천: 비즈니스, 프레젠테이션, 교육, IT, 데이터, 기획
 
-#### aws — AWS 서비스 소개형
-- 배경: 다크 네이비 (#232F3E) + 격자 패턴 오버레이
-- 악센트: `#FF9900` (AWS 오렌지)
-- 폰트: Pretendard
-- 특징: AWS 오렌지 악센트, 서비스 아이콘 지원, 다크 배경 + 글로우 효과
-- 추천: AWS 서비스 소개, 클라우드 아키텍처, DevOps, 인프라 튜토리얼
+#### aws — AWS 서비스/아키텍처/콘솔 튜토리얼형 (1080×1350, cs-doodle 손그림 엔진 공유)
+- 배경: Squid Ink 다크 (#232F3E), 격자·글로우 없음
+- 악센트: `#FF9900` (AWS 오렌지, 마커 강조 전용 — 텍스트로는 안 씀)
+- 폰트: Pretendard Variable + JetBrains Mono(코드) + Gamja Flower(짧은 주석)
+- 특징: 손그림 낙서 오브젝트 + 역할 기반 색 토큰(k-pub/k-priv/k-compute/k-data/k-sec/k-danger),
+  content-code(코드 줄 강조/주석), content-console(스크린샷 callouts/crop/redact)
+- 추천: AWS 서비스 소개, 클라우드 아키텍처, 콘솔 실습, CLI/IaC 튜토리얼
+- 상세: `.claude/skills/style-aws.md`
 
 #### cs — CS 교육 콘텐츠형 (1080×1080)
 - 배경: 화이트 (#FFFFFF) + 브라우저 프레임 UI
@@ -408,7 +410,7 @@ Claude Code가 오케스트레이터 역할을 하며, 리서치 → **리서치
 - `magazine` — 매거진 스타일, 포토 오버레이 + 화이트 클린
 - `clean` — 클린 에디토리얼형, 라이트그레이 배경, 그린 하이라이트, 브랜드 마크
 - `blueprint` — 블루프린트 프레젠테이션형, 라이트블루그레이 배경, 소프트블루 악센트, ○○○ 장식
-- `aws` — AWS 서비스 소개형, 다크 네이비 배경, AWS 오렌지 악센트, Pretendard 폰트
+- `aws` — AWS 서비스/아키텍처/콘솔 튜토리얼형, cs-doodle 손그림 엔진 공유, Squid Ink 다크 배경, AWS 오렌지 마커
 - `rn` — React Native 개발 튜토리얼형, 시안/흰색 스플릿 배경, JetBrains Mono, 코드블럭(One Dark Pro) 지원
 - `cs` — CS 교육 콘텐츠형, 화이트 배경, 모노스페이스, 브라우저 프레임 UI
 - `linux` — Linux 정보 전달형, 다크 터미널 배경, Tux 골든 옐로우, JetBrains Mono
@@ -656,7 +658,7 @@ instagram-card-news/
 │   ├── magazine/        # 14종
 │   ├── clean/           # 14종
 │   ├── blueprint/       # 14종
-│   ├── aws/             # 14종
+│   ├── aws/             # 18종 (cs-doodle과 같은 16종 + content-code, content-console)
 │   ├── rn/              # 20종 (공통 14 + rn 전용 6)
 │   ├── cs/              # 14종 (1080×1080)
 │   └── linux/           # 15종 (1080×1080, content-code 포함)

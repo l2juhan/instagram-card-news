@@ -33,7 +33,7 @@
 | `magazine` | 매거진 스타일, 포토 오버레이 | `/style-magazine` |
 | `clean` | 클린 에디토리얼형, 라이트그레이 | `/style-clean` |
 | `blueprint` | 블루프린트 프레젠테이션형 | `/style-blueprint` |
-| `aws` | AWS 서비스 소개형, 다크 네이비 | `/style-aws` |
+| `aws` | AWS 서비스/아키텍처/콘솔 튜토리얼형, cs-doodle 손그림 낙서풍 + Squid Ink 다크, 4:5 (1080×1350) | `/style-aws` |
 | `rn` | React Native 튜토리얼형, 스플릿 | `/style-rn` |
 | `cs` | CS 교육 콘텐츠형, 브라우저 프레임 (이전 게시물 재렌더링용) | `/style-cs` |
 | `cs-v2` | CS 교육 콘텐츠 v2, 웜 페이퍼 + 개념 색 토큰, 4:5 (1080×1350) | `/style-cs-v2` |
@@ -114,20 +114,24 @@ instagram-card-news/
 │   ├── magazine/        # 14종
 │   ├── clean/           # 14종
 │   ├── blueprint/       # 14종
-│   ├── aws/             # 14종
 │   ├── rn/              # 20종 (공통 14 + rn 전용 6)
 │   ├── cs/              # 14종 (1080×1080)
 │   ├── cs-v2/           # 16종 (1080×1350, 공통 14 + content-diagram, content-cheatsheet) ※ build-cs-v2.js가 생성
 │   ├── cs-doodle/       # 16종 (1080×1350, cs-v2와 동일 구성 + 손그림 그림체) ※ build-cs-doodle.js가 생성
+│   ├── aws/             # 18종 (1080×1350, cs-doodle과 같은 16종 + content-code, content-console) ※ build-aws.js가 생성
 │   └── linux/           # 15종 (1080×1080, content-code 포함)
 ├── scripts/
 │   ├── render.js        # Puppeteer HTML → PNG 렌더러 (--series, --preview)
-│   ├── lint-slides.js   # 가독성 검사 (글자 크기, 대비, 안전 영역, 오버플로, cs-doodle 결정성/겹침)
+│   ├── lint-slides.js   # 가독성 검사 (글자 크기, 대비, 안전 영역, 오버플로, 결정성/겹침, aws 전용 규칙)
 │   ├── build-cs-v2.js   # cs-v2 템플릿 생성기
-│   ├── build-cs-doodle.js # cs-doodle 템플릿 생성기
-│   ├── doodle/          # cs-doodle 드로잉 엔진 (rough.js 결정적 SVG, 클라이언트 변환기, 오브젝트 빌더)
+│   ├── build-cs-doodle.js # cs-doodle 템플릿 생성기 (얇은 진입점, 실제 로직은 doodle/build-core.js)
+│   ├── build-aws.js     # aws 템플릿 생성기 (얇은 진입점, cs-doodle과 같은 코어 공유)
+│   ├── doodle/          # 손그림 드로잉 엔진 (rough.js 결정적 SVG, 클라이언트 변환기, 오브젝트 빌더)
+│   │   ├── build-core.js      # cs-doodle/aws 공통 코어 (chrome, 16종 공통 타입, seed 규칙)
+│   │   └── themes/            # 테마별 팔레트·스프라이트·추가 타입 (cs-doodle.js, aws.js)
 │   └── generate-samples.js
-├── assets/doodle/       # cs-doodle 낙서 오브젝트 스프라이트 (build-objects.js가 생성) + README
+├── assets/doodle/       # 낙서 오브젝트 스프라이트: 공통 17종(sprite.svg, build-objects.js) +
+│                        # aws 확장 10종(sprite-aws.svg, build-objects-aws.js) + README
 ├── style-example/       # 각 스타일 커버 예시 PNG
 ├── workspace/           # 런타임 작업 공간 (gitignore — 스크래치, 버전관리 안 함)
 ├── output/              # 최종 PNG 출력 (gitignore)
