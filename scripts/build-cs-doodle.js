@@ -472,7 +472,11 @@ TYPES['content-split'] = {
   css: `
 .split { flex: 1; display: grid; grid-template-columns: 1fr 1fr; column-gap: 56px; position: relative; }
 .split-rule { position: absolute; left: 50%; top: 40px; bottom: 0; width: 6px; margin-left: -3px; overflow: hidden; }
-.col { color: var(--ink); padding-top: 32px; display: flex; flex-direction: column; gap: 22px; }
+/* color를 여기서 지정하지 않는다: {{left_color}}/{{right_color}}(k-a 등)와 같은 요소에
+   같은 우선순위로 걸리면 나중에 선언된 쪽(이 규칙)이 이겨서 제목이 늘 잉크색으로만
+   보인다. 색을 안 주면 .k-a 같은 개념 토큰 class가 그대로 이기고, col-title은 부모
+   색을 상속해 제목에 범례색이 실제로 입혀진다(본문은 아래 .col-body가 잉크로 고정). */
+.col { padding-top: 32px; display: flex; flex-direction: column; gap: 22px; }
 .col-rule { overflow: visible; margin-bottom: 4px; }
 .col-title { font-size: 48px; font-weight: 800; line-height: 1.25; letter-spacing: -0.01em; }
 .col-body { font-size: 36px; font-weight: 500; line-height: 1.5; color: var(--ink); }
