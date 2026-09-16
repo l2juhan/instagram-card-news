@@ -71,7 +71,7 @@ cs-v2와 같은 lint 기준(28px, 4.5:1 대비, 34px 크롭, 72px 여백, 오버
 
 ## 카피 규칙
 
-→ `/card-news` 스킬의 "cs-v2 카피 규칙" 섹션을 그대로 따른다 (장당 핵심 1 + 보조 1, 훅 헤드라인, 치트시트→CTA 고정, caption.md). `my_note`는 기본 생성하지 않는다 — 사용자가 요청할 때만 `/edit-card-news`로 추가한다.
+→ `/card-news` 스킬의 "cs-v2 카피 규칙" 섹션을 그대로 따른다 (장당 핵심 1 + 보조 1, 훅 헤드라인, 마지막 장 content-cheatsheet 고정, `cta` 미사용, caption.md). `my_note`는 기본 생성하지 않는다 — 사용자가 요청할 때만 `/edit-card-news`로 추가한다.
 
 ## 금지 사항
 

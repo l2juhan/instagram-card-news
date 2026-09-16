@@ -111,14 +111,5 @@
     "row6_value": "TLS 1.3 (EC)DHE, SSH, Signal, WireGuard",
     "save_hint": "저장해두면 시험 전날 1분 복습",
     "alt": "디피-헬만 한 장 요약표. 행마다 클라우드·열쇠·자물쇠·돋보기·엑스·서버 손그림 아이콘. 공개값 p와 g, 비밀값 a와 b, 공유 키 공식, 안전성 근거 CDH 가정, 약점 중간자 공격과 대책, 사용처 TLS 1.3, SSH, Signal, WireGuard."
-  },
-  {
-    "slide": 10,
-    "type": "cta",
-    "headline": "시험 전에 같이 공부하는\n친구한테 보내기",
-    "cta_text": "p = 23으로 둘이 손계산해 보면 5분이면 끝난다",
-    "next_topic": "RSA는 왜 소인수분해에 기댈까",
-    "visual": "<svg width='240' height='240' viewBox='0 0 240 240'><path d='M20 210 Q100 140 226 16' class='soft' fill='none' stroke='currentColor' stroke-width='5' stroke-dasharray='4 16'/><path d='M226 16 12 104l86 36 36 86z' class='ink' fill='none'/><path d='M226 16 98 140' class='ink' fill='none' stroke='currentColor' stroke-width='10'/></svg>",
-    "alt": "손그림 종이비행기와 날아간 점선 궤적, 그 아래 \"시험 전에 같이 공부하는 친구한테 보내기\"라는 문구, 아래에 다음 편 \"RSA는 왜 소인수분해에 기댈까\" 예고."
   }
 ]

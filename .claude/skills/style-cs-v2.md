@@ -112,8 +112,8 @@ node scripts/lint-slides.js --slides workspace/slides.json --style cs-v2
 | `content-image` | `headline`, `body`, `image_url`, `subtext` | |
 | `content-grid` | `headline`, `grid1`~`4` `_icon`/`_title`/`_desc` | 헤어라인 2x2 |
 | `content-fullimage` | `headline`, `badge_text`, `body`, `badge2_text`, `body2`, `image_url` | 어두운 셰이드 |
-| `content-cheatsheet` | `headline`, `row1`~`row6` `_label`/`_value`, `save_hint` | **cs-v2 전용**. 끝에서 두 번째 장 고정 |
-| `cta` | `headline`, `cta_text`, `next_topic`, `visual` | 마지막 장 고정. visual 없으면 종이비행기 |
+| `content-cheatsheet` | `headline`, `row1`~`row6` `_label`/`_value`, `save_hint` | **cs-v2 전용**. 마지막 장 고정 |
+| `cta` | `headline`, `cta_text`, `next_topic`, `visual` | 기본 생성에는 안 씀(공유 요구 카드 금지). visual 없으면 종이비행기 |
 
 ### bleed (슬라이드 경계를 넘는 선)
 
