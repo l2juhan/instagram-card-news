@@ -30,7 +30,7 @@ function localImageToDataUrl(imagePath) {
 const RAW_FIELDS = new Set(['code_body', 'visual']);
 
 // Fields that contain local image paths and need base64 conversion
-const IMAGE_FIELDS = new Set(['left_image', 'right_image']);
+const IMAGE_FIELDS = new Set(['left_image', 'right_image', 'screenshot']);
 
 // Fields that contain URLs (no conversion, pass through as-is)
 const URL_FIELDS = new Set(['image_url', 'logo_url']);
@@ -97,6 +97,10 @@ function applyPlaceholders(html, slide, opts, index, total) {
       processed = localImageToDataUrl(value);
     } else if (URL_FIELDS.has(key) || RAW_FIELDS.has(key)) {
       processed = value || '';
+    } else if (typeof value === 'object' && value !== null) {
+      // 배열/객체 필드(highlight_lines, annotations, callouts, crop, redact 등)는 템플릿의
+      // <script type="application/json"> 슬롯에 그대로 꽂아 넣도록 JSON으로 직렬화한다.
+      processed = toScriptJson(value);
     } else {
       processed = (value || '').toString().replace(/\n/g, '<br>');
     }

@@ -24,7 +24,6 @@
  * error가 하나라도 있으면 exit code 1.
  */
 
-const crypto = require('crypto');
 const puppeteer = require('puppeteer');
 const { buildSlidePages, waitForFonts } = require('./render.js');
 
@@ -189,7 +188,59 @@ function collectInPage({ minFont, tolerance, handFonts }) {
     }
   }
 
+  // --- aws: 공식 아이콘 컨테이너가 손그림 변환기를 통과했는지 -----------------
+  // data-aws-icon은 "변형 없이 그대로 쓴다"는 표시이므로 data-doodle-skip이 같이
+  // 없으면 convert-client.js가 안의 도형을 낙서로 바꿔버린다 — 그 결과물인
+  // data-doodle-shape가 안쪽에서 발견되면 스킵 속성이 빠진 것.
+  for (const icon of document.querySelectorAll('[data-aws-icon]')) {
+    if (icon.querySelector('[data-doodle-shape]')) {
+      issues.push({ level: 'error', rule: 'aws-icon-converted', message: 'data-aws-icon 요소 안에서 손그림 변환 결과(data-doodle-shape)가 발견됨 — data-doodle-skip 누락 의심' });
+    }
+  }
+
+  // --- aws: 콘솔 스크린샷이 원본보다 작게 렌더링되면 크롭 권장 -----------------
+  const consoleShot = document.getElementById('console-shot');
+  if (consoleShot && consoleShot.naturalWidth && visible(consoleShot)) {
+    const scale = consoleShot.clientWidth / consoleShot.naturalWidth;
+    if (scale < 1) {
+      issues.push({ level: 'warning', rule: 'screenshot-scale', message: `렌더링 배율 ${scale.toFixed(2)}x < 1.0 — 원본을 축소해서 보여주는 중, crop으로 필요한 영역만 확대하는 걸 권장` });
+    }
+  }
+
   return { issues, texts, width: W, height: H };
+}
+
+/**
+ * In-page: count pixels that differ by more than `channelTolerance` on any RGB channel
+ * between two base64 PNG screenshots of the same size. Used for the determinism check —
+ * a tolerant pixel diff instead of an exact byte hash, since Chromium's own text
+ * antialiasing isn't bit-for-bit reproducible even for an identical render.
+ */
+async function pixelDiffCount({ a, b, width, height, channelTolerance }) {
+  function toImageData(base64) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(img, 0, 0);
+        resolve(ctx.getImageData(0, 0, width, height).data);
+      };
+      img.onerror = reject;
+      img.src = `data:image/png;base64,${base64}`;
+    });
+  }
+  const [d1, d2] = await Promise.all([toImageData(a), toImageData(b)]);
+  let diff = 0;
+  for (let i = 0; i < d1.length; i += 4) {
+    const dr = Math.abs(d1[i] - d2[i]);
+    const dg = Math.abs(d1[i + 1] - d2[i + 1]);
+    const db = Math.abs(d1[i + 2] - d2[i + 2]);
+    if (dr > channelTolerance || dg > channelTolerance || db > channelTolerance) diff++;
+  }
+  return diff;
 }
 
 /** In-page (on a blank page): sample background pixels behind each text run. */
@@ -261,6 +312,29 @@ function safeAreaIssues(texts, width) {
   return issues;
 }
 
+// aws: 계정 ID/액세스 키/IP 같은 민감정보가 가림 처리 없이 텍스트·코드 필드에 그대로
+// 남아 있는지 의심 패턴으로 훑는다. 이미지 내부 픽셀은 코드로 읽을 수 없어서 대상이
+// 아니다(평가자 체크리스트로 처리 — style-aws.md 참고).
+const SENSITIVE_PATTERNS = [
+  { rule: 'sensitive-account-id', re: /(?<!\d)\d{12}(?!\d)/, hint: '12자리 숫자(계정 ID 패턴)' },
+  { rule: 'sensitive-access-key', re: /\b(?:AKIA|ASIA)[A-Z0-9]{16}\b/, hint: 'AKIA/ASIA로 시작하는 액세스 키 패턴' },
+  { rule: 'sensitive-ipv4', re: /\b(?:\d{1,3}\.){3}\d{1,3}\b/, hint: 'IPv4 주소 패턴' },
+];
+const SENSITIVE_SKIP_FIELDS = new Set(['slide', 'type', 'style_override']);
+
+function sensitivePatternIssues(slide) {
+  const issues = [];
+  for (const [key, value] of Object.entries(slide || {})) {
+    if (SENSITIVE_SKIP_FIELDS.has(key) || typeof value !== 'string') continue;
+    for (const pat of SENSITIVE_PATTERNS) {
+      if (pat.re.test(value)) {
+        issues.push({ level: 'warning', rule: pat.rule, message: `"${key}" 필드에 ${pat.hint} 의심 문자열 — 가림 처리했는지 확인`, text: value.slice(0, 40) });
+      }
+    }
+  }
+  return issues;
+}
+
 const HIDE_GLYPHS_CSS = `
 * { -webkit-text-fill-color: transparent !important; text-shadow: none !important; text-decoration-color: transparent !important; caret-color: transparent !important; }
 svg text, svg tspan { fill-opacity: 0 !important; stroke-opacity: 0 !important; }
@@ -271,7 +345,7 @@ svg text, svg tspan { fill-opacity: 0 !important; stroke-opacity: 0 !important; 
 `;
 
 async function lint(opts) {
-  const { style, dimensions, pages } = buildSlidePages(opts);
+  const { style, dimensions, pages, slides } = buildSlidePages(opts);
   const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   const report = [];
   try {
@@ -289,16 +363,29 @@ async function lint(opts) {
       // 렌더링해도 항상 같은 PNG가 나와야 한다(고정 seed). 페이지를 한 번 더 새로 열어
       // 픽셀까지 비교한다 — DOM을 그대로 두고 다시 찍으면 이미 변환된 결과만 비교하게
       // 되어 무의미하므로 반드시 setContent를 다시 호출해 변환기를 재실행시킨다.
+      //
+      // 정확한 바이트 해시 비교는 쓰지 않는다: 같은 HTML을 같은 Chromium에서 두 번 찍어도
+      // 글자 가장자리 안티앨리어싱이 1~2 밝기값 수준에서 미세하게 달라질 수 있다(눈으로는
+      // 절대 안 보임, aws 다크 배경 텍스트에서 실측 확인됨 — ImageMagick fuzz 2%로는 diff 0).
+      // 그래서 채널당 24 이상 차이 나는 픽셀만 세고, 그 개수가 전체의 0.05%를 넘을 때만
+      // "진짜 흔들린 도형"으로 본다 — 시드 미고정처럼 도형이 눈에 띄게 움직이면 수천~수만
+      // 픽셀 단위로 차이가 나서 이 문턱을 가뿐히 넘는다.
       const usesDoodleEngine = p.html.includes('__doodleConvert');
       const determinismIssues = [];
       if (usesDoodleEngine) {
-        const shot1 = await page.screenshot({ clip: { x: 0, y: 0, width: dimensions.width, height: dimensions.height } });
+        const shot1 = await page.screenshot({ encoding: 'base64', clip: { x: 0, y: 0, width: dimensions.width, height: dimensions.height } });
         await page.setContent(p.html, { waitUntil: 'networkidle0' });
         await waitForFonts(page, p.index + 1);
-        const shot2 = await page.screenshot({ clip: { x: 0, y: 0, width: dimensions.width, height: dimensions.height } });
-        const hash = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
-        if (hash(shot1) !== hash(shot2)) {
-          determinismIssues.push({ level: 'error', rule: 'determinism', message: '같은 입력을 2회 렌더링한 결과가 다름 (seed가 고정되지 않은 도형이 있을 수 있음)' });
+        const shot2 = await page.screenshot({ encoding: 'base64', clip: { x: 0, y: 0, width: dimensions.width, height: dimensions.height } });
+        const diffPixels = await page.evaluate(pixelDiffCount, {
+          a: shot1, b: shot2, width: dimensions.width, height: dimensions.height, channelTolerance: 24,
+        });
+        const totalPixels = dimensions.width * dimensions.height;
+        if (diffPixels / totalPixels > 0.0005) {
+          determinismIssues.push({
+            level: 'error', rule: 'determinism',
+            message: `같은 입력을 2회 렌더링한 결과가 다름 (${diffPixels}px, ${((diffPixels / totalPixels) * 100).toFixed(2)}% — seed가 고정되지 않은 도형이 있을 수 있음)`,
+          });
         }
       }
 
@@ -310,7 +397,10 @@ async function lint(opts) {
         width: dimensions.width, height: dimensions.height, minContrast: MIN_CONTRAST,
       });
 
-      const issues = [...collected.issues, ...contrast, ...safeAreaIssues(collected.texts, dimensions.width), ...determinismIssues];
+      const issues = [
+        ...collected.issues, ...contrast, ...safeAreaIssues(collected.texts, dimensions.width),
+        ...determinismIssues, ...sensitivePatternIssues(slides[p.index]),
+      ];
       report.push({ slide: p.index + 1, type: p.type, issues });
     }
   } finally {
