@@ -15,9 +15,14 @@ function doodleScriptTag() {
   return `<script>${roughBundle}\n${SOURCE}</script>`;
 }
 
-function objectSpriteMarkup() {
-  const sprite = fs.readFileSync(path.join(__dirname, '..', '..', 'assets', 'doodle', 'objects', 'sprite.svg'), 'utf8');
-  const inner = sprite.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+function objectSpriteMarkup(files) {
+  const list = files && files.length ? files : ['sprite.svg'];
+  const inner = list
+    .map((f) => {
+      const sprite = fs.readFileSync(path.join(__dirname, '..', '..', 'assets', 'doodle', 'objects', f), 'utf8');
+      return sprite.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+    })
+    .join('');
   return `<svg style="display:none" aria-hidden="true">${inner}</svg>`;
 }
 
