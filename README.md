@@ -90,9 +90,9 @@ cs 스타일로 "자료구조 기초" 카드뉴스 7장
 |---|---|---|
 | 주제 | (필수) | 카드뉴스 주제 |
 | 톤 | `professional` | professional / casual / energetic |
-| 템플릿 | `clean` | 템플릿 스타일 (아래 12종 참고) |
-| 슬라이드 수 | `7` | 5~12장 |
-| 악센트 색상 | `#3B82F6` | hex 코드 |
+| 템플릿 | `cs-v2` | 템플릿 스타일 (아래 13종 참고) |
+| 슬라이드 수 | `7` | 5~12장 (cs-v2는 8~10장 권장) |
+| 악센트 색상 | `#16171B` | hex 코드 |
 | 계정명 | `my_account` | Instagram 계정명 |
 
 ---
@@ -250,8 +250,8 @@ headline이나 body에 HTML span을 사용하면 스타일별 강조 효과가 �
 ```json
 {
   "defaults": {
-    "template": "clean",
-    "accent_color": "#3B82F6",
+    "template": "cs-v2",
+    "accent_color": "#16171B",
     "account_name": "my_account",
     "slide_count": 7
   }

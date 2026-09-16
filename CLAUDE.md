@@ -70,13 +70,15 @@ cs-v2로 만들 때는 `/card-news` 스킬의 "cs-v2 카피 규칙"을 따른다
 {
   "version": "3.0",
   "defaults": {
-    "template": "minimal",
-    "accent_color": "#2D63E2",
-    "account_name": "my_account",
+    "template": "cs-v2",
+    "accent_color": "#16171B",
+    "account_name": "cse_juhan02",
     "slide_count": 7
   }
 }
 ```
+
+> 기본 스타일이 `cs-v2`이므로 `카드뉴스 만들어줘: {주제}`만 입력하면 cs-v2로 생성됩니다. 다른 스타일은 요청에 이름을 적어 지정합니다 (예: "클린 스타일로").
 
 ---
 
