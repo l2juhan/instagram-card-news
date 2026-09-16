@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1080">
-  <title>aws content-bigdata</title>
+  <title>aws content-code</title>
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap">
@@ -103,13 +103,23 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
 
 .bleed-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5; overflow: visible; }
 
-.big { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
-.big-num { font-size: 240px; font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
-.big-unit { font-size: 72px; font-weight: 700; }
-.big-body { margin-top: 40px; }
+.code-panel { position: relative; background: #1B1E24; border-radius: 18px; padding: 40px 44px; margin-top: 40px; }
+.code-file { font-family: var(--mono); font-size: 28px; color: var(--ink-soft); margin-bottom: 20px; }
+.code-body { font-family: var(--mono); font-size: 32px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+.code-line { display: block; padding: 2px 14px; margin: 0 -14px; border-radius: 6px; }
+.ann-list { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
+.ann-item { display: flex; gap: 16px; align-items: flex-start; font-size: 28px; line-height: 1.5; }
+.ann-num {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; border: 3px solid var(--k-compute); color: var(--k-compute);
+  font-size: 28px; font-weight: 800; text-align: center; line-height: 38px; font-family: var(--sans);
+}
+/* One Dark Pro 토큰. t-cm은 원래 문서값(#5c6370)이 다크 패널(#1B1E24) 대비 2.76:1로
+   lint 기준(4.5:1) 미달이라 밝게 올렸다 — style-aws.md 표도 이 값으로 갱신할 것. */
+.t-kw{color:#c678dd} .t-fn{color:#61afef} .t-str{color:#98c379} .t-num{color:#d19a66}
+.t-cm{color:#8891A0;font-style:italic} .t-var{color:#e06c75} .t-op{color:#56b6c2} .t-type{color:#e5c07b} .t-plain{color:#abb2bf}
 </style>
 </head>
-<body class="" data-type="content-bigdata" data-fonts="Pretendard Variable|Gamja Flower" data-slide="{{slide_number}}" data-total="{{total_slides}}">
+<body class="" data-type="content-code" data-fonts="Pretendard Variable|Gamja Flower" data-slide="{{slide_number}}" data-total="{{total_slides}}">
 <svg style="display:none" aria-hidden="true">
   <symbol id="doodle-key" viewBox="0 0 120 120">
     <path d='M39.1 42.8 C42.4 43.6, 46.1 48.4, 47.8 51.6 C49.6 54.9, 49.8 59, 49.4 62.4 C49 65.8, 48 69.4, 45.5 72 C43 74.5, 38.1 77.4, 34.6 77.6 C31.1 77.8, 27.3 75.8, 24.5 73.2 C21.8 70.7, 18.6 66.1, 17.9 62.3 C17.2 58.5, 18.9 53.5, 20.5 50.5 C22.1 47.6, 23.2 45.2, 27.4 44.5 C31.7 43.7, 42.5 44.6, 46.2 46.1 C49.8 47.6, 49.6 53.2, 49.5 53.5 M42.5 43.8 C45.9 45, 48.8 48.7, 50.1 51.9 C51.5 55.2, 51.9 59.7, 50.4 63.4 C49 67.1, 44.3 72.1, 41.4 74.4 C38.4 76.8, 36.1 78, 32.6 77.5 C29 77.1, 22 74.6, 19.8 71.9 C17.6 69.3, 19.2 65.3, 19.3 61.7 C19.5 58.2, 18.7 54, 20.6 50.7 C22.4 47.3, 26.9 42.3, 30.3 41.7 C33.7 41, 39.2 46.1, 41.1 46.9 C42.9 47.8, 41.3 46.9, 41.2 46.9' stroke='currentColor' stroke-width='6.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/>
@@ -232,13 +242,96 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
   </header>
   <main data-lint-region class="main">
     <h2 class="title">{{headline}}</h2>
-    <div class="stage stage-center">
-      <div class="big" data-fit data-fit-min="120"><span class="big-num">{{bigdata_number}}</span><span class="big-unit">{{bigdata_unit}}</span></div>
-      <div class="body big-body" data-opt="body" data-slot="body">{{body}}</div>
+    <p class="lead" data-opt="lead" data-slot="lead">{{lead}}</p>
+    <div class="code-panel" data-doodle-box="ink">
+      <p class="code-file" data-opt="code_filename" data-slot="code_filename">{{code_filename}}</p>
+      <pre class="code-body">{{code_body}}</pre>
     </div>
-    <p class="caption" data-opt="subtext" data-slot="subtext">{{subtext}}</p>
+    <div class="ann-list"></div>
+    <p class="caption" data-opt="body" data-slot="body">{{body}}</p>
     <aside class="note" data-opt="my_note"><span class="note-mark">{{note_mark}}</span><p class="note-text" data-slot="my_note">{{my_note}}</p></aside>
   </main>
+  <script type="application/json" id="code-hl">{{highlight_lines}}</script>
+  <script type="application/json" id="code-ann">{{annotations}}</script>
+  <script>
+  (function () {
+    function readJson(id) {
+      var el = document.getElementById(id);
+      try { return JSON.parse((el && el.textContent) || 'null'); } catch (e) { return null; }
+    }
+    function init() {
+      var pre = document.querySelector('.code-body');
+      if (!pre) return;
+      var lines = pre.innerHTML.split('\n');
+      // 줄마다 display:block span으로 감싸므로 join에는 개행을 넣지 않는다 — 넣으면
+      // white-space:pre-wrap이 그 개행 문자까지 별도 줄로 렌더링해서 줄 간격이 두 배가 된다.
+      pre.innerHTML = lines.map(function (l, i) { return '<span class="code-line" data-ln="' + (i + 1) + '">' + l + '</span>'; }).join('');
+
+      var panel = document.querySelector('.code-panel');
+      var card = document.querySelector('.card').getBoundingClientRect();
+      var pr = panel.getBoundingClientRect();
+      var gen = window.rough && window.rough.generator();
+      var layer = document.querySelector('.bleed-layer');
+      var NS = 'http://www.w3.org/2000/svg';
+
+      function strokePath(drawable, color, width) {
+        var g = document.createElementNS(NS, 'g');
+        (drawable.sets || []).forEach(function (set) {
+          var dd = gen.opsToPath(set, 1); if (!dd) return;
+          var p = document.createElementNS(NS, 'path');
+          p.setAttribute('d', dd); p.setAttribute('stroke', 'currentColor'); p.setAttribute('stroke-width', String(width));
+          p.setAttribute('fill', 'none'); p.setAttribute('stroke-linecap', 'round'); g.appendChild(p);
+        });
+        g.style.color = color;
+        layer.appendChild(g);
+        return g;
+      }
+
+      // 강조는 배경색 대신 손그림 아웃라인으로 두른다 — One Dark Pro 9개 토큰 색을 전부
+      // 4.5:1 이상으로 유지하려면 패널 배경(#1B1E24)을 바꾸지 않는 편이 훨씬 안전하다.
+      (readJson('code-hl') || []).forEach(function (n, i) {
+        var el = pre.querySelector('.code-line[data-ln="' + n + '"]');
+        if (!el || !gen) return;
+        var r = el.getBoundingClientRect();
+        var x = pr.left - card.left - 6, y = r.top - card.top - 4;
+        var w = pr.width + 12, h = r.height + 8;
+        var d = gen.rectangle(x, y, w, h, { seed: 4500 + i * 9, roughness: 1.3, bowing: 0.8, maxRandomnessOffset: 4, stroke: 'currentColor', strokeWidth: 4 });
+        strokePath(d, 'var(--accent)', 4);
+      });
+
+      var anns = readJson('code-ann') || [];
+      var list = document.querySelector('.ann-list');
+      if (!anns.length) { if (list) list.remove(); return; }
+      anns.forEach(function (a, i) {
+        var num = i + 1;
+        var el = pre.querySelector('.code-line[data-ln="' + a.line + '"]');
+        if (el && layer && gen) {
+          var r = el.getBoundingClientRect();
+          var cx = pr.left - card.left + 26;
+          var cy = r.top - card.top + r.height / 2;
+          var d = gen.circle(cx, cy, 46, { seed: 4000 + i * 7, roughness: 1.4, bowing: 0.9, maxRandomnessOffset: 5, stroke: 'currentColor', strokeWidth: 5 });
+          var g = strokePath(d, 'var(--k-compute)', 5);
+          var t = document.createElementNS(NS, 'text');
+          t.setAttribute('x', cx); t.setAttribute('y', cy + 9); t.setAttribute('text-anchor', 'middle');
+          t.setAttribute('font-size', '28'); t.setAttribute('font-weight', '800'); t.setAttribute('font-family', "'Pretendard Variable'");
+          t.textContent = String(num);
+          g.appendChild(t);
+        }
+        if (list) {
+          var item = document.createElement('div');
+          item.className = 'ann-item';
+          var numSpan = document.createElement('span');
+          numSpan.className = 'ann-num'; numSpan.textContent = String(num);
+          var textSpan = document.createElement('span');
+          textSpan.textContent = a.text || '';
+          item.appendChild(numSpan); item.appendChild(textSpan);
+          list.appendChild(item);
+        }
+      });
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(init); else init();
+  })();
+  </script>
   <div class="progress">
     <div class="rule-track" style="width:936px"><svg width='936' height='22' viewBox='0 0 936 22' style='display:block;overflow:visible'><path d='M-0.5 13.5 C212.1 23.1, 414.8 26.5, 933.8 13.4' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
     <div class="rule-fill" style="width: {{progress_pct}}%; max-width:936px"><svg width='936' height='22' viewBox='0 0 936 22' style='display:block;overflow:visible'><path d='M-2.7 11.5 C207.5 9.4, 417.7 7.1, 936.1 10.3' stroke='currentColor' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>

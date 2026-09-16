@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1080">
-  <title>aws content-bigdata</title>
+  <title>aws content-diagram</title>
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap">
@@ -103,13 +103,10 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
 
 .bleed-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5; overflow: visible; }
 
-.big { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
-.big-num { font-size: 240px; font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
-.big-unit { font-size: 72px; font-weight: 700; }
-.big-body { margin-top: 40px; }
+.stage-visual { justify-content: center; }
 </style>
 </head>
-<body class="" data-type="content-bigdata" data-fonts="Pretendard Variable|Gamja Flower" data-slide="{{slide_number}}" data-total="{{total_slides}}">
+<body class="" data-type="content-diagram" data-fonts="Pretendard Variable|Gamja Flower" data-slide="{{slide_number}}" data-total="{{total_slides}}">
 <svg style="display:none" aria-hidden="true">
   <symbol id="doodle-key" viewBox="0 0 120 120">
     <path d='M39.1 42.8 C42.4 43.6, 46.1 48.4, 47.8 51.6 C49.6 54.9, 49.8 59, 49.4 62.4 C49 65.8, 48 69.4, 45.5 72 C43 74.5, 38.1 77.4, 34.6 77.6 C31.1 77.8, 27.3 75.8, 24.5 73.2 C21.8 70.7, 18.6 66.1, 17.9 62.3 C17.2 58.5, 18.9 53.5, 20.5 50.5 C22.1 47.6, 23.2 45.2, 27.4 44.5 C31.7 43.7, 42.5 44.6, 46.2 46.1 C49.8 47.6, 49.6 53.2, 49.5 53.5 M42.5 43.8 C45.9 45, 48.8 48.7, 50.1 51.9 C51.5 55.2, 51.9 59.7, 50.4 63.4 C49 67.1, 44.3 72.1, 41.4 74.4 C38.4 76.8, 36.1 78, 32.6 77.5 C29 77.1, 22 74.6, 19.8 71.9 C17.6 69.3, 19.2 65.3, 19.3 61.7 C19.5 58.2, 18.7 54, 20.6 50.7 C22.4 47.3, 26.9 42.3, 30.3 41.7 C33.7 41, 39.2 46.1, 41.1 46.9 C42.9 47.8, 41.3 46.9, 41.2 46.9' stroke='currentColor' stroke-width='6.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/>
@@ -232,11 +229,9 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
   </header>
   <main data-lint-region class="main">
     <h2 class="title">{{headline}}</h2>
-    <div class="stage stage-center">
-      <div class="big" data-fit data-fit-min="120"><span class="big-num">{{bigdata_number}}</span><span class="big-unit">{{bigdata_unit}}</span></div>
-      <div class="body big-body" data-opt="body" data-slot="body">{{body}}</div>
-    </div>
-    <p class="caption" data-opt="subtext" data-slot="subtext">{{subtext}}</p>
+    <p class="lead" data-opt="lead" data-slot="lead">{{lead}}</p>
+    <div class="stage stage-visual"><div class="visual">{{visual}}</div></div>
+    <p class="caption" data-opt="caption" data-slot="caption">{{caption}}</p>
     <aside class="note" data-opt="my_note"><span class="note-mark">{{note_mark}}</span><p class="note-text" data-slot="my_note">{{my_note}}</p></aside>
   </main>
   <div class="progress">

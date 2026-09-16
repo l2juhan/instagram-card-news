@@ -48,7 +48,7 @@
       "background": "light-blue-gray"
     },
     "aws": {
-      "description": "AWS 클라우드 서비스 전용 스타일 Squid Ink + Amazon Orange",
+      "description": "AWS 서비스/아키텍처/콘솔 튜토리얼 스타일, cs-doodle과 같은 손그림 낙서풍 + Squid Ink 다크, 4:5 세로형",
       "accent_color": "#FF9900",
       "background": "squid-ink-dark"
     },
@@ -87,6 +87,7 @@
     "cs": { "width": 1080, "height": 1080 },
     "cs-v2": { "width": 1080, "height": 1350 },
     "cs-doodle": { "width": 1080, "height": 1350 },
+    "aws": { "width": 1080, "height": 1350 },
     "linux": { "width": 1080, "height": 1080 }
   },
   "output_dir": "output",

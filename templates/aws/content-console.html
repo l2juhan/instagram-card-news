@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1080">
-  <title>aws content-bigdata</title>
+  <title>aws content-console</title>
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap">
@@ -103,13 +103,13 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
 
 .bleed-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5; overflow: visible; }
 
-.big { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
-.big-num { font-size: 240px; font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
-.big-unit { font-size: 72px; font-weight: 700; }
-.big-body { margin-top: 40px; }
+.console-frame { position: relative; margin-top: 40px; border-radius: 14px; overflow: hidden; background: #10131A; }
+.console-viewport { position: relative; width: 100%; overflow: hidden; }
+.console-viewport img { display: block; position: absolute; }
+.console-anno { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 </style>
 </head>
-<body class="" data-type="content-bigdata" data-fonts="Pretendard Variable|Gamja Flower" data-slide="{{slide_number}}" data-total="{{total_slides}}">
+<body class="" data-type="content-console" data-fonts="Pretendard Variable|Gamja Flower" data-slide="{{slide_number}}" data-total="{{total_slides}}">
 <svg style="display:none" aria-hidden="true">
   <symbol id="doodle-key" viewBox="0 0 120 120">
     <path d='M39.1 42.8 C42.4 43.6, 46.1 48.4, 47.8 51.6 C49.6 54.9, 49.8 59, 49.4 62.4 C49 65.8, 48 69.4, 45.5 72 C43 74.5, 38.1 77.4, 34.6 77.6 C31.1 77.8, 27.3 75.8, 24.5 73.2 C21.8 70.7, 18.6 66.1, 17.9 62.3 C17.2 58.5, 18.9 53.5, 20.5 50.5 C22.1 47.6, 23.2 45.2, 27.4 44.5 C31.7 43.7, 42.5 44.6, 46.2 46.1 C49.8 47.6, 49.6 53.2, 49.5 53.5 M42.5 43.8 C45.9 45, 48.8 48.7, 50.1 51.9 C51.5 55.2, 51.9 59.7, 50.4 63.4 C49 67.1, 44.3 72.1, 41.4 74.4 C38.4 76.8, 36.1 78, 32.6 77.5 C29 77.1, 22 74.6, 19.8 71.9 C17.6 69.3, 19.2 65.3, 19.3 61.7 C19.5 58.2, 18.7 54, 20.6 50.7 C22.4 47.3, 26.9 42.3, 30.3 41.7 C33.7 41, 39.2 46.1, 41.1 46.9 C42.9 47.8, 41.3 46.9, 41.2 46.9' stroke='currentColor' stroke-width='6.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/>
@@ -232,13 +232,104 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
   </header>
   <main data-lint-region class="main">
     <h2 class="title">{{headline}}</h2>
-    <div class="stage stage-center">
-      <div class="big" data-fit data-fit-min="120"><span class="big-num">{{bigdata_number}}</span><span class="big-unit">{{bigdata_unit}}</span></div>
-      <div class="body big-body" data-opt="body" data-slot="body">{{body}}</div>
+    <p class="lead" data-opt="lead" data-slot="lead">{{lead}}</p>
+    <div class="stage">
+      <div class="console-frame" data-doodle-box="ink">
+        <div class="console-viewport" id="console-viewport">
+          <img id="console-shot" data-optional-src src="{{screenshot}}" alt="{{alt}}">
+          <svg class="console-anno" id="console-anno"></svg>
+        </div>
+      </div>
     </div>
     <p class="caption" data-opt="subtext" data-slot="subtext">{{subtext}}</p>
     <aside class="note" data-opt="my_note"><span class="note-mark">{{note_mark}}</span><p class="note-text" data-slot="my_note">{{my_note}}</p></aside>
   </main>
+  <script type="application/json" id="console-crop">{{crop}}</script>
+  <script type="application/json" id="console-callouts">{{callouts}}</script>
+  <script type="application/json" id="console-redact">{{redact}}</script>
+  <script>
+  (function () {
+    function readJson(id) {
+      var el = document.getElementById(id);
+      try { return JSON.parse((el && el.textContent) || 'null'); } catch (e) { return null; }
+    }
+    function init() {
+      var img = document.getElementById('console-shot');
+      var frame = document.querySelector('.console-frame');
+      if (!img || !img.getAttribute('src')) { if (frame) frame.remove(); return; }
+      var viewport = document.getElementById('console-viewport');
+      var svg = document.getElementById('console-anno');
+      function run() {
+        var nw = img.naturalWidth, nh = img.naturalHeight;
+        var crop = readJson('console-crop');
+        var cropRect = (crop && crop.w) ? crop : { x: 0, y: 0, w: nw, h: nh };
+        var dispW = viewport.clientWidth;
+        var scale = dispW / cropRect.w;
+        var dispH = Math.round(cropRect.h * scale);
+        viewport.style.height = dispH + 'px';
+        img.style.width = (nw * scale) + 'px';
+        img.style.height = (nh * scale) + 'px';
+        img.style.left = (-cropRect.x * scale) + 'px';
+        img.style.top = (-cropRect.y * scale) + 'px';
+        svg.setAttribute('viewBox', '0 0 ' + dispW + ' ' + dispH);
+        svg.setAttribute('width', dispW); svg.setAttribute('height', dispH);
+        function toDisp(px, py) { return [(px - cropRect.x) * scale, (py - cropRect.y) * scale]; }
+        var gen = window.rough && window.rough.generator();
+        var NS = 'http://www.w3.org/2000/svg';
+        function paintPath(drawable, stroke, fill) {
+          (drawable.sets || []).forEach(function (set) {
+            var d = gen.opsToPath(set, 1); if (!d) return;
+            var p = document.createElementNS(NS, 'path');
+            p.setAttribute('d', d);
+            if (set.type === 'path') {
+              p.setAttribute('stroke', stroke); p.setAttribute('stroke-width', String(drawable.options.strokeWidth || 5));
+              p.setAttribute('fill', 'none'); p.setAttribute('stroke-linecap', 'round');
+            } else {
+              p.setAttribute('stroke', 'none'); p.setAttribute('fill', fill || stroke);
+            }
+            svg.appendChild(p);
+          });
+        }
+        (readJson('console-redact') || []).forEach(function (r, i) {
+          var p1 = toDisp(r.x, r.y);
+          var rw = r.w * scale, rh = r.h * scale;
+          var solid = document.createElementNS(NS, 'rect');
+          solid.setAttribute('x', p1[0]); solid.setAttribute('y', p1[1]);
+          solid.setAttribute('width', rw); solid.setAttribute('height', rh);
+          solid.setAttribute('fill', '#0B0C10');
+          svg.appendChild(solid);
+          var d = gen.rectangle(p1[0], p1[1], rw, rh, { seed: 3000 + i * 9, roughness: 1.4, bowing: 0.9, maxRandomnessOffset: 6, stroke: '#F6F2EA', strokeWidth: 5 });
+          paintPath(d, '#F6F2EA');
+        });
+        (readJson('console-callouts') || []).forEach(function (c, i) {
+          var seed = 3500 + i * 9;
+          if (c.type === 'circle') {
+            var p1 = toDisp(c.x, c.y);
+            var d = gen.circle(p1[0], p1[1], (c.r || 40) * scale * 2, { seed: seed, roughness: 1.4, bowing: 0.9, maxRandomnessOffset: 6, stroke: '#FF9900', strokeWidth: 7 });
+            paintPath(d, '#FF9900');
+          } else if (c.type === 'arrow') {
+            var a = toDisp(c.x1, c.y1), b = toDisp(c.x2, c.y2);
+            var d = gen.line(a[0], a[1], b[0], b[1], { seed: seed, roughness: 1.4, bowing: 0.9, maxRandomnessOffset: 6, stroke: '#FF9900', strokeWidth: 7 });
+            paintPath(d, '#FF9900');
+          } else if (c.type === 'number') {
+            var p2 = toDisp(c.x, c.y);
+            var d2 = gen.circle(p2[0], p2[1], 56, { seed: seed, roughness: 1.4, bowing: 0.9, maxRandomnessOffset: 6, stroke: '#FF9900', strokeWidth: 6, fill: '#FF9900', fillStyle: 'solid' });
+            paintPath(d2, '#FF9900', '#FF9900');
+            var t = document.createElementNS(NS, 'text');
+            t.setAttribute('x', p2[0]); t.setAttribute('y', p2[1] + 9);
+            t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-size', '30'); t.setAttribute('font-weight', '800');
+            t.setAttribute('font-family', "'Pretendard Variable'"); t.setAttribute('fill', '#232F3E');
+            t.textContent = String(c.n != null ? c.n : i + 1);
+            svg.appendChild(t);
+          }
+        });
+        document.body.setAttribute('data-console-ready', '1');
+      }
+      if (img.complete && img.naturalWidth) run(); else img.addEventListener('load', run);
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(init); else init();
+  })();
+  </script>
   <div class="progress">
     <div class="rule-track" style="width:936px"><svg width='936' height='22' viewBox='0 0 936 22' style='display:block;overflow:visible'><path d='M-0.5 13.5 C212.1 23.1, 414.8 26.5, 933.8 13.4' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
     <div class="rule-fill" style="width: {{progress_pct}}%; max-width:936px"><svg width='936' height='22' viewBox='0 0 936 22' style='display:block;overflow:visible'><path d='M-2.7 11.5 C207.5 9.4, 417.7 7.1, 936.1 10.3' stroke='currentColor' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>

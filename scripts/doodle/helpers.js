@@ -62,4 +62,21 @@ function divider(x1, y1, x2, y2, { cls = 'soft', width = 5 } = {}) {
   return `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke='currentColor' stroke-width='${width}' stroke-linecap='round'${attr(cls)}/>`;
 }
 
-module.exports = { arrow, curvedArrow, blockedArrow, divider };
+/**
+ * 그룹 경계 상자: AWS Cloud/Region/AZ/VPC/서브넷/보안 그룹처럼 중첩된 영역을
+ * 점선·실선 컨테이너 + 좌상단 라벨로 그린다(아키텍처 다이어그램 전용이지만 테마에
+ * 묶여 있지 않아 다른 콘텐츠에도 쓸 수 있다).
+ *
+ * 라벨은 기본으로 테두리에서 24/40px 안쪽에 앉힌다 — 라벨을 테두리에 바짝 붙이면
+ * 손그림 흔들림 때문에 lint의 doodle-overlap 경고가 뜬다. 중첩 그룹을 쓸 때는 안쪽
+ * 그룹의 y를 바깥 그룹 라벨보다 최소 56px 아래로 둬서 라벨끼리도 겹치지 않게 한다.
+ */
+function group(x, y, w, h, { cls = 'ink', dash = false, label = '', labelSize = 28, rx = 16 } = {}) {
+  const rect = `<rect x='${x}' y='${y}' width='${w}' height='${h}' rx='${rx}' fill='none' stroke='currentColor' stroke-width='5'${attr(cls)}${dash ? ` stroke-dasharray='16 12'` : ''}/>`;
+  const text = label
+    ? `<text x='${x + 24}' y='${y + 40}' font-size='${labelSize}' font-weight='700'${attr(cls)}>${label}</text>`
+    : '';
+  return rect + text;
+}
+
+module.exports = { arrow, curvedArrow, blockedArrow, divider, group };
