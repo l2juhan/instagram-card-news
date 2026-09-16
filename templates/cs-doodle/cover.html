@@ -315,9 +315,13 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
     if (kind === 'underline') {
       drawable = gen.line(x0 - 6, y0 + h + 8, x0 + w + 6, y0 + h + 8, { seed: seedOf(el, seed), roughness: PEN.roughness, bowing: PEN.bowing, stroke: color, strokeWidth: 6 });
     } else {
-      drawable = gen.ellipse(x0 + w / 2, y0 + h / 2, w + 48, h + 40, { seed: seedOf(el, seed), roughness: PEN.roughness, bowing: PEN.bowing, stroke: color, strokeWidth: 6, fill: 'none' });
+      // 패딩은 고정값으로 작게 둔다: 글자 크기에 비례시키면(줄 간격이 좁은 수식 등에서)
+      // 옆 글자나 위/아래 줄까지 침범하기 쉽다. fill은 넘기지 않는다(circle/ellipse가
+      // 'none'도 "채워라"로 읽는 rough.js 특성 — build-cs-doodle.js/build-objects.js 참고).
+      drawable = gen.ellipse(x0 + w / 2, y0 + h / 2, w + 24, h + 16, { seed: seedOf(el, seed), roughness: PEN.roughness, bowing: PEN.bowing, stroke: color, strokeWidth: 5 });
     }
     var g = document.createElementNS(NS, 'g');
+    g.setAttribute('data-doodle-shape', '1'); // 옆 텍스트를 침범하면 lint의 doodle-overlap 경고 대상
     g.innerHTML = opsToPathSets(drawable, gen);
     overlay.appendChild(g);
   }

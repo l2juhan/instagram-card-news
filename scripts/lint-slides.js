@@ -264,6 +264,10 @@ function safeAreaIssues(texts, width) {
 const HIDE_GLYPHS_CSS = `
 * { -webkit-text-fill-color: transparent !important; text-shadow: none !important; text-decoration-color: transparent !important; caret-color: transparent !important; }
 svg text, svg tspan { fill-opacity: 0 !important; stroke-opacity: 0 !important; }
+/* bleed 곡선과 cs-doodle 강조(동그라미/밑줄)는 .bleed-layer에 그려진다. 대비는
+   "글자 뒤에 실제로 있는 배경(종이, 채움)"을 재는 것이지, 글자 위/옆을 지나가는
+   장식성 손그림 선까지 배경으로 치면 안 되므로 숨긴다. */
+.bleed-layer { display: none !important; }
 `;
 
 async function lint(opts) {
