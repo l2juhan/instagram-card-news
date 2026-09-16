@@ -18,7 +18,7 @@ description: "카드뉴스 생성 파이프라인 (Harness v1.0). 사용자가 '
 |---|---|---|
 | `topic` | (필수) | 카드뉴스 주제 |
 | `tone` | `professional` | 톤 (professional / casual / energetic) |
-| `template` | `minimal` | 템플릿 스타일 |
+| `template` | `config.json`의 `defaults.template` (현재 `cs-doodle`) | 템플릿 스타일 |
 | `slide_count` | `7` | 슬라이드 수 (최소 5, 최대 12) |
 | `accent_color` | 템플릿 기본값 | 악센트 색상 (hex) |
 | `account_name` | `my_account` | 계정명 (@ 없이 입력, 템플릿에서 자동 추가) |
