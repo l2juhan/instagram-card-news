@@ -67,6 +67,11 @@
       "accent_color": "#16171B",
       "background": "warm-paper"
     },
+    "cs-doodle": {
+      "description": "CS 교육 콘텐츠 손그림 낙서풍 (cs-v2 + 볼펜 낙서 그림체), 4:5 세로형",
+      "accent_color": "#16171B",
+      "background": "warm-paper"
+    },
     "linux": {
       "description": "Linux 정보 전달 스타일 다크 터미널 배경 + Tux 골든 옐로우 + JetBrains Mono",
       "accent_color": "#F5D838",
@@ -81,6 +86,7 @@
     "rn": { "width": 1080, "height": 1080 },
     "cs": { "width": 1080, "height": 1080 },
     "cs-v2": { "width": 1080, "height": 1350 },
+    "cs-doodle": { "width": 1080, "height": 1350 },
     "linux": { "width": 1080, "height": 1080 }
   },
   "output_dir": "output",

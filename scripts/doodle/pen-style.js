@@ -9,6 +9,9 @@ module.exports = {
   roughness: 1.4,
   bowing: 0.9,
   strokeWidth: 6.5,
+  // rough.js maxRandomnessOffset은 절대 px값이라 도형이 커도 안 커진다. 기본값(2px)으로
+  // 두면 1080px 캔버스의 큰 도형(진행바, 박스 아웃라인)이 거의 안 흔들려 보인다.
+  maxRandomnessOffset: 7,
   // 채색이 꼭 필요한 소형 요소(화살촉, 체크 등)에 한해 옵트인으로 쓰는 얇은 해쳐 채움
   accentFillWeight: 2.2,
   accentHachureGap: 30,

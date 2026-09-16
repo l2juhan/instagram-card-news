@@ -22,7 +22,7 @@
  * 꼭 채워야 읽히면 원본 엘리먼트에 data-doodle-fill="solid"를 달아 예외로 둔다.
  */
 
-const PEN_STYLE_JS = `{ roughness: 1.4, bowing: 0.9, strokeWidth: 6.5 }`;
+const PEN_STYLE_JS = `{ roughness: 1.4, bowing: 0.9, strokeWidth: 6.5, maxRandomnessOffset: 7 }`;
 
 const SOURCE = `
 (function () {
@@ -66,9 +66,11 @@ const SOURCE = `
       bowing: PEN.bowing,
       stroke: penColor,
       strokeWidth: strokeWidth,
-      fill: solid && hasFill ? origFill : 'none',
       fillStyle: 'solid',
     };
+    // fill 키는 정말 채울 때만 넣는다: circle/ellipse/rect/polygon은 fill:'none' 문자열도
+    // "채워라"로 읽어 해쳐 세트를 만들어 버린다(path()/curve()만 'none'을 예외로 걷어낸다).
+    if (solid && hasFill) opts.fill = origFill;
     var drawable = null;
     if (tag === 'circle') {
       drawable = gen.circle(+el.getAttribute('cx'), +el.getAttribute('cy'), 2 * +el.getAttribute('r'), opts);
@@ -88,6 +90,7 @@ const SOURCE = `
     }
     var g = document.createElementNS(NS, 'g');
     if (el.getAttribute('class')) g.setAttribute('class', el.getAttribute('class'));
+    if (el.id) g.id = el.id; // cs-v2의 bleed anchor(getElementById)가 변환 후에도 그대로 동작해야 한다
     g.innerHTML = opsToPathSets(drawable, gen);
     var dash = el.getAttribute('stroke-dasharray');
     if (dash) {

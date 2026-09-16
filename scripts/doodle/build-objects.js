@@ -17,7 +17,11 @@ const PEN = require('./pen-style.js');
 
 const OUT = path.join(__dirname, '..', '..', 'assets', 'doodle', 'objects', 'sprite.svg');
 
-const outline = (seed) => ({ seed, roughness: PEN.roughness, bowing: PEN.bowing, stroke: 'currentColor', strokeWidth: PEN.strokeWidth, fill: 'none' });
+// fill을 아예 안 준다: rough.js의 circle/ellipse/rectangle/polygon은 fill:'none' 문자열도
+// "채워라"로 읽어 해쳐 세트를 만든다(path()/curve()만 'none'을 예외로 걷어낸다). 결과 자체는
+// drawableToSvg가 그 세트를 stroke='none'으로 그려 안 보이니 시각적 버그는 아니지만,
+// 안 그려도 되는 경로를 sprite에 남기지 않기 위해 아예 생략한다.
+const outline = (seed) => ({ seed, roughness: PEN.roughness, bowing: PEN.bowing, stroke: 'currentColor', strokeWidth: PEN.strokeWidth });
 const dot = (seed) => ({ seed, roughness: PEN.roughness * 0.7, bowing: PEN.bowing, stroke: 'none', fill: 'currentColor', fillStyle: 'solid' });
 
 const OBJECTS = {
