@@ -27,7 +27,7 @@ function localImageToDataUrl(imagePath) {
 }
 
 // Fields where \n should NOT be converted to <br> (raw HTML insertion)
-const RAW_FIELDS = new Set(['code_body']);
+const RAW_FIELDS = new Set(['code_body', 'visual']);
 
 // Fields that contain local image paths and need base64 conversion
 const IMAGE_FIELDS = new Set(['left_image', 'right_image']);
@@ -36,7 +36,23 @@ const IMAGE_FIELDS = new Set(['left_image', 'right_image']);
 const URL_FIELDS = new Set(['image_url', 'logo_url']);
 
 // Metadata fields that are not template placeholders
-const SKIP_FIELDS = new Set(['slide', 'type', 'style_override']);
+const SKIP_FIELDS = new Set(['slide', 'type', 'style_override', 'bleed_right', 'bleed_y', 'bleed_color', 'bleed_from', 'bleed_to', 'alt']);
+
+/**
+ * Normalize a slide's bleed_right spec into [{ y, color, from }].
+ * bleed_right: true uses bleed_y / bleed_color / bleed_from; an array lists several lines.
+ */
+function normalizeBleed(slide) {
+  if (!slide || !slide.bleed_right) return [];
+  const list = Array.isArray(slide.bleed_right)
+    ? slide.bleed_right
+    : [{ y: slide.bleed_y, color: slide.bleed_color, from: slide.bleed_from }];
+  return list.map((b) => ({ y: Number(b.y) || 760, color: b.color || 'ink', from: b.from || '' }));
+}
+
+function toScriptJson(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
+}
 
 /**
  * Replace all template placeholders in HTML content.
@@ -54,11 +70,16 @@ function applyPlaceholders(html, slide, opts, index, total) {
 
   // 1. System placeholders (not from slide data)
   const accentColor = opts.accent || config.defaults.accent_color;
+  const bleedTo = [].concat(slide.bleed_to || []);
   const systemReplacements = {
     '{{slide_number}}': String(index + 1).padStart(2, '0'),
     '{{total_slides}}': String(total).padStart(2, '0'),
     '{{accent_color}}': accentColor,
     '{{account_name}}': opts.account || config.defaults.account_name,
+    '{{progress_pct}}': (((index + 1) / total) * 100).toFixed(2),
+    '{{series}}': opts.series || '',
+    '{{bleed_out}}': toScriptJson(normalizeBleed(slide)),
+    '{{bleed_in}}': toScriptJson(normalizeBleed(opts.prevSlide).map((b, k) => ({ y: b.y, color: b.color, to: bleedTo[k] || '' }))),
   };
 
   for (const [placeholder, value] of Object.entries(systemReplacements)) {
@@ -104,6 +125,79 @@ function applyPlaceholders(html, slide, opts, index, total) {
 }
 
 /**
+ * Wait for web fonts before taking a screenshot.
+ * networkidle0 alone does not guarantee that font files have been applied.
+ * Templates may list required families in <body data-fonts="Family A|Family B">;
+ * if none of a family's faces finished loading, the render fails instead of
+ * silently producing a fallback-font PNG.
+ */
+async function waitForFonts(page, slideNo) {
+  const missing = await page.evaluate(async () => {
+    await document.fonts.ready;
+    // Let callbacks registered by the template (e.g. layout fitting after fonts.ready) run.
+    // setTimeout rather than requestAnimationFrame: rAF never fires in a background tab.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    const required = ((document.body && document.body.getAttribute('data-fonts')) || '').split('|').filter(Boolean);
+    const faces = Array.from(document.fonts);
+    return required.filter((family) => !faces.some(
+      (face) => face.family.replace(/["']/g, '') === family && face.status === 'loaded'
+    ));
+  });
+  if (missing.length > 0) {
+    throw new Error(`slide ${slideNo}: required font not applied: ${missing.join(', ')}`);
+  }
+}
+
+const PREVIEW_WIDTH = 360;
+
+/**
+ * Write phone-size previews to <outputDir>/preview/:
+ * - slide_XX.png: each slide scaled to 360px wide
+ * - grid_cover.png: the cover center-cropped to 3:4 as shown in the profile grid
+ */
+async function writePreviews(browser, files, dimensions, outputDir) {
+  const previewDir = path.join(outputDir, 'preview');
+  fs.mkdirSync(previewDir, { recursive: true });
+  const toDataUrl = (file) => `data:image/png;base64,${fs.readFileSync(file).toString('base64')}`;
+  const page = await browser.newPage();
+
+  const scale = PREVIEW_WIDTH / dimensions.width;
+  const previewHeight = Math.round(dimensions.height * scale);
+  await page.setViewport({ width: PREVIEW_WIDTH, height: previewHeight });
+  for (const file of files) {
+    await page.setContent(
+      `<body style="margin:0"><img src="${toDataUrl(file)}" style="display:block;width:${PREVIEW_WIDTH}px;height:${previewHeight}px"></body>`
+    );
+    await page.screenshot({
+      path: path.join(previewDir, path.basename(file)),
+      clip: { x: 0, y: 0, width: PREVIEW_WIDTH, height: previewHeight },
+    });
+  }
+
+  if (files.length > 0) {
+    let cropWidth = dimensions.width;
+    let cropHeight = dimensions.height;
+    if (cropWidth / cropHeight > 3 / 4) cropWidth = cropHeight * 3 / 4;
+    else cropHeight = cropWidth * 4 / 3;
+    const gridScale = PREVIEW_WIDTH / cropWidth;
+    const gridHeight = Math.round(cropHeight * gridScale);
+    const offsetX = ((dimensions.width - cropWidth) / 2) * gridScale;
+    const offsetY = ((dimensions.height - cropHeight) / 2) * gridScale;
+    await page.setViewport({ width: PREVIEW_WIDTH, height: gridHeight });
+    await page.setContent(
+      `<body style="margin:0;overflow:hidden"><img src="${toDataUrl(files[0])}" style="display:block;width:${dimensions.width * gridScale}px;margin:${-offsetY}px 0 0 ${-offsetX}px"></body>`
+    );
+    await page.screenshot({
+      path: path.join(previewDir, 'grid_cover.png'),
+      clip: { x: 0, y: 0, width: PREVIEW_WIDTH, height: gridHeight },
+    });
+  }
+
+  await page.close();
+  console.log(`  Previews: ${previewDir}`);
+}
+
+/**
  * Main render function.
  * @param {object} opts - Options
  * @param {string} opts.slidesPath - Path to slides.json
@@ -112,10 +206,15 @@ function applyPlaceholders(html, slide, opts, index, total) {
  * @param {string} opts.accent - Accent color hex
  * @param {string} opts.account - Account name string
  */
-async function render(opts = {}) {
+/**
+ * Build processed HTML for every slide. Shared by render() and scripts/lint-slides.js.
+ * @param {object} opts - Same options as render() (slidesPath, style, accent, account, series)
+ * @returns {{ slides: object[], style: string, dimensions: {width: number, height: number},
+ *             pages: Array<{ index: number, type: string, html: string }> }}
+ */
+function buildSlidePages(opts = {}) {
   const slidesPath = opts.slidesPath || path.join(process.cwd(), config.workspace_dir, 'slides.json');
   const style = opts.style || config.defaults.template;
-  const outputDir = opts.outputDir || path.join(process.cwd(), config.output_dir);
   const accent = opts.accent || config.defaults.accent_color;
   const account = opts.account || config.defaults.account_name;
   const styleDim = (config.style_dimensions || {})[style];
@@ -127,13 +226,43 @@ async function render(opts = {}) {
   }
   const slides = JSON.parse(fs.readFileSync(slidesPath, 'utf8'));
 
-  // Ensure output directory exists
-  fs.mkdirSync(outputDir, { recursive: true });
-
   const templateDir = path.join(__dirname, '..', 'templates', style);
   if (!fs.existsSync(templateDir)) {
     throw new Error(`Template directory not found: ${templateDir}`);
   }
+
+  const total = slides.length;
+  const seriesSource = slides.find((s) => s.series);
+  const series = opts.series || (seriesSource ? seriesSource.series : '');
+
+  // Pre-validate templates and prepare HTML for all slides
+  const pages = [];
+  for (let i = 0; i < slides.length; i++) {
+    const slide = slides[i];
+    const slideType = slide.type || 'content';
+    const templateFile = path.join(templateDir, `${slideType}.html`);
+
+    if (!fs.existsSync(templateFile)) {
+      console.warn(`  Warning: template not found for type "${slideType}", skipping slide ${i + 1}`);
+      continue;
+    }
+
+    const rawHtml = fs.readFileSync(templateFile, 'utf8');
+    const html = applyPlaceholders(
+      rawHtml, slide, { accent, account, series, prevSlide: slides[i - 1] }, i, total
+    );
+    pages.push({ index: i, type: slideType, html });
+  }
+
+  return { slides, style, dimensions, pages };
+}
+
+async function render(opts = {}) {
+  const outputDir = opts.outputDir || path.join(process.cwd(), config.output_dir);
+  const { slides, dimensions, pages } = buildSlidePages(opts);
+
+  // Ensure output directory exists
+  fs.mkdirSync(outputDir, { recursive: true });
 
   const browser = await puppeteer.launch({
     headless: 'new',
@@ -142,26 +271,10 @@ async function render(opts = {}) {
 
   try {
     const total = slides.length;
-
-    // Pre-validate templates and prepare HTML for all slides
-    const tasks = [];
-    for (let i = 0; i < slides.length; i++) {
-      const slide = slides[i];
-      const slideType = slide.type || 'content';
-      const templateFile = path.join(templateDir, `${slideType}.html`);
-
-      if (!fs.existsSync(templateFile)) {
-        console.warn(`  Warning: template not found for type "${slideType}", skipping slide ${i + 1}`);
-        continue;
-      }
-
-      const rawHtml = fs.readFileSync(templateFile, 'utf8');
-      const processedHtml = applyPlaceholders(rawHtml, slide, { accent, account }, i, total);
-      const slideNum = String(i + 1).padStart(2, '0');
-      const outputFile = path.join(outputDir, `slide_${slideNum}.png`);
-
-      tasks.push({ index: i, processedHtml, outputFile, slideNum });
-    }
+    const tasks = pages.map((p) => {
+      const slideNum = String(p.index + 1).padStart(2, '0');
+      return { index: p.index, processedHtml: p.html, outputFile: path.join(outputDir, `slide_${slideNum}.png`), slideNum };
+    });
 
     // Render slides in parallel using separate pages
     const CONCURRENCY = Math.min(tasks.length, 4);
@@ -182,6 +295,7 @@ async function render(opts = {}) {
         console.log(`Rendering slide ${task.index + 1}/${total}...`);
 
         await page.setContent(task.processedHtml, { waitUntil: 'networkidle0' });
+        await waitForFonts(page, task.index + 1);
 
         await page.screenshot({
           path: task.outputFile,
@@ -200,6 +314,10 @@ async function render(opts = {}) {
     }
 
     await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
+
+    if (opts.preview) {
+      await writePreviews(browser, tasks.map((t) => t.outputFile), dimensions, outputDir);
+    }
   } finally {
     await browser.close();
   }
@@ -228,6 +346,12 @@ function parseArgs(argv) {
       case '--account':
         opts.account = args[++i];
         break;
+      case '--series':
+        opts.series = args[++i];
+        break;
+      case '--preview':
+        opts.preview = true;
+        break;
       default:
         console.warn(`Unknown argument: ${args[i]}`);
     }
@@ -244,4 +368,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { render };
+module.exports = { render, buildSlidePages, applyPlaceholders, waitForFonts };
