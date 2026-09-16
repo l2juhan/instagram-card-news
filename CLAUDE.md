@@ -129,11 +129,19 @@ instagram-card-news/
 │   └── generate-samples.js
 ├── assets/doodle/       # cs-doodle 낙서 오브젝트 스프라이트 (build-objects.js가 생성) + README
 ├── style-example/       # 각 스타일 커버 예시 PNG
-├── workspace/           # 런타임 작업 공간
-├── output/              # 최종 PNG 출력
+├── workspace/           # 런타임 작업 공간 (gitignore — 스크래치, 버전관리 안 함)
+├── output/              # 최종 PNG 출력 (gitignore)
 ├── config.json          # 기본 설정
 └── CLAUDE.md            # 이 파일
 ```
+
+### workspace/ 정리 정책
+
+`workspace/`는 `output/`처럼 git에 안 잡힌다. 카드뉴스 한 편을 만들 때마다 생기는 `research.md`, `spec.md`, `contract.md`, `slides.json`, `evaluation.md`, `slides_v{N}.json` 같은 중간 산물, 그리고 그때그때 필요해서 넣은 이미지들이 쌓이는 곳이다.
+
+- 이 프로젝트에서 작업할 때, `workspace/` 안에 **한 번 쓰이고 오래(대략 몇 주 이상) 손 안 댄 파일**이 눈에 띄면, 지워도 되는지 먼저 물어보고 승인받으면 지운다. 자동으로 조용히 지우지 않는다.
+- `output/`으로 이미 렌더링이 끝난 덱의 `workspace/` 원본은 특히 정리 대상으로 먼저 제안한다.
+- 다만 이건 "이 프로젝트에서 같이 작업할 때마다 신경 써서 확인하는 습관"이고, 세션 없이 저 혼자 주기적으로 도는 백그라운드 작업은 아니다. 그런 무인 정기 실행이 필요하면 별도로 스케줄링을 요청할 것.
 
 ---
 
