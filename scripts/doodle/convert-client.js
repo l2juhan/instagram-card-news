@@ -89,6 +89,9 @@ const SOURCE = `
       return;
     }
     var g = document.createElementNS(NS, 'g');
+    // data-doodle-shape: lint-slides.js가 "낙서로 그려진 도형"만 골라 텍스트와 겹치는지
+    // 검사할 때 쓰는 마커. class는 색 토큰 표시용이라 그대로 보존한다.
+    g.setAttribute('data-doodle-shape', '1');
     if (el.getAttribute('class')) g.setAttribute('class', el.getAttribute('class'));
     if (el.id) g.id = el.id; // cs-v2의 bleed anchor(getElementById)가 변환 후에도 그대로 동작해야 한다
     g.innerHTML = opsToPathSets(drawable, gen);

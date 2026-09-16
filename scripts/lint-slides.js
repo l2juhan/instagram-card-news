@@ -7,17 +7,24 @@
  *     [--accent "#16171B"] [--account name] [--series Security]
  *
  * render.js와 같은 방식으로 HTML을 만들어 Puppeteer로 열고 다음을 검사한다.
- * - font-size : 보이는 텍스트의 실제 크기 < 28px            → error
- * - contrast  : 글자색 vs 실제 뒤 배경(픽셀 샘플) < 4.5:1     → error
- * - safe-area : 텍스트가 좌우 72px 여백 침범                  → warning
- *               좌우 34px 그리드 크롭 영역에 걸침              → error
- * - overflow  : 요소가 캔버스 밖, 텍스트 잘림,
- *               [data-lint-region] 영역 밖으로 넘친 콘텐츠     → error
+ * - font-size   : 보이는 텍스트의 실제 크기 < 28px             → error
+ * - hand-font   : 손글씨 폰트(HAND_FONTS)로 쓴 텍스트가 그 폰트의
+ *                 최소 크기 미만                                → error
+ * - contrast    : 글자색 vs 실제 뒤 배경(픽셀 샘플) < 4.5:1      → error
+ * - safe-area   : 텍스트가 좌우 72px 여백 침범                   → warning
+ *                 좌우 34px 그리드 크롭 영역에 걸침               → error
+ * - overflow    : 요소가 캔버스 밖, 텍스트 잘림,
+ *                 [data-lint-region] 영역 밖으로 넘친 콘텐츠      → error
+ * - doodle-overlap : 손그림 도형([data-doodle-shape], 오브젝트
+ *                 스프라이트 <use>)이 텍스트 위를 덮음            → warning
+ * - determinism : cs-doodle처럼 rough.js 변환기를 쓰는 템플릿에서
+ *                 같은 슬라이드를 2회 렌더링한 PNG가 다름          → error
  *
  * 순수 장식 요소는 data-lint-ignore 로 제외할 수 있다.
  * error가 하나라도 있으면 exit code 1.
  */
 
+const crypto = require('crypto');
 const puppeteer = require('puppeteer');
 const { buildSlidePages, waitForFonts } = require('./render.js');
 
@@ -27,8 +34,12 @@ const SAFE_MARGIN = 72;
 const CROP_MARGIN = 34;
 const TOLERANCE = 0.5;
 
+// cs-doodle이 짧은 주석용으로 쓰는 손글씨 폰트의 최소 권장 크기.
+// cs-doodle-prompt Phase 1 비교: 두꺼운 서체는 36px, 얇은 서체(Nanum Pen Script류)는 44px.
+const HAND_FONTS = { 'Gamja Flower': 36 };
+
 /** In-page: collect visible text runs and layout problems. */
-function collectInPage({ minFont, tolerance }) {
+function collectInPage({ minFont, tolerance, handFonts }) {
   const W = window.innerWidth;
   const H = window.innerHeight;
   const issues = [];
@@ -55,6 +66,24 @@ function collectInPage({ minFont, tolerance }) {
     left: Math.min(u.left, r.left), top: Math.min(u.top, r.top),
     right: Math.max(u.right, r.right), bottom: Math.max(u.bottom, r.bottom),
   }), { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity });
+  // cs-doodle은 "실제 크기를 알 수 없는 구분선"을 넉넉히 길게 그린 뒤 overflow:hidden인
+  // 조상으로 잘라서 보여준다(예: content-steps의 step-connector). 그 안쪽 SVG의
+  // getBoundingClientRect()는 여전히 잘리기 전 원래 크기를 그대로 돌려주므로, 조상들의
+  // clip 영역과 교집합을 구해야 "화면에 실제로 보이는" 영역을 알 수 있다.
+  const visibleRect = (el) => {
+    let r = el.getBoundingClientRect();
+    for (let anc = el.parentElement; anc && anc !== document.documentElement; anc = anc.parentElement) {
+      const acs = getComputedStyle(anc);
+      if (!/(hidden|clip|scroll|auto)/.test(acs.overflowX + acs.overflowY)) continue;
+      const ar = anc.getBoundingClientRect();
+      r = {
+        left: Math.max(r.left, ar.left), top: Math.max(r.top, ar.top),
+        right: Math.min(r.right, ar.right), bottom: Math.min(r.bottom, ar.bottom),
+      };
+      if (r.right <= r.left || r.bottom <= r.top) return null; // 조상 클립 밖으로 완전히 잘려 안 보임
+    }
+    return r;
+  };
 
   // --- text runs -----------------------------------------------------------
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -92,6 +121,14 @@ function collectInPage({ minFont, tolerance }) {
       issues.push({ level: 'error', rule: 'font-size', message: `${fontPx.toFixed(1)}px < ${minFont}px`, text: item.text });
     }
 
+    for (const [family, minPx] of Object.entries(handFonts || {})) {
+      if (cs.fontFamily.indexOf(family) === -1) continue;
+      if (fontPx < minPx - tolerance && !symbolOnly) {
+        issues.push({ level: 'error', rule: 'hand-font', message: `${family} ${fontPx.toFixed(1)}px < ${minPx}px`, text: item.text });
+      }
+      break;
+    }
+
     // clipped by an overflow container?
     for (let anc = el.parentElement; anc && anc !== document.documentElement; anc = anc.parentElement) {
       const acs = getComputedStyle(anc);
@@ -111,8 +148,8 @@ function collectInPage({ minFont, tolerance }) {
   // --- elements outside the canvas ----------------------------------------
   for (const el of document.body.querySelectorAll('*')) {
     if (ignored(el) || el.closest('script, style') || !visible(el)) continue;
-    const r = el.getBoundingClientRect();
-    if (r.width === 0 || r.height === 0) continue;
+    const r = visibleRect(el);
+    if (!r || r.right - r.left <= 0 || r.bottom - r.top <= 0) continue;
     if (r.left < -tolerance || r.top < -tolerance || r.right > W + tolerance || r.bottom > H + tolerance) {
       const name = `<${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}>`;
       issues.push({ level: 'error', rule: 'overflow', message: `${name} outside canvas (${Math.round(r.left)},${Math.round(r.top)})–(${Math.round(r.right)},${Math.round(r.bottom)})`, text: snippet(el.textContent || '') });
@@ -124,11 +161,30 @@ function collectInPage({ minFont, tolerance }) {
     const rr = region.getBoundingClientRect();
     for (const el of region.querySelectorAll('*')) {
       if (ignored(el) || !visible(el)) continue;
-      const r = el.getBoundingClientRect();
-      if (r.width === 0 || r.height === 0) continue;
+      const r = visibleRect(el);
+      if (!r || r.right - r.left <= 0 || r.bottom - r.top <= 0) continue;
       if (r.bottom > rr.bottom + 1 || r.top < rr.top - 1) {
         issues.push({ level: 'error', rule: 'overflow', message: `content exceeds layout region by ${Math.round(Math.max(r.bottom - rr.bottom, rr.top - r.top))}px`, text: snippet(el.textContent || '') });
         break;
+      }
+    }
+  }
+
+  // --- doodle shapes covering text ------------------------------------------
+  // [data-doodle-shape]: convert-client.js가 만든 <g>, build-cs-doodle.js의 bleed 곡선.
+  // use[href^="#doodle-"]: 오브젝트 스프라이트 아이콘. 배지/박스 아웃라인(drawBoxes)은
+  // 자기 라벨을 감싸는 게 정상이라 일부러 마커를 안 붙였으니 여기 안 걸린다.
+  const doodleEls = document.querySelectorAll('[data-doodle-shape], use[href^="#doodle-"]');
+  for (const el of doodleEls) {
+    if (ignored(el) || !visible(el)) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    for (const t of texts) {
+      const b = t.box;
+      const overlapX = Math.min(r.right, b.right) - Math.max(r.left, b.left);
+      const overlapY = Math.min(r.bottom, b.bottom) - Math.max(r.top, b.top);
+      if (overlapX > 4 && overlapY > 4) {
+        issues.push({ level: 'warning', rule: 'doodle-overlap', message: `doodle shape overlaps text by ${Math.round(Math.min(overlapX, overlapY))}px`, text: t.text });
       }
     }
   }
@@ -223,7 +279,24 @@ async function lint(opts) {
       await page.setContent(p.html, { waitUntil: 'networkidle0' });
       await waitForFonts(page, p.index + 1);
 
-      const collected = await page.evaluate(collectInPage, { minFont: MIN_FONT_PX, tolerance: TOLERANCE });
+      const collected = await page.evaluate(collectInPage, { minFont: MIN_FONT_PX, tolerance: TOLERANCE, handFonts: HAND_FONTS });
+
+      // cs-doodle처럼 rough.js로 렌더링 시점에 도형을 그리는 템플릿은, 같은 입력을 다시
+      // 렌더링해도 항상 같은 PNG가 나와야 한다(고정 seed). 페이지를 한 번 더 새로 열어
+      // 픽셀까지 비교한다 — DOM을 그대로 두고 다시 찍으면 이미 변환된 결과만 비교하게
+      // 되어 무의미하므로 반드시 setContent를 다시 호출해 변환기를 재실행시킨다.
+      const usesDoodleEngine = p.html.includes('__doodleConvert');
+      const determinismIssues = [];
+      if (usesDoodleEngine) {
+        const shot1 = await page.screenshot({ clip: { x: 0, y: 0, width: dimensions.width, height: dimensions.height } });
+        await page.setContent(p.html, { waitUntil: 'networkidle0' });
+        await waitForFonts(page, p.index + 1);
+        const shot2 = await page.screenshot({ clip: { x: 0, y: 0, width: dimensions.width, height: dimensions.height } });
+        const hash = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
+        if (hash(shot1) !== hash(shot2)) {
+          determinismIssues.push({ level: 'error', rule: 'determinism', message: '같은 입력을 2회 렌더링한 결과가 다름 (seed가 고정되지 않은 도형이 있을 수 있음)' });
+        }
+      }
 
       // Screenshot with glyphs hidden = the real background behind each text run
       await page.addStyleTag({ content: HIDE_GLYPHS_CSS });
@@ -233,7 +306,7 @@ async function lint(opts) {
         width: dimensions.width, height: dimensions.height, minContrast: MIN_CONTRAST,
       });
 
-      const issues = [...collected.issues, ...contrast, ...safeAreaIssues(collected.texts, dimensions.width)];
+      const issues = [...collected.issues, ...contrast, ...safeAreaIssues(collected.texts, dimensions.width), ...determinismIssues];
       report.push({ slide: p.index + 1, type: p.type, issues });
     }
   } finally {

@@ -1,6 +1,6 @@
 # Instagram 카드뉴스 생성 프로젝트
 
-> **v9.1** — 15종 슬라이드 타입 + 13종 템플릿 스타일(cs-v2 추가) + GAN 영감 하네스 아키텍처 + Skills 기반 + 가독성 lint
+> **v10.0** — 15종 슬라이드 타입 + 14종 템플릿 스타일(cs-doodle 손그림 그림체 추가) + GAN 영감 하네스 아키텍처 + Skills 기반 + 가독성 lint(결정성 검사 포함)
 
 ## 프로젝트 개요
 
@@ -37,6 +37,7 @@
 | `rn` | React Native 튜토리얼형, 스플릿 | `/style-rn` |
 | `cs` | CS 교육 콘텐츠형, 브라우저 프레임 (이전 게시물 재렌더링용) | `/style-cs` |
 | `cs-v2` | CS 교육 콘텐츠 v2, 웜 페이퍼 + 개념 색 토큰, 4:5 (1080×1350) | `/style-cs-v2` |
+| `cs-doodle` | CS 교육 콘텐츠, cs-v2 + 손그림 낙서풍(볼펜 낙서) 그림체, 4:5 (1080×1350) | `/style-cs-doodle` |
 | `linux` | Linux 정보 전달형, 다크 터미널 | `/style-linux` |
 
 ### cs-v2 카피 규칙 (요약)
@@ -103,8 +104,9 @@ instagram-card-news/
 │       ├── style-rn.md
 │       ├── style-cs.md
 │       ├── style-cs-v2.md
+│       ├── style-cs-doodle.md
 │       └── style-linux.md
-├── templates/           # HTML 템플릿 (13 스타일)
+├── templates/           # HTML 템플릿 (14 스타일)
 │   ├── minimal/         # 14종 (공통 슬라이드 타입)
 │   ├── bold/            # 14종
 │   ├── elegant/         # 14종
@@ -117,12 +119,16 @@ instagram-card-news/
 │   ├── rn/              # 20종 (공통 14 + rn 전용 6)
 │   ├── cs/              # 14종 (1080×1080)
 │   ├── cs-v2/           # 16종 (1080×1350, 공통 14 + content-diagram, content-cheatsheet) ※ build-cs-v2.js가 생성
+│   ├── cs-doodle/       # 16종 (1080×1350, cs-v2와 동일 구성 + 손그림 그림체) ※ build-cs-doodle.js가 생성
 │   └── linux/           # 15종 (1080×1080, content-code 포함)
 ├── scripts/
 │   ├── render.js        # Puppeteer HTML → PNG 렌더러 (--series, --preview)
-│   ├── lint-slides.js   # 가독성 검사 (글자 크기, 대비, 안전 영역, 오버플로)
+│   ├── lint-slides.js   # 가독성 검사 (글자 크기, 대비, 안전 영역, 오버플로, cs-doodle 결정성/겹침)
 │   ├── build-cs-v2.js   # cs-v2 템플릿 생성기
+│   ├── build-cs-doodle.js # cs-doodle 템플릿 생성기
+│   ├── doodle/          # cs-doodle 드로잉 엔진 (rough.js 결정적 SVG, 클라이언트 변환기, 오브젝트 빌더)
 │   └── generate-samples.js
+├── assets/doodle/       # cs-doodle 낙서 오브젝트 스프라이트 (build-objects.js가 생성) + README
 ├── style-example/       # 각 스타일 커버 예시 PNG
 ├── workspace/           # 런타임 작업 공간
 ├── output/              # 최종 PNG 출력

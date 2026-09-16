@@ -264,6 +264,7 @@ const SHARED_SCRIPT = `
     function roughPath(d, color, seed) {
       var drawable = gen.path(d, { seed: seed, roughness: 1.4, bowing: 0.9, maxRandomnessOffset: 7, stroke: 'currentColor', strokeWidth: 6 });
       var g = document.createElementNS(NS, 'g');
+      g.setAttribute('data-doodle-shape', '1'); // 캡션/라벨 위로 bleed 선이 지나가면 lint가 경고하도록
       (drawable.sets || []).forEach(function (set) {
         var dd = gen.opsToPath(set, 1);
         if (!dd) return;
@@ -281,6 +282,7 @@ const SHARED_SCRIPT = `
     function roughTriangle(pts, color, seed) {
       var drawable = gen.polygon(pts, { seed: seed, roughness: 1.4, bowing: 0.9, maxRandomnessOffset: 7, stroke: 'none', fill: 'currentColor', fillStyle: 'solid' });
       var g = document.createElementNS(NS, 'g');
+      g.setAttribute('data-doodle-shape', '1');
       (drawable.sets || []).forEach(function (set) {
         var dd = gen.opsToPath(set, 1);
         if (!dd) return;

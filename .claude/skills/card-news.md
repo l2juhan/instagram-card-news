@@ -134,7 +134,7 @@ description: "카드뉴스 생성 파이프라인 (Harness v1.0). 사용자가 '
 - 슬라이드 1→N 논리적 흐름 (서사 아크)
 - 각 슬라이드가 고유한 역할 수행 (중복 없음)
 - 헤드라인만으로 핵심 메시지 파악 가능
-- cta 타입 슬라이드 미포함 (프로젝트 규칙). **단 cs-v2는 예외**: 끝에서 두 번째 `content-cheatsheet`, 마지막 `cta` 고정
+- cta 타입 슬라이드 미포함 (프로젝트 규칙). **단 cs-v2, cs-doodle은 예외**: 끝에서 두 번째 `content-cheatsheet`, 마지막 `cta` 고정
 
 ## 통과 기준
 - 각 축 최소 6/10
@@ -253,7 +253,7 @@ description: "카드뉴스 생성 파이프라인 (Harness v1.0). 사용자가 '
 - **문장 길이**: 짧고 임팩트 있게, 한 줄 15자 이내 권장
 - **어조**: 요청된 톤(professional / casual / energetic)에 맞게 작성
 
-### cs-v2 카피 규칙 (cs-v2 스타일에서는 위 가이드라인보다 우선)
+### cs-v2 카피 규칙 (cs-v2, cs-doodle 스타일에서는 위 가이드라인보다 우선)
 
 목표는 "폰에서 한 장당 2~3초 안에 읽히고, 저장하거나 친구에게 DM으로 보내고 싶은 카드"다.
 
@@ -266,7 +266,7 @@ description: "카드뉴스 생성 파이프라인 (Harness v1.0). 사용자가 '
 7. **길이**: 장 제목 2줄 이내(한 줄 약 12자), 표지 헤드라인 3줄 이내(한 줄 약 9자), `lead` 2줄 이내.
 8. **개념 색 배정**: 기획서(`spec.md`) 디자인 노트에 "개념 → 토큰" 표를 먼저 쓰고 전 장에 똑같이 적용한다. 물감이나 도형 색과 수식 변수 색은 반드시 같은 토큰이어야 한다.
 9. **수식**은 `<sup>`와 `.eq`로 쓴다. 캐럿(`^`) 표기는 코드 블록이 아닌 한 금지한다.
-10. **사람 목소리**: `my_note`는 덱당 1~2곳에만 작성자 관점("처음에 내가 헷갈렸던 점" 등)을 넣는다. 파이프라인이 쓴 문구 끝에는 `(TODO: 직접 수정)`을 붙여 사용자가 고치게 한다.
+10. **`my_note`는 초안 생성 시 만들지 않는다.** 작성자 한 줄 코멘트는 파이프라인이 대신 지어내지 않는다 — 사용자가 "N번 장에 이 코멘트 넣어줘"라고 직접 요청할 때만 `/edit-card-news`로 추가한다.
 11. **헤드라인 금지 패턴**: `—` 구분자, `A · B · C` 가운뎃점 나열, 제목 속 단어 하나 색칠
 12. **대체 텍스트**: slides.json 각 장에 `alt` 필드(1~2문장, 이미지에 보이는 내용 묘사)를 쓴다. 렌더링에는 쓰이지 않고 `caption.md`에 들어간다.
 
@@ -287,7 +287,7 @@ node scripts/render.js \
 
 렌더링은 4개 워커가 병렬로 실행되며, 완료 후 `output/` 디렉토리에 `slide_01.png` ~ `slide_0N.png` 파일이 생성됩니다.
 
-**cs-v2 스타일은 추가로** `--series "{카테고리}" --preview` 를 붙이고, 렌더링 직후 가독성 lint를 실행합니다:
+**cs-v2, cs-doodle 스타일은 추가로** `--series "{카테고리}" --preview` 를 붙이고, 렌더링 직후 가독성 lint를 실행합니다:
 
 ```bash
 node scripts/render.js --slides workspace/slides.json --style cs-v2 --output output/ \
@@ -296,9 +296,12 @@ node scripts/lint-slides.js --slides workspace/slides.json --style cs-v2 \
   --accent "#16171B" --account "{account_name}" --series "{카테고리}"
 ```
 
+`--style cs-doodle`로 바꾸면 cs-doodle에도 그대로 적용됩니다.
+
 - `output/preview/slide_XX.png`: 폰 체감 크기(360px 폭) 축소본
 - `output/preview/grid_cover.png`: 프로필 그리드(3:4)에서 보이는 표지
 - lint 검사 항목: 글자 28px 미만, 대비 4.5:1 미만, 34px 크롭 영역 침범, 캔버스·레이아웃 영역 밖 요소, 잘린 텍스트 → error / 72px 여백 침범 → warning
+- **cs-doodle에서만 추가로**: 손글씨 폰트 크기가 최소치 미만 → error, 손그림 도형이 텍스트 위를 덮음 → warning, 같은 슬라이드를 2회 렌더링한 결과가 다름(결정성 깨짐) → error
 - **lint가 exit 1(error 존재)이면 평가자에게 넘기기 전에 생성자 단계로 되돌립니다.** error 목록을 `evaluation.md`의 `[CRITICAL]` 항목으로 그대로 전달합니다.
 
 ---
@@ -309,7 +312,7 @@ node scripts/lint-slides.js --slides workspace/slides.json --style cs-v2 \
 **모델**: sonnet
 **입력**:
 - `output/` 디렉토리의 PNG 파일 전체 (시각 검사)
-- cs-v2: `output/preview/` 360px 축소본 전체 + `grid_cover.png`, `lint-slides.js` 출력 결과
+- cs-v2, cs-doodle: `output/preview/` 360px 축소본 전체 + `grid_cover.png`, `lint-slides.js` 출력 결과
 - `workspace/slides.json` (데이터 검사)
 - `workspace/contract.md` (수락 기준)
 - `workspace/spec.md` (기획 의도)
@@ -322,9 +325,14 @@ node scripts/lint-slides.js --slides workspace/slides.json --style cs-v2 \
 ### 평가 수행 항목
 
 1. **시각 검사** (PNG): 텍스트 오버플로, 빈 공간 비율, 정렬, 색상 일관성, 가독성, style_override 적용 결과
-   - **cs-v2**: 가독성은 원본 PNG가 아니라 `output/preview/` **360px 축소본으로 판단**한다. 기준은 "폰으로 봤을 때 한 장당 2~3초 안에 핵심이 읽히는가"이다. `grid_cover.png`에서 헤드라인과 비주얼이 온전한지도 확인한다.
-   - **cs-v2**: lint error가 1개라도 남아 있으면 기술적 완성도 축은 5점 이하(자동 불통과)로 채점한다. warning은 슬라이드별 피드백에 적는다.
-   - **cs-v2**: 물감(도형) 색과 수식 변수 색이 같은 개념 토큰인지 확인한다.
+   - **cs-v2, cs-doodle**: 가독성은 원본 PNG가 아니라 `output/preview/` **360px 축소본으로 판단**한다. 기준은 "폰으로 봤을 때 한 장당 2~3초 안에 핵심이 읽히는가"이다. `grid_cover.png`에서 헤드라인과 비주얼이 온전한지도 확인한다.
+   - **cs-v2, cs-doodle**: lint error가 1개라도 남아 있으면 기술적 완성도 축은 5점 이하(자동 불통과)로 채점한다. warning은 슬라이드별 피드백에 적는다.
+   - **cs-v2, cs-doodle**: 물감(도형) 색과 수식 변수 색이 같은 개념 토큰인지 확인한다.
+   - **cs-doodle 전용**:
+     - 360px 미리보기에서 핵심이 2~3초 안에 읽히는가 (그림체가 부드러워졌다고 가독성이 희생되지 않았는지)
+     - 그림이 설명을 돕는가, 장식에 그치는가 — 손그림이라는 이유로 정보 없는 낙서를 늘리지 않았는지
+     - 낙서 질감(흔들리는 선, 해쳐 채움)이 라벨·수식·화살표 방향 같은 정보를 흐리지 않는가
+     - 한 덱 안에서 그림체(선 굵기, 거칠기, 채색 방식)가 일관적인가 — 슬라이드마다 손맛의 정도가 달라 보이지 않는지
 2. **데이터 검사** (slides.json): 서사 흐름, 카피 품질, 후킹력, 글자 수, 슬라이드 타입 다양성
 3. **4축 채점**: 각 축 1~10점
 4. **슬라이드별 피드백**: OK 또는 구체적 수정 제안
@@ -422,9 +430,9 @@ node scripts/lint-slides.js --slides workspace/slides.json --style cs-v2 \
 output/slide_01.png ~ output/slide_{count}.png
 ```
 
-### cs-v2: `output/caption.md` 생성
+### cs-v2, cs-doodle: `output/caption.md` 생성
 
-cs-v2 결과물은 PNG와 함께 오케스트레이터가 `output/caption.md`를 작성합니다. 캡션, 대체 텍스트, 해시태그는 콘텐츠 분류와 검색 노출(공개 게시물은 구글 검색 포함)에 쓰입니다.
+cs-v2, cs-doodle 결과물은 PNG와 함께 오케스트레이터가 `output/caption.md`를 작성합니다. 캡션, 대체 텍스트, 해시태그는 콘텐츠 분류와 검색 노출(공개 게시물은 구글 검색 포함)에 쓰입니다.
 
 ```markdown
 # 캡션
@@ -444,7 +452,6 @@ cs-v2 결과물은 PNG와 함께 오케스트레이터가 `output/caption.md`를
 ## 업로드 체크리스트
 - [ ] 차분한 인스트루멘털 음악 추가 (음악을 넣은 캐러셀은 릴스 탭에 노출될 수 있음)
 - [ ] 슬라이드별 대체 텍스트 입력 (고급 설정 → 대체 텍스트 작성)
-- [ ] my_note의 `(TODO: 직접 수정)` 문구를 본인 말로 교체했는지 확인
 ```
 
 규칙:

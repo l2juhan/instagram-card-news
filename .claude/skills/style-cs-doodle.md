@@ -45,6 +45,7 @@ cs-v2와 같은 lint 기준(28px, 4.5:1 대비, 34px 크롭, 72px 여백, 오버
   (콘텐츠 생성자가 슬라이드를 작성할 때, 위 함수로 얻은 SVG 문자열을 `visual` 필드의 raw SVG 안에 그대로 이어붙인다.)
 - **텍스트 강조**(동그라미, 밑줄)는 `visual` 밖 일반 HTML 텍스트에도 쓸 수 있다: 강조할 부분을 `<mark data-doodle-mark="circle" data-doodle-color="k-threat" style="background:none;color:inherit">텍스트</mark>`로 감싼다. `data-doodle-mark`는 `"circle"` 또는 `"underline"`.
 - **결정적 seed가 필요 없는(=원래 모양 그대로 둬야 하는) 도형**은 조상에 `data-doodle-skip`을 붙인다.
+- **원/도형 안에 글자를 넣을 때, 그 도형이 채워져 있다고 가정하고 글자색을 정하지 않는다.** cs-v2는 `fill='currentColor'`인 원 안에 종이색(`#F6F2EA`) 글자를 얹어 대비를 맞추는 패턴을 쓰지만, cs-doodle의 도형은 기본이 아웃라인(속이 비어 종이색 그대로)이라 같은 패턴을 그대로 가져오면 글자가 종이 위에 종이색으로 앉아 안 보인다(`node scripts/lint-slides.js`가 `contrast` error로 잡아준다). 도형 안 글자는 `ink`나 개념 토큰 색으로 쓴다.
 - **`clip-path`로 겹친 부분만 다른 색을 칠하는 트릭**(cs-v2 표지에서 씀)은 자동 변환기가 이해하지 못한다 — 아웃라인만 남아 어색해진다. cs-doodle에서 "겹치는 두 색" 같은 그림은 세 번째 원을 살짝 옆에 겹쳐 그리는 식으로 다시 그린다.
 
 ## 낙서 오브젝트 라이브러리
