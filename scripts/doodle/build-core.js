@@ -190,6 +190,12 @@ ${theme.onDarkCss || ''}`;
     if (slot && !slot.innerHTML.replace(/<br\\s*\\/?>/gi, '').trim()) el.remove();
   });
 
+  // cheatsheet: 빈 행이 지워지면 그 옆 얇은 구분선이 겹쳐 남는다. 얇은 선은 두 행 사이에 있을 때만 둔다.
+  Array.prototype.slice.call(document.querySelectorAll('.sheet-rule.is-between')).forEach(function (rule) {
+    var prev = rule.previousElementSibling, next = rule.nextElementSibling;
+    if (!prev || !next || !prev.classList.contains('row') || !next.classList.contains('row')) rule.remove();
+  });
+
   Array.prototype.slice.call(document.querySelectorAll('img[data-optional-src]')).forEach(function (img) {
     if (!img.getAttribute('src')) img.remove();
   });
@@ -653,7 +659,7 @@ ${theme.onDarkCss || ''}`;
     <h2 class="title">{{headline}}</h2>
     <dl class="sheet">
       <div class="sheet-rule">${hRuleSvg(PROGRESS_W, 12, 8)}</div>
-      ${[1, 2, 3, 4, 5, 6].map((n) => `${row(n)}\n      <div class="sheet-rule">${hRuleSvg(PROGRESS_W, 12, n === 6 ? 8 : 5)}</div>`).join('\n      ')}
+      ${[1, 2, 3, 4, 5, 6].map((n) => `${row(n)}\n      <div class="sheet-rule${n === 6 ? '' : ' is-between'}">${hRuleSvg(PROGRESS_W, 12, n === 6 ? 8 : 5)}</div>`).join('\n      ')}
     </dl>
     <p class="save" data-opt="save_hint"><svg width="30" height="36" viewBox="0 0 30 36">${R.path('M3 3h24v30L15 24 3 33z', chromeOpts(nextSeed()))}</svg><span data-slot="save_hint">{{save_hint}}</span></p>
     ${NOTE}

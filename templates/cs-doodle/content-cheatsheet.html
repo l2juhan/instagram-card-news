@@ -195,15 +195,15 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
     <dl class="sheet">
       <div class="sheet-rule"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M2.9 7.4 C210 2.7, 413.1 1.6, 932.4 5.1' stroke='currentColor' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
       <div class="row" data-opt="row1_value"><dt>{{row1_label}}</dt><dd data-slot="row1_value">{{row1_value}}</dd></div>
-      <div class="sheet-rule"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M0.6 5.3 C205.4 14.2, 415.9 15.3, 934.7 9.8' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
+      <div class="sheet-rule is-between"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M0.6 5.3 C205.4 14.2, 415.9 15.3, 934.7 9.8' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
       <div class="row" data-opt="row2_value"><dt>{{row2_label}}</dt><dd data-slot="row2_value">{{row2_value}}</dd></div>
-      <div class="sheet-rule"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M-1.6 3.3 C208.7 -7.3, 418.7 -4, 937.1 6.6' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
+      <div class="sheet-rule is-between"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M-1.6 3.3 C208.7 -7.3, 418.7 -4, 937.1 6.6' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
       <div class="row" data-opt="row3_value"><dt>{{row3_label}}</dt><dd data-slot="row3_value">{{row3_value}}</dd></div>
-      <div class="sheet-rule"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M-3.9 9.1 C212 4.2, 413.7 9.6, 939.5 3.5' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
+      <div class="sheet-rule is-between"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M-3.9 9.1 C212 4.2, 413.7 9.6, 939.5 3.5' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
       <div class="row" data-opt="row4_value"><dt>{{row4_label}}</dt><dd data-slot="row4_value">{{row4_value}}</dd></div>
-      <div class="sheet-rule"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M1.7 7.1 C207.5 23.6, 416.6 23.3, 934 8.1' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
+      <div class="sheet-rule is-between"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M1.7 7.1 C207.5 23.6, 416.6 23.3, 934 8.1' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
       <div class="row" data-opt="row5_value"><dt>{{row5_label}}</dt><dd data-slot="row5_value">{{row5_value}}</dd></div>
-      <div class="sheet-rule"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M-0.5 5.1 C210.8 2.1, 419.4 4, 936.4 5' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
+      <div class="sheet-rule is-between"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M-0.5 5.1 C210.8 2.1, 419.4 4, 936.4 5' stroke='currentColor' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
       <div class="row" data-opt="row6_value"><dt>{{row6_label}}</dt><dd data-slot="row6_value">{{row6_value}}</dd></div>
       <div class="sheet-rule"><svg width='936' height='12' viewBox='0 0 936 12' style='display:block;overflow:visible'><path d='M-2.7 3 C206.2 13.6, 414.4 9.9, 938.7 9.7' stroke='currentColor' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg></div>
     </dl>
@@ -360,6 +360,12 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
     var name = el.getAttribute('data-opt');
     var slot = el.getAttribute('data-slot') === name ? el : el.querySelector('[data-slot="' + name + '"]');
     if (slot && !slot.innerHTML.replace(/<br\s*\/?>/gi, '').trim()) el.remove();
+  });
+
+  // cheatsheet: 빈 행이 지워지면 그 옆 얇은 구분선이 겹쳐 남는다. 얇은 선은 두 행 사이에 있을 때만 둔다.
+  Array.prototype.slice.call(document.querySelectorAll('.sheet-rule.is-between')).forEach(function (rule) {
+    var prev = rule.previousElementSibling, next = rule.nextElementSibling;
+    if (!prev || !next || !prev.classList.contains('row') || !next.classList.contains('row')) rule.remove();
   });
 
   Array.prototype.slice.call(document.querySelectorAll('img[data-optional-src]')).forEach(function (img) {

@@ -389,6 +389,12 @@ code, .mono { font-family: var(--mono); font-weight: 500; }
     if (slot && !slot.innerHTML.replace(/<br\s*\/?>/gi, '').trim()) el.remove();
   });
 
+  // cheatsheet: 빈 행이 지워지면 그 옆 얇은 구분선이 겹쳐 남는다. 얇은 선은 두 행 사이에 있을 때만 둔다.
+  Array.prototype.slice.call(document.querySelectorAll('.sheet-rule.is-between')).forEach(function (rule) {
+    var prev = rule.previousElementSibling, next = rule.nextElementSibling;
+    if (!prev || !next || !prev.classList.contains('row') || !next.classList.contains('row')) rule.remove();
+  });
+
   Array.prototype.slice.call(document.querySelectorAll('img[data-optional-src]')).forEach(function (img) {
     if (!img.getAttribute('src')) img.remove();
   });
